@@ -1,6 +1,12 @@
 ---
 title: "Clase 1. Concepto de datos ordenados para la minería de texto"
-output: html_notebook
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+author: "Germán Rosati"
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
 ```{r include=FALSE}
@@ -8,16 +14,15 @@ library(tidyverse)
 library(tidytext)
 ```
 
-La idea de "datos ordenados" o _tidy data_ es una forma de manejar de forma efectiva y eso aplica también para el caso de los datos textuales. Según [Hadley Wickham (2004)]() los datos "tidy" tiene tres características:
+La idea de "datos ordenados" o _tidy data_ es una forma de manejar de forma efectiva y eso aplica también para el caso de los datos textuales. Según [Hadley Wickham (2004)](https://vita.had.co.nz/papers/tidy-data.pdf) los datos "tidy" tiene tres características:
 
 - Cada variable (o atributo) es una columna
 - Cada unidad (u observación) es una fila
 - Cada tipo de unidad observacional es una tabla
 
-(Si en esta definición les resuena aquello que en las materias de Metodología de la Investigación se llamaba "estructura tripartita del dato" o lo que Juan Samaja llamaba "estructura cuatriparti
-ta del dato" están bien encaminades).
+(Si en esta definición les resuena aquello que en las materias de Metodología de la Investigación se llamaba "estructura tripartita del dato" o lo que Juan Samaja llamaba "estructura cuatripartita del dato" están bien encaminades).
 
-En el contexto de minería de texto, los datos ordenados van a tener la siguente estrucutra: un **token** por fila. Un **token** es una unidad conceptual y/o analíticamente signifactivas con las que dividimos un documento. Un **token** puede ser una palabra (ese será el caso más frecuente en este curso) pero también, [n-gramas](https://es.wikipedia.org/wiki/N-grama), oraciones e incluso párrafos. De hecho, un primer paso en el preprocesamiento de texto es dividir el corpus en **tokens**.
+En el contexto de minería de texto, los datos ordenados van a tener la siguente estrucutra: un **token** por fila. Un **token** es una unidad conceptual y/o analíticamente signifactivas con las que dividimos un documento. Un **token** puede ser una palabra (ese será el caso más frecuente en este curso) pero también podrían ser [n-gramas](https://es.wikipedia.org/wiki/N-grama), oraciones e incluso párrafos. De hecho, un primer paso en el preprocesamiento de texto es dividir el corpus en **tokens**. Para lo cual, es necesario, entonces, definir qué va a ser un **token**.
 
 Como puede verse esta estructura difiere de otras formas de almacenar el texto crudo
 
@@ -25,12 +30,12 @@ Como puede verse esta estructura difiere de otras formas de almacenar el texto c
 - Corpus: estos tipos de objetos suelen contener cadenas sin procesar anotadas con metadatos y detalles adicionales.
 - Matriz documento-término: esta es una matriz dispersa que describe una colección (es decir, un corpus) de documentos con una fila para cada documento y una columna para cada término. El valor de la matriz suele ser el recuento de palabras o tf-idf.
 
-Como iremos viendo, va a ser muy fácil pasar del texto en formato tidy a otros formatos. Particularmente, vamos a estar yendo y viniendo para diferentes tareas. Así, tendremos que modelar en formato Matrix-documento-término, pero llevaremos esos resultados a formato tidy para generar visualizaciones que nos permitan interpretar este modelo.
+Como iremos viendo, va a ser muy fácil pasar del texto en formato tidy a otros formatos. Particularmente, vamos a estar yendo y viniendo entre textos en formato tidy y no-tidy para diferentes tareas. Así, cuando nos toque construir modelos seguramento vamos a tener que pasar a un  formato Matrix-documento-término (TFM). Pero cuando querramos generar gráficos o métricas que nos permitan interpretar ese modelo, seguramente vamos a tener que volver a formato tidy.
+
 
 ## Primer ejemplo
 
-Marx escribió en el famoso Prólogo a la Contribución a la Crítica de la Economía Política de 1859:
-
+Vamos a empezar con un ejemplo mínimo: un párrafo de Marx. En el famoso "Prólogo a la Contribución a la Crítica de la Economía Política" de 1859 escribió el siguiente párrafo que vamos a guardar en un objeto `character` que se va a llamar `marx`.
 
 ```{r}
 marx <- c("El conjunto de estas relaciones de producción forma la estructura económica de la sociedad, la base real sobre la que se levanta la superestructura jurídica y política y a la que corresponden determinadas formas de conciencia social. El modo de producción de la vida material condiciona el proceso de la vida social política y espiritual en general. No es la conciencia del hombre la que determina su ser sino, por el contrario, el ser social es lo que determina su conciencia. Al llegar a una fase determinada de desarrollo las fuerzas productivas materiales de la sociedad entran en contradicción con las relaciones de producción existentes o, lo que no es más que la expresión jurídica de esto, con las relaciones de propiedad dentro de las cuales se han desenvuelto hasta allí. De formas de desarrollo de las fuerzas productivas, estas relaciones se convierten en trabas suyas, y se abre así una época de revolución social. Al cambiar la base económica se transforma, más o menos rápidamente, toda la inmensa superestructura erigida sobre ella.")
@@ -48,12 +53,11 @@ marx_df
 ```
 ¿Qué significa que este marco de datos se ha impreso como un "tibble"? Un tibble es una clase moderna de marco de datos dentro de R, disponible en los paquetes dplyr y tibble, que tiene un método de impresión conveniente, no convierte cadenas en factores y no usa nombres de fila. Tibbles son ideales para usar con herramientas ordenadas.
 
-Sin embargo, tenga en cuenta que este marco de datos que contiene texto aún no es compatible con un análisis de texto ordenado. No podemos filtrar las palabras ni contar las que ocurren con mayor frecuencia, ya que cada fila está formada por varias palabras combinadas. Necesitamos convertir esto para que tenga un token por documento por fila.
+Sin embargo, tengamos en cuenta que este marco de datos que contiene texto aún no es compatible con un análisis de texto tidy. No podemos filtrar las palabras ni contar las que ocurren con mayor frecuencia, ya que cada fila está formada por varias palabras combinadas. Necesitamos convertir esto para que tenga un token por documento por fila.
 
-¿Cuántos documentos tenemos?
+¿Cuántos documentos tenemos en este ejemplo?
 
 Dentro de nuestro marco de texto ordenado, necesitamos dividir el texto en tokens individuales (un proceso llamado tokenización) y transformarlo en una estructura de datos ordenada. Para hacer esto, usamos la función `unnest_tokens()` de tidytext.
-
 
 ```{r}
 library(tidytext)
@@ -67,11 +71,23 @@ Usamos aquí dos argumentos básicos:
 - el nombre de la columna de salida que se creará cuando el texto no esté anidado (palabra, en este caso), y luego 
 - la columna de entrada de la que proviene el texto (texto, en este caso). 
 
-Recordar que `text_df` arriba tiene una columna llamada `text` que contiene los datos de interés. A su vez `unnest_tokens()` realiza la tokenización por defecto usando palabras. Esto puede cambiarse sin problemas.
+¿Qué formato tiene ahora nuestro párrafo?
 
-¿Qué formato tiene ahora?
+---
 
-A su vez, es importante observar que:
+**Otros tokens**
+Es importante recordar que `text_df` arriba tiene una columna llamada `text` que contiene los datos de interés. A su vez `unnest_tokens()` realiza la tokenización por defecto usando palabras. Esto puede cambiarse sin problemas, cambiando el parámetro `token`. Por ejemplo,
+
+```{r}
+marx_df %>%
+  unnest_tokens(word, text, token='sentences')
+```
+
+Ahora, tenemos una tibble en la que cada línea es una oración ("sentences") y no una palabra.
+
+---
+
+A su vez, han pasado otras varias cosas al ejecutar `unnest_tokens` que es importante marcar:
 
 - Se conservan otras columnas, como el número de línea de donde proviene cada palabra.
 - Se ha eliminado la puntuación.
@@ -109,8 +125,7 @@ marx_engels_tidy
 ## Eliminando stopwords
 El siguiente paso es la eliminación de las llamadas stopwords. Se trata de palabras que o bien por su función sintáctica (pronombres, preposiciones, adverbios, etc.) o por su frecuencia (aparecen en gran frecuencia) no aportan información al texto.
 
-En general, la forma estandar de lidiar con las stopwords es mediante su eliminación a través de una lista. Carguemos la lista con las stopwords, al mismo tiempo, vamos a eliminar los acentos de esta tabla.
-
+En general, la forma estándar y más inmediata de lidiar con las stopwords es mediante su eliminación a través de una lista. La idea es buscar las palabras que estén en esa lista y eliminarlas. Carguemos la lista con las stopwords, al mismo tiempo, vamos a eliminar los acentos de esta tabla.
 
 ```{r}
 stop_words <- read_csv('https://raw.githubusercontent.com/Alir3z4/stop-words/master/spanish.txt', col_names=FALSE) %>%
@@ -118,7 +133,7 @@ stop_words <- read_csv('https://raw.githubusercontent.com/Alir3z4/stop-words/mas
         mutate(word = stringi::stri_trans_general(word, "Latin-ASCII"))
 ```
 
-Ahora sí, podemos removerlas usando la funcion `anti_join` 
+Ahora sí, podemos removerlas usando la funcion `anti_join`:
 
 ```{r}
 marx_engels_tidy <- marx_engels_tidy %>%
@@ -146,7 +161,7 @@ Escribir el código para replicar la tabla anterior usando los comandos del `tid
 
 -------
 
-Debido a que hemos estado usando herramientas ordenadas, nuestros recuentos de palabras se almacenan en un marco de datos ordenado. Esto nos permite canalizar esto directamente al paquete `ggplot2`, por ejemplo, para crear una visualización de las palabras más comunes:
+Debido a que hemos estado usando herramientas ordenadas, nuestros recuentos de palabras se almacenan en una tibble en formato tidy. Esto nos permite pasar casi sin mediaciones a nuestro viejo amigo `ggplot2`, por ejemplo, para crear una visualización de las palabras más comunes:
 
 ```{r}
 marx_engels_tidy %>%
@@ -169,18 +184,24 @@ marx_engels_tidy <- marx_engels_tidy %>%
         )) 
 ```
 
-Utilizamos la función `str_detect` del paquete `stringr` para testear si la condición se cumple... en este caso si la palabra `Carta` aparece en las filas de `título`.
+Utilizamos la función `str_detect` del paquete `stringr` para testear si cierto patrón está en un determinado texto. Más precisamente, en este caso buscamos para cada fila si la palabra `Carta` aparece en las filas de `título`. 
+
+Combinamos esta función con `case_when` y `mutate` para modificar la columna `tipo` y agregar una categoría de cartas.
+
+A partir de ahora podemos utilizar las herramientas del tidyverse para contar y manipular palabras.
 
 ```{r}
 freqs <- marx_engels_tidy %>%
-        mutate(word = str_extract(word, "[a-z']+")) %>%
-        group_by(tipo, word) %>%
+        mutate(word = str_extract(word, "[a-z']+")) %>% #Nos quedamos con las letras
+        group_by(tipo, word) %>% #Agrupamos por tipo y word
         summarise(n = n()) %>%
         mutate(
                 total = sum(n),
-                prop = n/total*100) %>%
+                prop = n/total*100
+                ) %>%
+        ungroup() %>%
         select(tipo, word, prop) %>%
-        pivot_wider(names_from = tipo, values_from = prop)
+        pivot_wider(names_from = tipo, values_from = prop) 
 
 freqs
 ```
@@ -198,7 +219,7 @@ ggplot( aes(notas, libros)) +
   theme_minimal()
 ```
 
-Las palabras que están cerca de la línea en estos gráficos tienen frecuencias similares en ambos conjuntos de textos, por ejemplo, tanto en los libros de Marx y Engels como en las aparecen con frecuencias simialres: burguesa, acción, campesinos, abolición, comuna, producción, clase. En cambio, en los libros parecen aparecer palabras como esencia, concepto, hegel, indidiuo, fenomenología, misterio. En las notas periodísitcas aparece notablemente palabras ligadas a la acción política: congreso, consejo, internacional, liga, estatutos, etc.
+Las palabras que están cerca de la línea en estos gráficos tienen frecuencias similares en ambos conjuntos de textos, por ejemplo, tanto en los libros de Marx y Engels como en las aparecen con frecuencias simialres: burguesa, acción, campesinos, abolición, comuna, producción, clase. En cambio, en los libros parecen aparecer palabras como autoconciencia, during, espípirtu, matemática. En las notas periodísitcas aparecen palabras ligadas a la acción política: congreso, consejo, estatutos, conferencia, etc.
 
 -------
 
