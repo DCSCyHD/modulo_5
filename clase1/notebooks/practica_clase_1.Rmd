@@ -1,6 +1,13 @@
 ---
-title: "Clase 1. Práctica independiente"
-output: html_notebook
+title: "Clase 1. Concepto de datos ordenados para la minería de texto"
+subtitle: "Práctica independiente"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+author: "Germán Rosati"
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
 Vamos a trabajar con unos 340 textos de Lenin y Rosa Luxemburgo (también provenientes del dataset que Diego Kosloski escrapeó del Marxist Internet Archive).
