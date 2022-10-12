@@ -1,0 +1,34 @@
+---
+title: "Clase 3. Práctica independiente"
+author: "Domenech Burin, Laia"
+date: "8/11/2021"
+output: html_document
+---
+
+Vamos a hacer el mismo ejercicio para Piglia con la editorial Anagrama pero con Marx en la editorial Fondo de Cultura Económico. (https://www.fondodeculturaeconomica.com)
+
+```{r, results='hide'}
+library(rvest)
+library(tidyverse)
+```
+
+1. Leemos o buscamos el perfil del autor. 
+
+(Si no hay catálogo, ¿dónde busco? 
+¿Qué funciones de tidyverse me pueden ayudar a conseguir un listado solo de Marx?)
+
+```{r}
+marx <- 
+```
+
+2. Traemos los links de los libros
+
+```{r}
+
+```
+
+3. Hacemos una función que inserte en una tabla el título, año de publicación, resumen, precio, cantidad de páginas, e ISBN. 
+
+```{r}
+
+```
