@@ -1,8 +1,16 @@
 ---
-title: "Ponderando frecuencias de palabras"
+title: "Clase 2. Ponderando frecuencias de palabras"
 subtitle: "Los diarios de Emilio Renzi (tres tomos)"
-output: html_notebook
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+author: "Germán Rosati"
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
+
+
 
 ```{r}
 library(tidyverse)
@@ -130,5 +138,5 @@ A partir del corpus de textos de Marx y Engels trabajado la clase pasada, identi
 ```
 
 
-### Resumen
+## Resumen
 El uso de tf-idf nos permite encontrar palabras que son características de un documento dentro de una colección de documentos, ya sea que ese documento sea una novela, un diario un texto físico o una página web. Explorar la frecuencia de los términos por sí solo puede darnos una idea de cómo se usa el lenguaje en una colección de lenguaje natural, y los verbos dplyr como `count()` y `rank()` nos brindan herramientas para razonar sobre la frecuencia de los términos. El paquete `tidytext` utiliza una implementación de tf-idf consistente con los principios de tidy data que nos permite ver cómo diferentes palabras son importantes en los documentos dentro de una colección o corpus de documentos.

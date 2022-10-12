@@ -1,7 +1,13 @@
 ---
-title: "Análsis de sentimiento mediante diccionarios"
+title: "Clase 2. Análsis de sentimiento mediante diccionarios"
 subtitle: "Los diarios de Emilio Renzi (tres tomos)"
-output: html_notebook
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+author: "Germán Rosati"
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
 ## Introducción

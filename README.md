@@ -3,7 +3,7 @@
 ## Docentes
 
 - [Germán Rosati](https://gefero.github.io/)
-- [Laia Domenech]()
+- [Tomás Maguire]()
 
 # Presentación
 El trabajo empírico en las ciencias sociales se caracteriza por su gran diversidad en el tipo de fuentes de información utilizadas: desde datos altamente estructurados (cuya forma más clásica son las encuestas) hasta datos de un grado menor de estructuración. En este último grupo, los datos textuales, ya se trate de documentos, noticias, entrevistas, etc.- ocupan un lugar central.
@@ -15,10 +15,10 @@ En las ciencias sociales argentinas el análisis de textos parece haber estado c
 ## Clase 1. Introducción a R y al tidyverse y a tidytext. ¿Cómo hacer de un corpus de texto crudo algo analizable mediante métodos cuantitativos? Preprocesamiento de texto: stopwords, lemmas y stemming. 
 
 - [Slides - pdf](/clase1/DIPLO_TM_Clase_1.pdf)
-- [Explicación y práctica - Notebook](/clase1/notebooks/clase_1.nb.html)
+- [Explicación y práctica - Notebook](/clase1/notebooks/clase_1.html)
 - [Explicación y práctica - RMarkdown](/clase1/notebooks/clase_1.Rmd)
 - [Práctica Independiente - RMarkdown](/clase1/notebooks/practica_clase_1.Rmd)
-- [Práctica Independiente - Notebook](/clase1/notebooks/practica_clase_1.nb.html)
+- [Práctica Independiente - Notebook](/clase1/notebooks/practica_clase_1.html)
 
 Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
 
@@ -28,15 +28,15 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 ## Clase 2. ¿Cómo vectorizar textos? Contando palabras y extrayendo conclusiones de un corpus. Bag of Words. Term-frequency matrix: conteos crudos y ponderación TF-IDF. Análisis de sentimientos sobre un corpus. 
 
 - [Slides - pdf](/clase2/DIPLO_TM_Clase_2.pdf)
-- [Sentiment Analysis - Explicación y práctica - Notebook](/clase2/notebooks/2_sentimient_analysis.nb.html)
+- [Sentiment Analysis - Explicación y práctica - Notebook](/clase2/notebooks/2_sentimient_analysis.html)
 - [Sentiment Analysis - Explicación y práctica - RMarkdown](/clase2/notebooks/2_sentimient_analysis.Rmd)
-- [TF-IDF - Explicación y práctica - Notebook](/clase2/notebooks/21_tfidf.nb.html)
+- [TF-IDF - Explicación y práctica - Notebook](/clase2/notebooks/21_tfidf.html)
 - [TF-IDF - Explicación y práctica - RMarkdown](/clase2/notebooks/21_tfidf.Rmd)
 
 
 Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
 
-[![](imgs/Download.png)](clase2.zip)
+[![](imgs/Download.png)]()
 
 
 ## Clase 3. Web Scraping
@@ -50,7 +50,7 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 
 Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
 
-[![](imgs/Download.png)](clase3.zip)
+[![](imgs/Download.png)]()
 
 ## Clase 4. ¿Cómo detectar temas en corpus I? Introducción al modelado de tópicos. Latent Dirichlet Allocation (LDA)
 
@@ -59,7 +59,7 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 - [Explicación y práctica - RMarkdown](/clase4/notebooks/4_topic_modeling_LDA.Rmd)
 - [Práctica independiente](/clase4/notebooks/4_practica_independiente.nb.html)
 
-[![](imgs/Download.png)](clase4.zip)
+[![](imgs/Download.png)]()
 
 
 ## Clase 5. ¿Cómo detectar temas en corpus II? Un modelo para detectar tópicos diseñado para las ciencias sociales: Structural Topic Modeling.
@@ -68,7 +68,7 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 - [Explicación y práctica - Notebook](/clase5/notebooks/5_topic_modeling_STM.nb.html)
 - [Explicación y práctica - RMarkdown](/clase5/notebooks/5_topic_modeling_STM.Rmd)
 
-[![](imgs/Download.png)](clase5.zip)
+[![](imgs/Download.png)]()
 
 ## Clase 6. Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec). Cierre del módulo
 
@@ -76,7 +76,7 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 - [Explicación y práctica - Notebook](/clase6/notebooks/6_word2vec.nb.html)
 - [Explicación y práctica - RMarkdown](/clase6/notebooks/6_word2vec.Rmd)
 
-[![](imgs/Download.png)](clase6.zip)
+[![](imgs/Download.png)]()
 
 # Librerías a utilizar
 El taller se desarrollará en R y se hará un uso extensivo de las siguientes librerías:
