@@ -24,59 +24,15 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 
 [![](imgs/Download.png)](clase1.zip)
 
-
 ## Clase 2. ¿Cómo vectorizar textos? Contando palabras y extrayendo conclusiones de un corpus. Bag of Words. Term-frequency matrix: conteos crudos y ponderación TF-IDF. Análisis de sentimientos sobre un corpus. 
 
-- [Slides - pdf](/clase2/DIPLO_TM_Clase_2.pdf)
-- [Sentiment Analysis - Explicación y práctica - Notebook](/clase2/notebooks/2_sentimient_analysis.html)
-- [Sentiment Analysis - Explicación y práctica - RMarkdown](/clase2/notebooks/2_sentimient_analysis.Rmd)
-- [TF-IDF - Explicación y práctica - Notebook](/clase2/notebooks/21_tfidf.html)
-- [TF-IDF - Explicación y práctica - RMarkdown](/clase2/notebooks/21_tfidf.Rmd)
-
-
-Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
-
-[![](imgs/Download.png)]()
-
-
-## Clase 3. Web Scraping
-
-- [Slides - pdf](/clase3/DIPLO_TM_Clase_3.pdf)
-- [Scraping - Explicación y práctica - Notebook](/clase3/notebooks/3_clase.nb.html)
-- [Scraping - Explicación y práctica - RMarkdown](/clase3/notebooks/3_clase.Rmd)
-- [APIS - Explicación y práctica - Notebook](/clase3/notebooks/APIs.nb.html)
-- [APIS - Explicación y práctica - RMarkdown](/clase3/notebooks/APIs.Rmd)
-- [Práctica independiente](/clase3/notebooks/3_practica_independiente.Rmd)
-
-Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
-
-[![](imgs/Download.png)]()
+## Clase 3. Web Scraping. ¿Cómo descargamos información de un sitio estático?
 
 ## Clase 4. ¿Cómo detectar temas en corpus I? Introducción al modelado de tópicos. Latent Dirichlet Allocation (LDA)
 
-- [Slides - pdf](/clase4/DIPLO_TM_Clase_4.pdf)
-- [Explicación y práctica - Notebook](/clase4/notebooks/4_topic_modeling_LDA.nb.html)
-- [Explicación y práctica - RMarkdown](/clase4/notebooks/4_topic_modeling_LDA.Rmd)
-- [Práctica independiente](/clase4/notebooks/4_practica_independiente.nb.html)
-
-[![](imgs/Download.png)]()
-
-
 ## Clase 5. ¿Cómo detectar temas en corpus II? Un modelo para detectar tópicos diseñado para las ciencias sociales: Structural Topic Modeling.
 
-- [Slides - pdf](/clase5/DIPLO_TM_Clase_5.pdf)
-- [Explicación y práctica - Notebook](/clase5/notebooks/5_topic_modeling_STM.nb.html)
-- [Explicación y práctica - RMarkdown](/clase5/notebooks/5_topic_modeling_STM.Rmd)
-
-[![](imgs/Download.png)]()
-
 ## Clase 6. Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec). Cierre del módulo
-
-- [Slides - pdf](/clase6/DIPLO_TM_Clase_6.pdf)
-- [Explicación y práctica - Notebook](/clase6/notebooks/6_word2vec.nb.html)
-- [Explicación y práctica - RMarkdown](/clase6/notebooks/6_word2vec.Rmd)
-
-[![](imgs/Download.png)]()
 
 # Librerías a utilizar
 El taller se desarrollará en R y se hará un uso extensivo de las siguientes librerías:
@@ -88,7 +44,7 @@ El taller se desarrollará en R y se hará un uso extensivo de las siguientes li
 - `textclean`
 - `word2vec`
 
-Pueden instalarse utili`zando las instrucciones:
+Pueden instalarse utilizando las instrucciones:
 
 ```{r}
 install.packages('tidytext')
