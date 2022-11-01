@@ -14,7 +14,7 @@ En las ciencias sociales argentinas el análisis de textos parece haber estado c
 # Contenidos y materiales
 ## Clase 1. Introducción a R y al tidyverse y a tidytext. ¿Cómo hacer de un corpus de texto crudo algo analizable mediante métodos cuantitativos? Preprocesamiento de texto: stopwords, lemmas y stemming. 
 
-- [Slides - pdf](/clase1/DIPLO_TM_Clase_1.pdf)
+- [Slides - pdf](/clase1/DIPLO_M5_Clase_1.pdf)
 - [Explicación y práctica - Notebook](/clase1/notebooks/clase_1.html)
 - [Explicación y práctica - RMarkdown](/clase1/notebooks/clase_1.Rmd)
 - [Práctica Independiente - RMarkdown](/clase1/notebooks/practica_clase_1.Rmd)
