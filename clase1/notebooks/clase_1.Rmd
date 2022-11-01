@@ -14,7 +14,7 @@ library(tidyverse)
 library(tidytext)
 ```
 
-La idea de "datos ordenados" o _tidy data_ es una forma de manejar de forma efectiva y eso aplica también para el caso de los datos textuales. Según [Hadley Wickham (2004)](https://vita.had.co.nz/papers/tidy-data.pdf) los datos "tidy" tiene tres características:
+La idea de "datos or denados" o _tidy data_ es una forma de manejar de forma efectiva y eso aplica también para el caso de los datos textuales. Según [Hadley Wickham (2004)](https://vita.had.co.nz/papers/tidy-data.pdf) los datos "tidy" tiene tres características:
 
 - Cada variable (o atributo) es una columna
 - Cada unidad (u observación) es una fila
