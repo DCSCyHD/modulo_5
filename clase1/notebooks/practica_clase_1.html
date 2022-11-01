@@ -1512,7 +1512,7 @@ div.tocify {
 <h1 class="title toc-ignore">Clase 1. Concepto de datos ordenados para la minería de texto</h1>
 <h3 class="subtitle">Práctica independiente</h3>
 <h4 class="author">Germán Rosati</h4>
-<h4 class="date">11 octubre, 2022</h4>
+<h4 class="date">01 noviembre, 2022</h4>
 
 </div>
 
@@ -1531,9 +1531,11 @@ div.tocify {
 <div id="cargamos-los-datos" class="section level2">
 <h2>1. Cargamos los datos</h2>
 <pre class="r"><code>rosa_lenin &lt;- read_csv('../data/lenin_luxemburgo.csv')</code></pre>
-<pre><code>## Rows: 92 Columns: 4── Column specification ────────────────────────────────────────────────────────
+<pre><code>## Rows: 92 Columns: 4
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (4): tipo, autor, titulo, texto
+## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
@@ -1547,9 +1549,11 @@ div.tocify {
 <pre class="r"><code>stop_words &lt;- read_csv('../data/stop_words_complete.csv', col_names=FALSE) %&gt;%
         rename(word = X1) %&gt;%
         mutate(word = stringi::stri_trans_general(word, &quot;Latin-ASCII&quot;))</code></pre>
-<pre><code>## Rows: 1767 Columns: 2── Column specification ────────────────────────────────────────────────────────
+<pre><code>## Rows: 1767 Columns: 2
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (2): X1, X2
+## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <p>Ahora sí, podemos proceder a la eliminación:</p>

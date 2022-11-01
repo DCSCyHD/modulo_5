@@ -14,7 +14,7 @@ library(tidyverse)
 library(tidytext)
 ```
 
-La idea de "datos or denados" o _tidy data_ es una forma de manejar de forma efectiva y eso aplica también para el caso de los datos textuales. Según [Hadley Wickham (2004)](https://vita.had.co.nz/papers/tidy-data.pdf) los datos "tidy" tiene tres características:
+La idea de "datos ordenados" o _tidy data_ es una forma de manejar de forma efectiva y eso aplica también para el caso de los datos textuales. Según [Hadley Wickham (2004)](https://vita.had.co.nz/papers/tidy-data.pdf) los datos "tidy" tiene tres características:
 
 - Cada variable (o atributo) es una columna
 - Cada unidad (u observación) es una fila
@@ -51,13 +51,13 @@ Para poder analizarlo como datos tidy, primero tenemos que llevarlo a un datafra
 marx_df <- tibble(line = 1, text = marx)
 marx_df
 ```
-¿Qué significa que este marco de datos se ha impreso como un "tibble"? Un tibble es una clase moderna de marco de datos dentro de R, disponible en los paquetes dplyr y tibble, que tiene un método de impresión conveniente, no convierte cadenas en factores y no usa nombres de fila. Tibbles son ideales para usar con herramientas ordenadas.
+¿Qué significa que este dataframe se ha impreso como un "tibble"? Un tibble es una clase moderna de dataframe dentro de R, disponible en los paquetes dplyr y tibble, que tiene un método de impresión conveniente, no convierte cadenas en factores y no usa nombres de fila. Tibbles son ideales para usar con herramientas ordenadas.
 
-Sin embargo, tengamos en cuenta que este marco de datos que contiene texto aún no es compatible con un análisis de texto tidy. No podemos filtrar las palabras ni contar las que ocurren con mayor frecuencia, ya que cada fila está formada por varias palabras combinadas. Necesitamos convertir esto para que tenga un token por documento por fila.
+Sin embargo, tengamos en cuenta que este dataframe que contiene texto aún no es compatible con un análisis de texto tidy. No podemos filtrar las palabras ni contar las que ocurren con mayor frecuencia, ya que cada fila está formada por varias palabras combinadas. Necesitamos convertir esto para que tenga un **token** por documento por fila.
 
 ¿Cuántos documentos tenemos en este ejemplo?
 
-Dentro de nuestro marco de texto ordenado, necesitamos dividir el texto en tokens individuales (un proceso llamado tokenización) y transformarlo en una estructura de datos ordenada. Para hacer esto, usamos la función `unnest_tokens()` de tidytext.
+Dentro de nuestro dataframe de texto ordenado, necesitamos dividir el texto en **tokens** individuales (un proceso llamado tokenización) y transformarlo en una estructura de datos ordenada. Para hacer esto, usamos la función `unnest_tokens()` de `tidytext`.
 
 ```{r}
 library(tidytext)
@@ -76,16 +76,14 @@ Usamos aquí dos argumentos básicos:
 ---
 
 **Otros tokens**
-Es importante recordar que `text_df` arriba tiene una columna llamada `text` que contiene los datos de interés. A su vez `unnest_tokens()` realiza la tokenización por defecto usando palabras. Esto puede cambiarse sin problemas, cambiando el parámetro `token`. Por ejemplo,
+Es importante recordar que `marx_df` arriba tiene una columna llamada `text` que contiene los datos de interés. A su vez `unnest_tokens()` realiza la tokenización por defecto usando palabras. Esto puede cambiarse sin problemas, cambiando el parámetro `token`. Por ejemplo,
 
 ```{r}
 marx_df %>%
   unnest_tokens(word, text, token='sentences')
 ```
 
-Ahora, tenemos una tibble en la que cada línea es una oración ("sentences") y no una palabra.
-
----
+Ahora, tenemos una tibble en la que cada línea es una oración ("sentence") y no una palabra.
 
 A su vez, han pasado otras varias cosas al ejecutar `unnest_tokens` que es importante marcar:
 
@@ -123,9 +121,9 @@ marx_engels_tidy
 ```
 
 ## Eliminando stopwords
-El siguiente paso es la eliminación de las llamadas stopwords. Se trata de palabras que o bien por su función sintáctica (pronombres, preposiciones, adverbios, etc.) o por su frecuencia (aparecen en gran frecuencia) no aportan información al texto.
+El siguiente paso es la eliminación de las llamadas **stopwords**. Se trata de palabras que o bien por su función sintáctica (pronombres, preposiciones, adverbios, etc.) o por su frecuencia (aparecen en gran frecuencia) no aportan información al texto.
 
-En general, la forma estándar y más inmediata de lidiar con las stopwords es mediante su eliminación a través de una lista. La idea es buscar las palabras que estén en esa lista y eliminarlas. Carguemos la lista con las stopwords, al mismo tiempo, vamos a eliminar los acentos de esta tabla.
+En general, la forma estándar y más inmediata de lidiar con las stopwords es mediante su eliminación a través de una lista. La idea es matchear las palabras en nuestro corpus con las que estén en esa lista y eliminar las que coinciden. Carguemos la lista con las **stopwords**, al mismo tiempo, vamos a eliminar los acentos de esta tabla.
 
 ```{r}
 stop_words <- read_csv('https://raw.githubusercontent.com/Alir3z4/stop-words/master/spanish.txt', col_names=FALSE) %>%
@@ -161,7 +159,7 @@ Escribir el código para replicar la tabla anterior usando los comandos del `tid
 
 -------
 
-Debido a que hemos estado usando herramientas ordenadas, nuestros recuentos de palabras se almacenan en una tibble en formato tidy. Esto nos permite pasar casi sin mediaciones a nuestro viejo amigo `ggplot2`, por ejemplo, para crear una visualización de las palabras más comunes:
+Debido a que hemos estado usando herramientas del estilo tidy, nuestros recuentos de palabras se almacenan en una tibble en ese formato (tidy data). Esto nos permite pasar casi sin mediaciones a nuestro viejo amigo `ggplot2`, por ejemplo, para crear una visualización de las palabras más comunes:
 
 ```{r}
 marx_engels_tidy %>%
