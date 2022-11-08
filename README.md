@@ -26,14 +26,14 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 
 ## Clase 2. ¿Cómo vectorizar textos? Contando palabras y extrayendo conclusiones de un corpus. Bag of Words. Term-frequency matrix: conteos crudos y ponderación TF-IDF. Análisis de sentimientos sobre un corpus. 
 - [Slides - pdf](/clase2/DIPLO_M5_Clase_2.pdf)
-- [Explicación y práctica parte 1 guiada - Notebook](/clase1/notebooks/21_sentiment_analysis.html)
-- [Explicación y práctica parte 1 guiada - RMarkdown](/clase1/notebooks/21_sentiment_analysis.Rmd)
-- [Explicación y práctica parte 2 guiada - RMarkdown](/clase1/notebooks/22_tfidf.Rmd)
-- [Explicación y práctica parte 2 guiada - Notebook](/clase1/notebooks/22_tfidf.html)
+- [Explicación y práctica parte 1 guiada - Notebook](/clase2/notebooks/21_sentiment_analysis.html)
+- [Explicación y práctica parte 1 guiada - RMarkdown](/clase2/notebooks/21_sentiment_analysis.Rmd)
+- [Explicación y práctica parte 2 guiada - RMarkdown](/clase2/notebooks/22_tfidf.Rmd)
+- [Explicación y práctica parte 2 guiada - Notebook](/clase2/notebooks/22_tfidf.html)
 
 Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
 
-[![](imgs/Download.png)]()
+[![](imgs/Download.png)](clase2.zip)
 
 ## Clase 3. Web Scraping. ¿Cómo descargamos información de un sitio estático?
 
