@@ -15,8 +15,8 @@ En las ciencias sociales argentinas el análisis de textos parece haber estado c
 ## Clase 1. Introducción a R y al tidyverse y a tidytext. ¿Cómo hacer de un corpus de texto crudo algo analizable mediante métodos cuantitativos? Preprocesamiento de texto: stopwords, lemmas y stemming. 
 
 - [Slides - pdf](/clase1/DIPLO_M5_Clase_1.pdf)
-- [Explicación y práctica - Notebook](/clase1/notebooks/clase_1.html)
-- [Explicación y práctica - RMarkdown](/clase1/notebooks/clase_1.Rmd)
+- [Explicación y práctica guiada - Notebook](/clase1/notebooks/clase_1.html)
+- [Explicación y práctica guiada - RMarkdown](/clase1/notebooks/clase_1.Rmd)
 - [Práctica Independiente - RMarkdown](/clase1/notebooks/practica_clase_1.Rmd)
 - [Práctica Independiente - Notebook](/clase1/notebooks/practica_clase_1.html)
 
@@ -25,6 +25,15 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 [![](imgs/Download.png)](clase1.zip)
 
 ## Clase 2. ¿Cómo vectorizar textos? Contando palabras y extrayendo conclusiones de un corpus. Bag of Words. Term-frequency matrix: conteos crudos y ponderación TF-IDF. Análisis de sentimientos sobre un corpus. 
+- [Slides - pdf](/clase2/DIPLO_M5_Clase_2.pdf)
+- [Explicación y práctica parte 1 guiada - Notebook](/clase1/notebooks/21_sentiment_analysis.html)
+- [Explicación y práctica parte 1 guiada - RMarkdown](/clase1/notebooks/21_sentiment_analysis.Rmd)
+- [Explicación y práctica parte 2 guiada - RMarkdown](/clase1/notebooks/22_tfidf.Rmd)
+- [Explicación y práctica parte 2 guiada - Notebook](/clase1/notebooks/22_tfidf.html)
+
+Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
+
+[![](imgs/Download.png)]()
 
 ## Clase 3. Web Scraping. ¿Cómo descargamos información de un sitio estático?
 

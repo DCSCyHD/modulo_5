@@ -25,10 +25,11 @@ En este caso, vamos a trabajar con la "polaridad", es decir, con el carácter po
 La segunda forma, que no vamos a tocar hoy, supone entrenar algún modelo que haga esa clasificación por nosotros.
 
 ### Analizando los diarios de Emilio Renzi
+En esta clase, vamos a tomar nuetro dataset con los tres tomos de os diarios de Renzi (aka Ricardo Piglia... o al revés...) y vamos a implementar uno de estos análisis de sentimiento.
 
-En esta clase, vamos a tomar nuetro dataset con los tres tomos de os diarios de Renzi (aka Ricardo Piglia) y vamos a implementar uno de estos análisis de sentimiento.
+![](../imgs/diarios.jpg)
 
-Acá hay un lindo esuqema del flujo de trabajo:
+Acá hay un lindo esquema del flujo de trabajo:
 
 ![https://www.tidytextmining.com/images/tmwr_0201.png]
 
@@ -54,7 +55,7 @@ renzi <- renzi %>%
         ))
 ```
 
-Ahora, como vamos a contar palabras, vamos a "unnestear" los tokens... o las palabras. Recordemos: estamos en el formato tidy: cada fila va a ser una palabra y vamos a generar una columna que numere cada una de las entradas
+Ahora, dado que vamos a contar palabras, vamos a "unnestear" los tokens... en este caso, las palabras. Recordemos: estamos en el formato `tidy`: cada fila va a ser una palabra y vamos a generar una columna que numere cada una de las entradas.
 
 ```{r}
 tidy_renzi <- renzi %>%
@@ -73,7 +74,7 @@ tidy_renzi <- tidy_renzi %>%
         anti_join(stop_words)
 ```
 
-Y hacemos un "anti_join" (es decir, lo opuesto de un join): lo que nos va a devolver son todas las palabras que están en `tidy_renzi` pero no en `stop_words`. Nótese que pasamos de unas 386.500 palabras a unas 192.000.
+Y hacemos un "anti_join" (es decir, lo opuesto de un join): lo que nos va a devolver son todas las palabras que están en `tidy_renzi` pero no en `stop_words`. Nótese que pasamos de unas 386.500 palabras a unas 192.300.
 
 Ahora sí estamos en condiciones de avanzar en el análisis de sentimiento. Vamos a cargar dos lexicones. El primero, viene de [este sitio de Kaggle](https://www.kaggle.com/rtatman/sentiment-lexicons-for-81-languages). Este fue generado  este  a través de un "grafo de conocimiento", una representación gráfica de entidades del mundo real y los vínculos entre ellas. La intuición general es que las palabras que están estrechamente vinculadas en un grafo de conocimiento probablemente tengan polaridades de sentimiento similares. Particularmente, si les interesa el proceso de construcción de este lexicon (que forma parte de un proyecto que generó diccionarios para 81 lenguajes) pueden consultar [el paper original](https://aclanthology.org/P14-2063.pdf)
 
@@ -82,7 +83,7 @@ sentiment_words_kaggle <- read_csv('../data/sentiment_lexicon_kaggle.csv')
 sentiment_words_kaggle
 ```
 
-El segundo fue elaborado por Agustín Gravano del Laboratorio de Inteligencia Artificial Aplicada de la UBA. Se trata de un diccioario llamado [SDAL]() de unos 2880 palabras que fueron clasificadas manualmente (a través de una especie de "encuesta web" en la que participaron unas 600 personas) en tres dimensiones: 
+El segundo fue elaborado por Agustín Gravano del Laboratorio de Inteligencia Artificial Aplicada de la UBA. Se trata de un diccioario llamado "SDAL" (por el acrónimo de "Spanish Dictionary of Affects in Language") de unos 2880 palabras que fueron clasificadas manualmente (a través de una especie de "encuesta web" en la que participaron unas 600 personas) en tres dimensiones: 
 
 - agrado (agradable / neutra / desagradable)
 - activación (activa / neutra / pasiva)
@@ -97,7 +98,7 @@ sentiment_words_liia <- read_csv('../data/sentiment_lexicon_liia.csv')
 sentiment_words_liia
 ```
 
-Como puede verse, este lexicon difiere respecto del anterior en que no tiene una clasificación de palabras en "positivas" o "negativas" sino que tiene un promedio de los votos de cada persona en una escala de 1 a 3. Así "amor" es ua palabra totalmente positiva porque tiene un primedio de 3. Vamos a aprovechar esta característica de ese lexicon pero vamos, también, a recodificar los datos para clasificarlos en positivos, negativos y neutros, redondeando los decimales.
+Como puede verse, este lexicon difiere respecto del anterior en que no tiene una clasificación de palabras en "positivas" o "negativas" sino que tiene un promedio de los votos de cada persona en una escala de 1 a 3. Así "amor" es ua palabra totalmente positiva porque tiene un promedio de 3. Vamos a aprovechar esta característica de ese lexicon pero vamos, también, a recodificar los datos para clasificarlos en positivos, negativos y neutros, redondeando los decimales.
 
 ```{r}
 sentiment_words_liia <- sentiment_words_liia %>% 
@@ -159,10 +160,9 @@ ggplot(tidy_renzi_sent_kag, aes(entry_number, sentiment, color=tomo)) +
 ```
 
 
-¿Qué se puede ver acá? Se ve cómo los primeros años tienen unas cuántas entradas muy negativas. "Los años felices" parecen estar más equilibrados. 
-Por último, el tomo III que abarca los años de la dictadura y la enfermedad de Piglia tiene unas cuantas entradas sumamente negativas.
+¿Qué se puede ver acá? Se ve cómo los primeros años tienen unas cuántas entradas muy negativas. "Los años felices" parecen estar más equilibrados. Por último, el tomo III que abarca los años de la dictadura y la enfermedad de Piglia tiene unas cuantas entradas sumamente negativas.
 
-### Ejercicio. 
+### Ejercicio
 Replicar el análisis de sentimento con el lexicon construido por el LIIA. Comparar los resultados.
 
 ```{r}

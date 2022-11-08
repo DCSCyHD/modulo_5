@@ -22,7 +22,7 @@ La idea de "datos ordenados" o _tidy data_ es una forma de manejar de forma efec
 
 (Si en esta definición les resuena aquello que en las materias de Metodología de la Investigación se llamaba "estructura tripartita del dato" o lo que Juan Samaja llamaba "estructura cuatripartita del dato" están bien encaminades).
 
-En el contexto de minería de texto, los datos ordenados van a tener la siguente estrucutra: un **token** por fila. Un **token** es una unidad conceptual y/o analíticamente signifactivas con las que dividimos un documento. Un **token** puede ser una palabra (ese será el caso más frecuente en este curso) pero también podrían ser [n-gramas](https://es.wikipedia.org/wiki/N-grama), oraciones e incluso párrafos. De hecho, un primer paso en el preprocesamiento de texto es dividir el corpus en **tokens**. Para lo cual, es necesario, entonces, definir qué va a ser un **token**.
+En el contexto de minería de texto, los datos ordenados van a tener la siguente estructura: un **token** por fila. Un **token** es una unidad conceptual y/o analíticamente signifactivas con las que dividimos un documento. Un **token** puede ser una palabra (ese será el caso más frecuente en este curso) pero también podrían ser [n-gramas](https://es.wikipedia.org/wiki/N-grama), oraciones e incluso párrafos. De hecho, un primer paso en el preprocesamiento de texto es dividir el corpus en **tokens**. Para lo cual, es necesario, entonces, definir qué va a ser un **token**.
 
 Como puede verse esta estructura difiere de otras formas de almacenar el texto crudo
 
@@ -32,9 +32,7 @@ Como puede verse esta estructura difiere de otras formas de almacenar el texto c
 
 Como iremos viendo, va a ser muy fácil pasar del texto en formato tidy a otros formatos. Particularmente, vamos a estar yendo y viniendo entre textos en formato tidy y no-tidy para diferentes tareas. Así, cuando nos toque construir modelos seguramento vamos a tener que pasar a un  formato Matrix-documento-término (TFM). Pero cuando querramos generar gráficos o métricas que nos permitan interpretar ese modelo, seguramente vamos a tener que volver a formato tidy.
 
-
 ## Primer ejemplo
-
 Vamos a empezar con un ejemplo mínimo: un párrafo de Marx. En el famoso "Prólogo a la Contribución a la Crítica de la Economía Política" de 1859 escribió el siguiente párrafo que vamos a guardar en un objeto `character` que se va a llamar `marx`.
 
 ```{r}
@@ -63,7 +61,7 @@ Dentro de nuestro dataframe de texto ordenado, necesitamos dividir el texto en *
 library(tidytext)
 
 marx_df %>%
-  unnest_tokens(word, text)
+  unnest_tokens(output=word, input=text)
 ```
 
 Usamos aquí dos argumentos básicos:
@@ -95,9 +93,7 @@ Un diagrama del flujo de trabajo puede verse a continuación:
 
 ![](https://www.tidytextmining.com/images/tmwr_0101.png)
 
-
 ## Ordenando algunos textos de Marx y Engels
-
 Vamos a trabajar con un dataset que el capo de [Diego Kosloski](https://sites.google.com/view/diego-kozlowski/home) escrapeó de la sección en español del [Marxist Internet Archive](https://www.marxists.org/espanol/). 
 
 Cargamos los datos:
