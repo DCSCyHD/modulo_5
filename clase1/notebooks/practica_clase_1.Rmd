@@ -24,7 +24,6 @@ rosa_lenin <- read_csv('../data/lenin_luxemburgo.csv')
 ```
 
 ## 2. Construimos la tabla de tokens del texto
-
 ```{r}
 ###
 ```
@@ -39,23 +38,16 @@ stop_words <- read_csv('../data/stop_words_complete.csv', col_names=FALSE) %>%
         mutate(word = stringi::stri_trans_general(word, "Latin-ASCII"))
 ```
 Ahora sí, podemos proceder a la eliminación:
-
 ```{r}
-###     
+###
 ```
-
 
 ## 4. ¿Cuáles son las palabras más usadas en el dataset?
-
 ```{r}
 ###
 ```
-
 
 ## 5. ¿Se observa alguna diferencia entre las palabras que usan Rosa y Lenin?
-
 ```{r}
 ###
 ```
-
-
