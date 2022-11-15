@@ -58,7 +58,7 @@ book_words <- book_words %>%
                 ungroup() %>%
                 arrange(desc(n))
 
-head(book_words)
+book_words
 ```
 
 Esta tibble `book_words` presenta una fila para cada combinación de tomo y palabras. Tiene dos columnas (además de `tomo` y `word` que ya las conocemos):

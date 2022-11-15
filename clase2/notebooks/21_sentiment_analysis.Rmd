@@ -80,7 +80,9 @@ Ahora sí estamos en condiciones de avanzar en el análisis de sentimiento. Vamo
 
 ```{r}
 sentiment_words_kaggle <- read_csv('../data/sentiment_lexicon_kaggle.csv')
-sentiment_words_kaggle
+sentiment_words_kaggle %>%
+  group_by(sentiment) %>%
+  summarise(n=n())
 ```
 
 El segundo fue elaborado por Agustín Gravano del Laboratorio de Inteligencia Artificial Aplicada de la UBA. Se trata de un diccioario llamado "SDAL" (por el acrónimo de "Spanish Dictionary of Affects in Language") de unos 2880 palabras que fueron clasificadas manualmente (a través de una especie de "encuesta web" en la que participaron unas 600 personas) en tres dimensiones: 
@@ -107,6 +109,8 @@ sentiment_words_liia <- sentiment_words_liia %>%
                 round(mean_likeness) == 2 ~ 'neutral',
                 round(mean_likeness) == 3 ~ 'positivo',
         ))
+
+sentiment_words_liia
 ```
 
 ### Los sentimientos de Renzi a lo largo de su vida
@@ -124,7 +128,7 @@ tidy_renzi_sent_kag <- tidy_renzi %>%
 tidy_renzi_sent_kag
 ```
 
- Y, por si fuera poco, vamos a cambiarle el formato a la tabla para que nos quede una columna por sentimiento y, finalmente... vamos a calcular la resta entre la cantidad de términos positivos y la cantidad de términos negativos:
+Y, por si fuera poco, vamos a cambiarle el formato a la tabla para que nos quede una columna por sentimiento y, finalmente... vamos a calcular la resta entre la cantidad de términos positivos y la cantidad de términos negativos:
 
 ```{r}
 tidy_renzi_sent_kag <- tidy_renzi %>%
@@ -137,14 +141,14 @@ tidy_renzi_sent_kag <- tidy_renzi %>%
                     values_fill=0) %>%
         mutate(sentiment = positivo - negativo)
 
-
 tidy_renzi_sent_kag
 ```
 
 Ahora ya podemos hacer un primer gráfico de la evolución de los "sentimientos" de Renzi a lo largo de su vida (al menos, a lo largo de las entradas de su diario)
 
 ```{r}
-ggplot(tidy_renzi_sent_kag, aes(entry_number, sentiment, color=tomo)) +
+tidy_renzi_sent_kag %>%
+ggplot(aes(x=entry_number, y=sentiment, color=tomo)) +
         geom_line(show.legend = TRUE) +
         #geom_smooth(aes(index, sentiment, color=tomo)) +
         labs(x='Entrada del diario',
@@ -159,13 +163,46 @@ ggplot(tidy_renzi_sent_kag, aes(entry_number, sentiment, color=tomo)) +
                 legend.position = 'bottom')
 ```
 
-
 ¿Qué se puede ver acá? Se ve cómo los primeros años tienen unas cuántas entradas muy negativas. "Los años felices" parecen estar más equilibrados. Por último, el tomo III que abarca los años de la dictadura y la enfermedad de Piglia tiene unas cuantas entradas sumamente negativas.
 
 ### Ejercicio
 Replicar el análisis de sentimento con el lexicon construido por el LIIA. Comparar los resultados.
 
 ```{r}
-###
+sentiment_words_liia <- sentiment_words_liia %>%
+  mutate(word =  stringi::stri_trans_general(str = word, 
+                                   id = "Latin-ASCII"))
+```
+
+
+```{r}
+tidy_renzi_sent_liia <- tidy_renzi %>%
+  inner_join(sentiment_words_liia) %>%
+  group_by(tomo, entry_number, sentiment) %>%
+  summarise(n=n()) %>%
+  ungroup() %>%
+  pivot_wider(names_from = sentiment,
+              values_from = n,
+              values_fill = 0) %>%
+  mutate(sentiment = positivo-negativo)
+
+tidy_renzi_sent_liia
+```
+
+```{r}
+tidy_renzi_sent_liia %>%
+ggplot(aes(x=entry_number, y=sentiment, color=tomo)) +
+        geom_line(show.legend = TRUE) +
+        #geom_smooth(aes(index, sentiment, color=tomo)) +
+        labs(x='Entrada del diario',
+             y= 'Sentimiento (palabras positivas-palabras negativas)',
+             title='Análisis de sentimiento por palabras (lexicon Kaggle)') +
+        theme_minimal() +
+        scale_color_viridis_d() +
+        theme(
+                axis.title.x=element_blank(),
+                axis.text.x=element_blank(),
+                axis.ticks.x=element_blank(),
+                legend.position = 'bottom')
 ```
 

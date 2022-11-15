@@ -24,6 +24,7 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 
 [![](imgs/Download.png)](clase1.zip)
 
+
 ## Clase 2. ¿Cómo vectorizar textos? Contando palabras y extrayendo conclusiones de un corpus. Bag of Words. Term-frequency matrix: conteos crudos y ponderación TF-IDF. Análisis de sentimientos sobre un corpus. 
 - [Slides - pdf](/clase2/DIPLO_M5_Clase_2.pdf)
 - [Explicación y práctica parte 1 guiada - Notebook](/clase2/notebooks/21_sentiment_analysis.html)
@@ -35,13 +36,29 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 
 [![](imgs/Download.png)](clase2.zip)
 
-## Clase 3. Web Scraping. ¿Cómo descargamos información de un sitio estático?
+
+## Clase 3. Web Scraping + APIs. ¿Cómo descargamos información de un sitio estático?
+- [Slides - pdf](/clase3/DIPLO_M5_Clase_3.pdf)
+- [Explicación y práctica guiada Scraping - Notebook](/clase3/notebooks/clase_3_scraping.html)
+- [Explicación y práctica guiada APIS - Notebook](/clase3/notebooks/clase_3_APIS.html)
+- [Explicación y práctica guiada Scraping - RMarkdown](/clase3/notebooks/clase_3_scraping.Rmd)
+- [Explicación y práctica guiada APIS - RMarkdown](/clase3/notebooks/clase_3_APIS.Rmd)
+- [Pŕactica independiente - Notebook](/clase3/notebooks/clase_3_practica_independiente.html)
+- [Pŕactica independiente - RMarkdown](/clase3/notebooks/clase_3_practica_independiente.Rmd)
+
+Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
+
+[![](imgs/Download.png)](clase3.zip)
+
 
 ## Clase 4. ¿Cómo detectar temas en corpus I? Introducción al modelado de tópicos. Latent Dirichlet Allocation (LDA)
 
+
 ## Clase 5. ¿Cómo detectar temas en corpus II? Un modelo para detectar tópicos diseñado para las ciencias sociales: Structural Topic Modeling.
 
+
 ## Clase 6. Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec). Cierre del módulo
+
 
 # Librerías a utilizar
 El taller se desarrollará en R y se hará un uso extensivo de las siguientes librerías:
