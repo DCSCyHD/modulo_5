@@ -38,11 +38,11 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 
 
 ## Clase 3. Web Scraping + APIs. ¿Cómo descargamos información de un sitio estático?
-- [Slides - pdf](/clase3/DIPLO_M5_Clase_3.pdf)
+- [Slides - pdf](/clase3/Diplo_M5_Clase_3.pdf)
 - [Explicación y práctica guiada Scraping - Notebook](/clase3/notebooks/clase_3_scraping.html)
-- [Explicación y práctica guiada APIS - Notebook](/clase3/notebooks/clase_3_APIS.html)
+- [Explicación y práctica guiada APIS - Notebook](/clase3/notebooks/clase_3_APIs.html)
 - [Explicación y práctica guiada Scraping - RMarkdown](/clase3/notebooks/clase_3_scraping.Rmd)
-- [Explicación y práctica guiada APIS - RMarkdown](/clase3/notebooks/clase_3_APIS.Rmd)
+- [Explicación y práctica guiada APIS - RMarkdown](/clase3/notebooks/clase_3_APIs.Rmd)
 - [Pŕactica independiente - Notebook](/clase3/notebooks/clase_3_practica_independiente.html)
 - [Pŕactica independiente - RMarkdown](/clase3/notebooks/clase_3_practica_independiente.Rmd)
 
