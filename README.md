@@ -52,6 +52,15 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 
 
 ## Clase 4. ¿Cómo detectar temas en corpus I? Introducción al modelado de tópicos. Latent Dirichlet Allocation (LDA)
+- [Slides - pdf](/clase4/Diplo_M5_Clase_3.pdf)
+- [Explicación y práctica guiada LDA - Notebook](/clase4/notebooks/clase_4_topic_modeling_LDA.html)
+- [Explicación y práctica guiada LDA - RMarkdown](/clase4/notebooks/clase_4_topic_modeling_LDA.Rmd)
+- [Pŕactica independiente - Notebook](/clase4/notebooks/clase_4_practica_independiente.html)
+- [Pŕactica independiente - RMarkdown](/clase4/notebooks/clase_4_practica_independiente.Rmd)
+
+Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
+
+[![](imgs/Download.png)](clase4.zip)
 
 
 ## Clase 5. ¿Cómo detectar temas en corpus II? Un modelo para detectar tópicos diseñado para las ciencias sociales: Structural Topic Modeling.

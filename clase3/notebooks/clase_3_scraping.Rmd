@@ -56,9 +56,10 @@ piglia
 La función `read_html()` parsea y devuelve una lista que contiene la estructura arbolada de HTML que mencionamos antes. Por suerte `rvest` usa la lógica de los pipes para acceder a estos elementos, por lo que para encontrar lo que queremos podemos usar la funcion `html_elements()`. Esta identifica los elementos que buscamos según XPath o [selectores CSS](https://www.w3schools.com/cssref/css_selectors.asp). Como podemos encontrar lo que queríamos identificándolo por una clase única, vamos a usar CSS. 
 
 ```{r}
-libros <- piglia %>% html_elements(".libro-vertical__info") %>% 
-        html_elements("a") %>% 
-        html_attr("href")
+libros <- piglia %>% 
+          html_elements("div.libro-vertical__info") %>% 
+          html_elements("a") %>%
+          html_attr("href")
 
 head(libros)
 ```
@@ -107,9 +108,10 @@ libro %>% html_elements("h1.titulo-libro") %>%
 Vamos a hacer lo mismo para el resumen: este lo identificamos porque está en el elemento div con clase textContent. 
 
 ```{r}
-libro %>% html_element(".textContent")%>%
-        html_text2()%>%
+libro %>% html_element(".textContent") %>%
+        html_text2() %>%
         str_squish() #Borramos los espacios en blanco de más
+
 ```
 
 Finalmente, podemos ver que hay un compilado de información que nos interesa (cantidad de páginas, fecha de publicación, colección, identificador) en una tabla debajo de la imagen de la tapa. Podríamos extraer los elementos uno por uno como veníamos haciendo, pero RVest tiene una función para traer directamente los elementos `<table>` en formato tibble. 
@@ -146,8 +148,11 @@ scrapeo_anagrama <- function(listado_links){
         #Creo listas y dataframes auxiliares donde voy a ir guardando la data. 
         titulos <- c()
         resumenes <- c()
-        info_extra <- data.frame(isbn = numeric(), ean  = numeric(), precio = character(), 
-                                 paginas  = numeric(), fecha_publicacion = character(), 
+        info_extra <- data.frame(isbn = numeric(), 
+                                 ean  = numeric(), 
+                                 precio = character(), 
+                                 paginas  = numeric(), 
+                                 fecha_publicacion = character(), 
                                  coleccion = character())
         
         for (l in listado_links){
@@ -191,9 +196,8 @@ scrapeo_anagrama <- function(listado_links){
         return(df)
 }
 
-scrapeo_anagrama(libros_links)
+scrapeo_anagrama(listado_links=libros_links)
 ```
-
 
 Nos encontramos con algo que suele pasar bastante en el scrapeo: hay una página que rompe el formato que veníamos usando. En este caso, Crítica y Ficción no tiene el número de páginas en la tabla. Por eso vamos a usar la función tryCatch(), que nos sirve para indicar qué hacer en caso de toparnos con un error sin que se rompa la función. 
 
@@ -241,7 +245,7 @@ scrapeo_anagrama <- function(listado_links){
                         select(isbn, ean, precio, paginas, fecha_publicacion, coleccion)
                         },
                     error = function(e){
-                    tabla_info%>%
+                    tabla_info %>%
                         pivot_wider(names_from = "X1", values_from = "X2") %>%
                         rename("isbn" = "ISBN",
                                "ean" = "EAN",
@@ -261,8 +265,13 @@ scrapeo_anagrama <- function(listado_links){
         return(df)
 }
 
-scrapeo_anagrama(libros_links)
+libros_piglia <- scrapeo_anagrama(libros_links)
 ```
+
+```{r}
+libros_piglia
+```
+
 
 ### Actividad
 Traer de la página de Anagrama el listado de todos los autores que tienen disponibles. 
