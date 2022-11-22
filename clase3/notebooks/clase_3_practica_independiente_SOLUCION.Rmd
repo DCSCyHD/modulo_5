@@ -46,6 +46,7 @@ for (i in 1:2){
 ## 3. Scrapeamos todo...
 Hacemos una función que inserte en una tabla el título, le autore, resumen y precio: 
 ```{r}
+
 scrap_book_sxxi <- function(l){
         
         libro <- read_html(l)
@@ -70,7 +71,8 @@ scrap_book_sxxi <- function(l){
                         html_elements("bdi") %>%
                         html_text()
         
-        return(tibble(
+        return(
+          tibble(
                 titulo=tit,
                 autore=aut,
                 sinopsis=res,
@@ -93,6 +95,7 @@ books <- tibble(
 
 for (l in links){
                 b <- scrap_book_sxxi(l=l)
+                print(b)
                 books <- books %>% bind_rows(b)
 }
 ```
