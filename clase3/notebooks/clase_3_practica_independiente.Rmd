@@ -9,17 +9,17 @@ author: "Germán Rosati"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
-Vamos a hacer el mismo ejercicio para Piglia con la editorial Anagrama pero con Marx en la editorial Fondo de Cultura Económico. (https://www.fondodeculturaeconomica.com)
+Vamos a hacer el mismo ejercicio para Piglia con la editorial Anagrama pero con la "Biblioteca del Pensamiento Socialista" de la [Editorial Siglo XXI](https://sigloxxieditores.com.ar/).
 
 ```{r, results='hide'}
 library(rvest)
 library(tidyverse)
+library(httr)
 ```
 
-## 1. Identificar la/s páginas que queremmos descargar
+## 1. Identificar la/s páginas que queremos descargar
 Leemos o buscamos el perfil del autor. 
-(Si no hay catálogo, ¿dónde busco? 
-¿Qué funciones de tidyverse me pueden ayudar a conseguir un listado solo de Marx?)
+(Si no hay catálogo, ¿dónde busco?)
 ```{r}
 ### 
 ```
@@ -31,7 +31,14 @@ Traemos los links de los libros
 ```
 
 ## 3. Scrapeamos todo...
-Hacemos una función que inserte en una tabla el título, año de publicación, resumen, precio, cantidad de páginas, e ISBN. 
+Hacemos una función que inserte en una tabla el título, le autore, resumen y precio: 
 ```{r}
 ###
 ```
+
+Y ahora la corremos en un loop:
+
+```{r}
+###
+```
+

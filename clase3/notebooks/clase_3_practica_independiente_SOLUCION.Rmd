@@ -1,0 +1,103 @@
+---
+title: "Clase 3. Práctica independiente"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+author: "Germán Rosati"
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+Vamos a hacer el mismo ejercicio para Piglia con la editorial Anagrama pero con la "Biblioteca del Pensamiento Socialista" de la [Editorial Siglo XXI](https://sigloxxieditores.com.ar/).
+
+```{r, results='hide'}
+library(rvest)
+library(tidyverse)
+library(httr)
+```
+
+## 1. Identificar la/s páginas que queremos descargar
+Leemos o buscamos el perfil del autor. 
+(Si no hay catálogo, ¿dónde busco?)
+```{r}
+### 
+```
+
+## 2. Generar lista de links
+Traemos los links de los libros
+```{r}
+links <- c()
+for (i in 1:2){
+        link <- paste0("https://sigloxxieditores.com.ar/tienda/page/", i, "/?coleccion=biblioteca-del-pensamiento-socialista")
+        
+        soc <- read_html(link)
+
+        libros <- soc %>% 
+          html_elements("div.info-product") %>% 
+          html_elements("a.product-title") %>%
+          html_attr("href")
+
+        links <- append(links, libros)
+}
+
+```
+
+## 3. Scrapeamos todo...
+Hacemos una función que inserte en una tabla el título, le autore, resumen y precio: 
+```{r}
+scrap_book_sxxi <- function(l){
+        
+        libro <- read_html(l)
+        
+        tit <-  libro %>%
+                        html_elements("h4") %>%
+                        html_text2() %>%
+                        first()
+        
+        aut <-  libro %>%
+                        html_elements("div.author") %>%
+                        html_elements("a") %>%
+                        html_text()
+        
+        res <- libro %>%
+                        html_elements("p.descripcion-corta") %>%
+                        html_text2()
+
+
+        prec <- libro %>%
+                        html_elements("div.precio-producto") %>%
+                        html_elements("bdi") %>%
+                        html_text()
+        
+        return(tibble(
+                titulo=tit,
+                autore=aut,
+                sinopsis=res,
+                precio=prec
+        ))
+
+        
+}
+```
+
+Y ahora la corremos en un loop:
+
+```{r}
+books <- tibble(
+                titulo=character(),
+                autore=character(),
+                sinopsis=character(),
+                precio=character()
+                )
+
+for (l in links){
+                b <- scrap_book_sxxi(l=l)
+                books <- books %>% bind_rows(b)
+}
+```
+
+```{r}
+books
+```
+

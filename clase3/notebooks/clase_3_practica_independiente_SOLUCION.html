@@ -1514,15 +1514,90 @@ busco?)</p>
 <div id="generar-lista-de-links" class="section level2">
 <h2>2. Generar lista de links</h2>
 <p>Traemos los links de los libros</p>
-<pre class="r"><code>###</code></pre>
+<pre class="r"><code>links &lt;- c()
+for (i in 1:2){
+        link &lt;- paste0(&quot;https://sigloxxieditores.com.ar/tienda/page/&quot;, i, &quot;/?coleccion=biblioteca-del-pensamiento-socialista&quot;)
+        
+        soc &lt;- read_html(link)
+
+        libros &lt;- soc %&gt;% 
+          html_elements(&quot;div.info-product&quot;) %&gt;% 
+          html_elements(&quot;a.product-title&quot;) %&gt;%
+          html_attr(&quot;href&quot;)
+
+        links &lt;- append(links, libros)
+}</code></pre>
 </div>
 <div id="scrapeamos-todo" class="section level2">
 <h2>3. Scrapeamos todo…</h2>
 <p>Hacemos una función que inserte en una tabla el título, le autore,
 resumen y precio:</p>
-<pre class="r"><code>###</code></pre>
+<pre class="r"><code>scrap_book_sxxi &lt;- function(l){
+        
+        libro &lt;- read_html(l)
+        
+        tit &lt;-  libro %&gt;%
+                        html_elements(&quot;h4&quot;) %&gt;%
+                        html_text2() %&gt;%
+                        first()
+        
+        aut &lt;-  libro %&gt;%
+                        html_elements(&quot;div.author&quot;) %&gt;%
+                        html_elements(&quot;a&quot;) %&gt;%
+                        html_text()
+        
+        res &lt;- libro %&gt;%
+                        html_elements(&quot;p.descripcion-corta&quot;) %&gt;%
+                        html_text2()
+
+        prec &lt;- libro %&gt;%
+                        html_elements(&quot;div.precio-producto&quot;) %&gt;%
+                        html_elements(&quot;bdi&quot;) %&gt;%
+                        html_text()
+        
+        return(tibble(
+                titulo=tit,
+                autore=aut,
+                sinopsis=res,
+                precio=prec
+        ))
+
+        
+}</code></pre>
 <p>Y ahora la corremos en un loop:</p>
-<pre class="r"><code>###</code></pre>
+<pre class="r"><code>books &lt;- tibble(
+                titulo=character(),
+                autore=character(),
+                sinopsis=character(),
+                precio=character()
+                )
+
+for (l in links){
+                b &lt;- scrap_book_sxxi(l=l)
+                books &lt;- books %&gt;% bind_rows(b)
+}</code></pre>
+<pre class="r"><code>books</code></pre>
+<pre><code>## # A tibble: 17 × 4
+##    titulo                                              autore     sinop…¹ precio
+##    &lt;chr&gt;                                               &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt; 
+##  1 FEMINISMOS PARA LA REVOLUCIÓN                       laura fer… &quot;¿Qué … $3,990
+##  2 ANTOLOGÍA                                           josé carl… &quot;Llama… $4,890
+##  3 MANIFIESTO SOCIALISTA                               Bhaskar S… &quot;¿Qué … $4,190
+##  4 MANIFIESTO POR UN ARTE REVOLUCIONARIO INDEPENDIENTE andre bre… &quot;Prese… $1,890
+##  5 MANIFIESTO POR UN ARTE REVOLUCIONARIO INDEPENDIENTE diego riv… &quot;Prese… $1,890
+##  6 MANIFIESTO POR UN ARTE REVOLUCIONARIO INDEPENDIENTE leon trot… &quot;Prese… $1,890
+##  7 CONTRAHEGEMONÍA YA                                  nancy fra… &quot;El ca… $1,690
+##  8 ¿QUÉ ENTIENDO YO POR MARXISMO?                      alain bad… &quot;A dos… $1,690
+##  9 LA BIBLIA DEL PROLETARIADO                          horacio t… &quot;El ca… $2,490
+## 10 MANIFIESTO COMUNISTA                                friedrich… &quot;Escri… $2,090
+## 11 MANIFIESTO COMUNISTA                                horacio t… &quot;Escri… $2,090
+## 12 MANIFIESTO COMUNISTA                                karl marx  &quot;Escri… $2,090
+## 13 ANTOLOGÍA DE GRAMSCI                                antonio g… &quot;Esta … $5,990
+## 14 ANTOLOGÍA                                           karl marx  &quot;Una v… $5,890
+## 15 EL CAPITAL VOL.2                                    karl marx  &quot;La ed… $4,690
+## 16 EL CAPITAL VOL.1                                    karl marx  &quot;La ed… $4,790
+## 17 EL CAPITAL VOL.3                                    karl marx  &quot;La ed… $4,890
+## # … with abbreviated variable name ¹​sinopsis</code></pre>
 </div>
 
 
