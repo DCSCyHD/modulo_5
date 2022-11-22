@@ -45,6 +45,8 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 - [Explicación y práctica guiada APIS - RMarkdown](/clase3/notebooks/clase_3_APIs.Rmd)
 - [Pŕactica independiente - Notebook](/clase3/notebooks/clase_3_practica_independiente.html)
 - [Pŕactica independiente - RMarkdown](/clase3/notebooks/clase_3_practica_independiente.Rmd)
+- [Pŕactica independiente SOLUCION - Notebook](/clase3/notebooks/clase_3_practica_independiente_SOLUCION.html)
+- [Pŕactica independiente SOLUCION - RMarkdown](/clase3/notebooks/clase_3_practica_independiente_SOLUCION.Rmd)
 
 Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
 
