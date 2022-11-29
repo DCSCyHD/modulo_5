@@ -42,7 +42,7 @@ revistas <- revistas %>%
         mutate(fecha = format_date(fecha)) %>%
         mutate(fecha=as.Date(fecha,format="%d %B %Y")) %>%
         mutate(trimestre = quarter(fecha),
-               anio = year(fecha)) %>%
+               anio = as.character(year(fecha))) %>%
         select(id, fecha, trimestre, anio, everything())
 
 
@@ -118,7 +118,7 @@ library(tictoc)
 tic()
 stm_15 <- stm(documents = revistas_dfm,
      K = 15,
-     prevalence = ~categoria + anio,
+     prevalence = ~categoria ,
      max.em.its = 75,
      data = metadata,
      init.type = "Spectral")
