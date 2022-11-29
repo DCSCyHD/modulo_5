@@ -17,7 +17,6 @@ library(tidytext)
 library(tictoc)
 ```
 
-
 ## Introducción
 En la minería de texto, suele ser habitual disponer de grandes volúmenes de texto (publicaciones de blogs, artículos de noticias, comentarios, etc.) a los cuales nos gustaría poder "dividir" en grupos naturales para poder entenderlos por separado. El modelado de tópicos es un método para la clasificación no supervisada de dichos documentos, similar a la agrupación de datos numéricos, que encuentra grupos naturales de elementos incluso cuando no estamos seguros de lo que estamos buscando.
 
@@ -48,7 +47,6 @@ Vamos a usar el siguiente dataset que contiene artículos tomados de dos revista
 - Brando, destinada a hombres
 
 Una versión del mismo fue utilizado para el [siguiente paper](https://www.tandfonline.com/doi/pdf/10.1080/14680777.2022.2047090) que puede serles de utilidad como una aplicación posible del modelado de tópicos.
-
 
 Estamos interesados en poder identificar qué temas existen en las revistas para hombres y mujeres cada uno pero no estamos interesados en leer todos los discursos. Por eso vamos a usar LDA en este corpus.
 
@@ -114,7 +112,12 @@ revistas_tidy %>%
 #### Pregunta
 ¿Cómo podríamos identificar las palabras más usadas cada grupo de revista?
 ```{r}
-####
+revistas_tidy %>%
+        group_by(categoria, word) %>%
+        summarise(n=n()) %>%
+        arrange(desc(n)) %>%
+        pivot_wider(names_from = categoria,
+                    values_from = n)
 ```
 
 Ahora sí, estamos en condiciones de avanzar en nuestro modelado de tópicos.
@@ -159,7 +162,8 @@ Lo primero que vamos a hacer es tomar la distribución de palabras para cada tó
 ```{r}
 ap_topics <- tidy(lda_4, matrix = "beta") # Si esta línea les tira algún error, hagan install.packages("reshape2")
 
-ap_topics
+ap_topics %>%
+  mutate(beta = round(100*beta,6))
 ```
 
 La función `tidy`conviritó el modelo a un formato de un tópico-término por fila. Para cada combinación, el modelo calcula la probabilidad de que ese término se genere a partir de ese tópico. Por ejemplo, el término "cesped" tiene una probabilidad de 3.21x10-13  de ser generado a partir del tema 1. Esta valor baja sensiblemente en el resto de los tópicos.
@@ -171,7 +175,6 @@ ap_top_terms <- ap_topics %>%
   slice_max(beta, n = 15) %>% 
   ungroup() %>%
   arrange(topic, -beta)
-
 
 ap_top_terms %>%
   mutate(term = reorder_within(term, beta, topic)) %>%
@@ -224,7 +227,9 @@ Además de estimar cada tema como una mezcla de palabras, LDA también modela ca
 ```{r}
 doc_2_topics <- tidy(lda_4, matrix = "gamma")
 doc_2_topics %>%
-  mutate(gamma = round(gamma, 5))
+  mutate(gamma = round(gamma, 5),
+         document = as.integer(document)) %>%
+  arrange(document, desc(gamma))
 ```
 
 Cada uno de estos valores es una proporción estimada de palabras de ese documento que se generan a partir de ese tema. 
@@ -236,7 +241,7 @@ doc_2_topics %>%
   mutate(gamma = round(gamma, 5))
 ```
 
-Por ejemplo, el modelo estima que  alrededor del 68% de las palabras en el documento 8 se generaron a partir del tema 3. O menos del 1% de las palabras del documento 1 se generan a partir del tópico 1.
+Por ejemplo, el modelo estima que  alrededor del 68% de las palabras en el documento 9 se generaron a partir del tema 3. O menos del 1% de las palabras del documento 1 se generan a partir del tópico 1.
 
 Para verificar esta respuesta, podríamos ordenar la matriz documento-término (ver Capítulo 5.1) y verificar cuáles eran las palabras más comunes en ese documento
 ```{r}
@@ -265,8 +270,7 @@ doc_2_topics %>%
   mutate(id = as.integer(id)) %>%
   left_join(revistas %>% select(id, categoria) %>% unique()) %>%
   group_by(categoria, topic) %>%
-    summarise(mean = mean(gamma)*100
-              ) %>%
+    summarise(mean = mean(gamma)*100) %>%
   ggplot() +
     geom_col(aes(x=topic, y=mean, fill=categoria), position='dodge') +
     theme_minimal()

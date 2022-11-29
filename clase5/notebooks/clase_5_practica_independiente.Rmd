@@ -1,0 +1,87 @@
+---
+title: "Modelado de tópicos Vol. 2. Structural Topic Model"
+subtitle: "Práctica Independiente. Un modelo que evoluciona en el tiempo"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+author: "Germán Rosati"
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+## Introducción
+En la clase trabajamos con un modelo que tomaba el target de la revista como covariables para el contenido.
+
+La idea de esta actividad es que puedan implementar e interpretar un modelo que tome el tiempo como covariable. Para eso, vamos a seguir trabajando con el dataset de revistas. En este caso, no les vamos a dar un modelo pre-entrenado. Deberán entrenarlo ustedes.
+
+### Cargar las librerías 
+```{r}
+library(tidyverse)
+library(topicmodels)
+library(tidytext)
+library(lubridate)
+library(stm)
+```
+
+### Cargar el dataset
+```{r}
+revistas <- read_csv('../data/revistas_limpias_final.csv')
+```
+### Crear la variable año
+```{r}
+###
+```
+
+
+
+### Hacer el preprocesamiento
+**Normalización**
+```{r}
+###
+```
+
+
+**Eliminación de dígitos**
+```{r}
+###
+```
+
+**Tokenización**
+```{r}
+###
+```
+
+**Eliminación stopwords**
+```{r}
+###
+```
+
+
+**Generar el word count**
+```{r}
+###
+```
+
+
+**Castear a formato dtm**
+```{r}
+###
+```
+
+
+### Entrenar el STM
+```{r}
+###
+```
+
+### Interpretar los tópicos
+```{r}
+###
+```
+
+### Construir una visualización que permita realizar un análisis de la evolución en el tiempo de los tópicos
+```{r}
+###
+```
+

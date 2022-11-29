@@ -1,0 +1,139 @@
+---
+title: "Modelado de tópicos Vol. 2. Structural Topic Model"
+subtitle: "Práctica Independiente. Un modelo que evoluciona en el tiempo"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+author: "Germán Rosati"
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+## Introducción
+En la clase trabajamos con un modelo que tomaba el target de la revista como covariables para el contenido.
+
+La idea de esta actividad es que puedan implementar e interpretar un modelo que tome el tiempo como covariable. Para eso, vamos a seguir trabajando con el dataset de revistas. En este caso, no les vamos a dar un modelo pre-entrenado. Deberán entrenarlo ustedes.
+
+### Cargar las librerías 
+```{r}
+library(tidyverse)
+library(topicmodels)
+library(tidytext)
+library(lubridate)
+library(stm)
+```
+
+### Cargar el dataset
+```{r}
+revistas <- read_csv('../data/revistas_limpias_final.csv')
+```
+### Creamos la variable fecha
+```{r}
+format_date <- function(string){
+        string <- str_replace_all(string, "de","")
+        string <- str_squish(string)
+        string <- str_to_title(string)
+        return(string)
+}
+
+
+revistas <- revistas %>%
+        mutate(fecha = format_date(fecha)) %>%
+        mutate(fecha=as.Date(fecha,format="%d %B %Y")) %>%
+        mutate(trimestre = quarter(fecha),
+               anio = year(fecha)) %>%
+        select(id, fecha, trimestre, anio, everything())
+
+
+```
+
+
+
+### Hacer el preprocesamiento
+**Normalización**
+```{r}
+revistas <- revistas %>%
+                mutate(text = stringi::stri_trans_general(text, "Latin-ASCII"),
+                       titulo = stringi::stri_trans_general(titulo, "Latin-ASCII"))
+```
+
+
+**Eliminación de dígitos**
+```{r}
+revistas <- revistas %>%
+          mutate(text = str_replace_all(text, '[[:digit:]]+', ''))
+```
+
+**Tokenización**
+```{r}
+revistas_tidy <- revistas %>%
+                unnest_tokens(word, text)
+```
+
+**Eliminación stopwords**
+```{r}
+stop_words <- read_delim('../data/stopwords.txt', 
+                         delim = '\t',
+                         col_names = c('word')) %>%
+                        mutate(word=stringi::stri_trans_general(word, "Latin-ASCII"))
+
+
+## Aquí agregamos algunas palabras al listado de stopwords...
+stop_words <- stop_words %>%
+                bind_rows( tibble(word=c('ano', 'anos', 'ohlala', 'foto', 'the'))) 
+
+revistas_tidy <- revistas_tidy %>%
+                anti_join(stop_words)
+
+
+metadata <- revistas_tidy %>%
+                  select(id, categoria, anio) %>%
+                  distinct() %>%
+                  left_join(revistas %>% select(id, text))
+```
+
+
+**Generar el word count**
+```{r}
+word_counts <- revistas_tidy %>%
+        group_by(id, word) %>%
+        summarise(n=n()) %>%
+        ungroup()
+```
+
+
+**Castear a formato dtm**
+```{r}
+revistas_dfm <- word_counts %>%
+                cast_dfm(id, word, n)
+
+revistas_dfm
+```
+
+
+### Entrenar el STM
+```{r}
+library(tictoc)
+tic()
+stm_15 <- stm(documents = revistas_dfm,
+     K = 15,
+     prevalence = ~categoria + anio,
+     max.em.its = 75,
+     data = metadata,
+     init.type = "Spectral")
+toc()
+```
+
+
+### Interpretar los tópicos
+```{r}
+###
+```
+
+
+### Construir una visualización que permita realizar un análisis de la evolución en el tiempo de los tópicos
+```{r}
+###
+```
+
