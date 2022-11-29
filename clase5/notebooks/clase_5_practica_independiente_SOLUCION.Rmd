@@ -131,7 +131,6 @@ toc()
 ###
 ```
 
-
 ### Construir una visualización que permita realizar un análisis de la evolución en el tiempo de los tópicos
 ```{r}
 ###
