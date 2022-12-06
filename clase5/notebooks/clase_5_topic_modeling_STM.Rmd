@@ -213,7 +213,7 @@ findThoughts(stm_15,
              topics=9)
 ```
 
-Al ver los primeros 5 documentos parece claro que se trata de tópico que habla de autos, sobre todo.
+Al ver los primeros 10 documentos parece claro que se trata de tópico que habla de autos, sobre todo.
  
 
 #### Actividad
@@ -221,6 +221,7 @@ Repetir el ejercicio de validación con el tópico 5. ¿Qué pueden decir al res
 ```{r}
 labelTopics(stm_15, topic=5)
 ```
+
 
 ```{r}
 findThoughts(stm_15, 
@@ -268,7 +269,8 @@ Y veamos las palabras más relevantes en cada tópico de lDA
   geom_col(show.legend = FALSE) +
   facet_wrap(~ topic, scales='free_y') +
   scale_y_reordered() +
-  theme_minimal()
+  theme_minimal() +
+  theme(text = element_text(size = 5))
 ```
 Podemos etiquetar de alguna forma estos tópicos
 

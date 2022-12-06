@@ -44,7 +44,7 @@ Si quisieran entrenarlo ustedes mismos o probar otras especificaciones, pueden h
 
 
 
-### Construir una visualización que permita realizar un análisis de la composición de tópocs según la categoría de la revista.
+### Construir una visualización que permita realizar un análisis de la composición de tópicos según la categoría de la revista.
 ```{r}
 ###
 ```
