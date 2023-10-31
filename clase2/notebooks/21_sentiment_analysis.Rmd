@@ -11,18 +11,18 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
 ## Introducción
-En esta parte vamos a aplicar algunas de las herramientas que vimos recién a una tarea bastante clásica en Procesamiento de Lenguaje Natural: el análisis de sentimento, también conocido como minería de opiniones.
+En esta parte vamos a aplicar algunas de las herramientas que vimos recién a una tarea bastante clásica en Procesamiento de Lenguaje Natural: el análisis de sentimento, también conocido como minería de opiniones. Esta actividad nos va a servir también para tener una primera aproximación a una forma de trabajar en NLP: el uso de lexicones (o diccionarios).
 
 Supongamos que tenemos un conjunto de comentarios de Facebook o de lectores en un foro. Y queremos tener una idea del "tono" general de los comentarios. Es decir, queremos tener una idea si los comentarios son positivos, negativos, si expresan cierto tipo de emociones, etc. Esta es, básicamente, la esencia del análisis de sentimiento: dado un texto (oración, párrafo, un tuit, etc.) queremos poder clasificarlo en términos de su "tono" o sus "emociones".
 
-Una defincion un poco más formal diría algo así como: "identificar y extraer información subjetiva de los recursos. Desde el punto de vista de la minería de textos, el análisis de sentimientos es una tarea de clasificación masiva de documentos de manera automática, en función de la connotación positiva o negativa del lenguaje ocupado en el documento".
+Una defincion un poco más formal diría algo así como identificar y extraer información subjetiva de los recursos. Desde el punto de vista de la minería de textos, el análisis de sentimientos es una tarea de clasificación masiva de documentos de manera automática, en función de la connotación positiva o negativa del lenguaje ocupado en el documento.
 
 Una subtarea básica (la que vamos a encarar aquí) es el análisis de polaridad: o sea, analizar un texto en función de si su tono "positivo" o "negativo". La clasificación del sentimiento más avanzada, "más allá de la polaridad" busca, por ejemplo, estados emocionales tales como "enfado", "tristeza", o "felicidad". [Acá hay una buena reseña](https://ieeexplore.ieee.org/document/6468032?arnumber=6468032) de estos métodos.
 
 ### Polaridad
 En este caso, vamos a trabajar con la "polaridad", es decir, con el carácter positivo o negativo de un texto. Existen dos formas básicas de abordar este problema. La primera es tan simple como contar palabras. A partir de un diccionario o lexicón de palabras clasificadas como positivas / negativas, procedemos a contar cuántas aparecen de cada categoría y vincularlas de alguna forma (una resta o un ratio). Si las palabras positivas exceden a las negativas, entonces, el texto tendrá un carácter positivo.
 
-La segunda forma, que no vamos a tocar hoy, supone entrenar algún modelo que haga esa clasificación por nosotros.
+La segunda forma, que no vamos a tocar hoy, supone entrenar algún modelo que haga esa clasificación por nosotros. Este enfoque es utilizable para cualquier tarea de análisis de sentimiento.
 
 ### Analizando los diarios de Emilio Renzi
 En esta clase, vamos a tomar nuetro dataset con los tres tomos de os diarios de Renzi (aka Ricardo Piglia... o al revés...) y vamos a implementar uno de estos análisis de sentimiento.
@@ -55,7 +55,7 @@ renzi <- renzi %>%
         ))
 ```
 
-Ahora, dado que vamos a contar palabras, vamos a "unnestear" los tokens... en este caso, las palabras. Recordemos: estamos en el formato `tidy`: cada fila va a ser una palabra y vamos a generar una columna que numere cada una de las entradas.
+Ahora, dado que vamos a contar palabras, vamos a tokenizar el corpus. En este caso, los tokens van a ser las palabras individuales. Recordemos: estamos en el formato `tidy`: cada fila va a ser una palabra y vamos a generar una columna que numere cada una de las entradas.
 
 ```{r}
 tidy_renzi <- renzi %>%
@@ -114,7 +114,6 @@ sentiment_words_liia
 ```
 
 ### Los sentimientos de Renzi a lo largo de su vida
-
 Ahora sí, estamos en condiciones de avanzar. La lógica del procesamiento va a ser la siguiente: vamos a buscar qué palabras de nuestro corpus aparecen en los listados de términos. Para eso, vamos a hacer un `inner_join`. Pero, además, vamos a contar cuántas veces aparece cada palabra con un `count`.
 
 ```{r}
@@ -169,40 +168,5 @@ ggplot(aes(x=entry_number, y=sentiment, color=tomo)) +
 Replicar el análisis de sentimento con el lexicon construido por el LIIA. Comparar los resultados.
 
 ```{r}
-sentiment_words_liia <- sentiment_words_liia %>%
-  mutate(word =  stringi::stri_trans_general(str = word, 
-                                   id = "Latin-ASCII"))
+###
 ```
-
-
-```{r}
-tidy_renzi_sent_liia <- tidy_renzi %>%
-  inner_join(sentiment_words_liia) %>%
-  group_by(tomo, entry_number, sentiment) %>%
-  summarise(n=n()) %>%
-  ungroup() %>%
-  pivot_wider(names_from = sentiment,
-              values_from = n,
-              values_fill = 0) %>%
-  mutate(sentiment = positivo-negativo)
-
-tidy_renzi_sent_liia
-```
-
-```{r}
-tidy_renzi_sent_liia %>%
-ggplot(aes(x=entry_number, y=sentiment, color=tomo)) +
-        geom_line(show.legend = TRUE) +
-        #geom_smooth(aes(index, sentiment, color=tomo)) +
-        labs(x='Entrada del diario',
-             y= 'Sentimiento (palabras positivas-palabras negativas)',
-             title='Análisis de sentimiento por palabras (lexicon Kaggle)') +
-        theme_minimal() +
-        scale_color_viridis_d() +
-        theme(
-                axis.title.x=element_blank(),
-                axis.text.x=element_blank(),
-                axis.ticks.x=element_blank(),
-                legend.position = 'bottom')
-```
-

@@ -29,66 +29,57 @@ library(tidyverse)
 ```
 
 ## Un ejemplo mínimo: estadísticas mundiales de pobreza
-[PovcalNet](http://iresearch.worldbank.org/PovcalNet/povOnDemand.aspx) es un proyecto del Banco Mundial. Se trata de una herrmienta que permite replicar los cálculos que el organismo realiza sobre la llamada "Pobreza Absoluta" para una gran grupo de paises en el mundo. No nos vamos a meter en detalles pero la cosa es que hay dos grandes formas de medir la pobreza: la absoluta y la relativa. La pobreza absoluta define un cierto umbral de ingresos por medio del cual puede adquirirse una canasta mínima de bienes y servicios. Aquellos hogares que se encuentren por debajo de ese umbral serán clasificados omo "pobres". Ahora bien, las canastas varían notablemente entre países por diversos motivos (históricos, culturales, metodológicos) es por ello que el Banco Mundial definió el criterio de los "2 dólares diarios": cualquier persona que no llegue a ese ingreso es considerado como "pobre extremo".
+[PIP](https://pip.worldbank.org/) es un proyecto del Banco Mundial. Se trata de una herrmienta que permite replicar los cálculos que el organismo realiza sobre la llamada "Pobreza Absoluta" para una gran grupo de paises en el mundo. No nos vamos a meter en detalles pero la cosa es que hay dos grandes formas de medir la pobreza: la absoluta y la relativa. La pobreza absoluta define un cierto umbral de ingresos por medio del cual puede adquirirse una canasta mínima de bienes y servicios. Aquellos hogares que se encuentren por debajo de ese umbral serán clasificados omo "pobres". Ahora bien, las canastas varían notablemente entre países por diversos motivos (históricos, culturales, metodológicos) es por ello que el Banco Mundial definió el criterio de los "2 dólares diarios": cualquier persona que no llegue a ese ingreso es considerado como "pobre extremo".
 
-### La API de `povcalnet`
+### La API de `PIP`
 Lo interesante (entre otras cosas) de este proyecto es que no te hace bajar un mamotreto de datos sino que... tiene una API, bastante completa para trabajar. De hecho, podemos jugar con diferentes umbrales de pobreza absoluta. Si U$S nos parece demasiado bajo podemos utilizar otro umbral más alto y la API nos va a devolver cálculos de pobreza para dichos umbrales.
 
 ```{r}
-povcalnet <- GET("http://iResearch.worldbank.org/PovcalNet/PovcalNetAPI.ashx?C0=CHN&PL0=2.5&Y0=All&format=json")
+#povcalnet <- GET("http://iResearch.worldbank.org/PovcalNet/PovcalNetAPI.ashx?C0=CHN&PL0=2.5&Y0=All&format=#json")
+
+api<-GET("https://api.worldbank.org/pip/v1/pip?country=CHN&year=all&povline=2.5&fill_gaps=false&format=csv")
 ```
 
 La búsqueda tiene varias partes:
 
 - el protocolo: `http://`,
-- el nombre del servidor: `iResearch.worldbank.org`,
-- el nombre del sitio: `PovcalNet`,
-- el "handler": `PovcalNetAPI.ashx`,
-- el string de la query (esta es la parte importante): `C0=CHN&PL0=2.5&Y0=All&format=json`
+- el nombre del servidor: `api.worldbank.org`,
+- el nombre del sitio: `pip`,
+- el string de la query (esta es la parte importante):`country=CHN&year=all&povline=2.5&fill_gaps=false&format=csv`
 
 Vamos a descomponer esta última parte:
 
-- `C0=CHN`: es el parámetro de país... en este caso, China
-- `PL0=2.5`: refiere al umbral de los "dólares diarios". Quienes ganen menos (en este caso de U$S2.5 por día serán considerados como pobres
-- `Y0=All`: pide todos los años de estimación disponibles
-- `format=json`: el formato de respuesta requerido
+- `country=CHN`: es el parámetro de país... en este caso, China
+- `year=all`: pide todos los años de estimación disponibles
+- `povline=2.5`: refiere al umbral de los "dólares diarios". Quienes ganen menos (en este caso de U$S2.5 por día serán considerados como pobres
+- `fill_gaps=false`: parámetro para rellenar o no los perdidos
+- `format=csv`: el formato de respuesta requerido
+
+Hay muchos más 
 
 ```{r}
-povcalnet
+api
 ```
 
-### De json a una `tibble`
-Hasta acá la data todavía está en un formato que no nos sirve. La información está en formato Unidecode en el objeto `content` de nuestra lista,  Por eso vamos a usar la funcion `rawtoChar` para convertir este formato a un string que se vea en formato JSON. Luego, vamos a leerlo en formato JSON. 
+### De csv a una `tibble`
+Hasta acá la data todavía está en un formato que no nos sirve. La información está en formato Unidecode en el objeto `content` de nuestra lista,  Por eso vamos a usar la funcion `rawtoChar` para convertir este formato a un string que se vea en formato csv Luego, vamos a leerlo como si fuera una `tibble` 
 
 ```{r}
-povcalnet <- fromJSON(rawToChar(povcalnet$content))
-
-names(povcalnet)
-length(povcalnet)
-
-names(povcalnet$PovResult[[1]])
+api <- read_csv(rawToChar(api$content))
 ```
 
-Pasamos a DF...
+Hagamos un gráfico breve para ver la evolución de la pobreza en este umbral según zonas urbanas y rurales:
 ```{r}
-povcalnet_df <- as.data.frame(do.call(rbind, povcalnet$PovResult))
-
-povcalnet_df<- povcalnet_df %>% 
-                mutate(across(everything(), as.character))
-
-povcalnet_df<- povcalnet_df %>% 
-                mutate(across(c(DataYear, HC), as.numeric))
-
-povcalnet_df %>% 
-         ggplot(aes(x=DataYear, y=HC))+
-         geom_line() +
-         labs(x='Año',
-              y='% población c/ menos de 2.5 U$S diarios') +
-         theme_minimal()
-  
+api %>% 
+        ggplot(aes(x=survey_year, y=headcount, color=reporting_level))+
+        geom_line() +
+        labs(x='Año',
+             y='% población c/ menos de 2.5 U$S diarios') +
+        theme_minimal() +
+        facet_wrap(~reporting_level)
 ```
 
-### Actividad
+## Actividad
 
 Traer las estimaciones de pobreza de Brasil con un umbral de pobreza de U$S2 para todos los años disponibles y graficarlo. 
 
@@ -96,7 +87,7 @@ Traer las estimaciones de pobreza de Brasil con un umbral de pobreza de U$S2 par
 
 ```
 
-### Autenticación 
+## Autenticación 
 
 Muchas veces las API requieren algún mecanismo de registro para poder usarlas. Esto puede ser por mera seguridad o para cobrar por su uso.
 

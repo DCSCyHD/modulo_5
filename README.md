@@ -53,35 +53,36 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 [![](imgs/Download.png)](clase3.zip)
 
 
-## Clase 4. ¿Cómo detectar temas en corpus I? Introducción al modelado de tópicos. Latent Dirichlet Allocation (LDA)
+## Clase 4. ¿Cómo detectar temas en corpus I? Introducción al modelado de tópicos. Latent Dirichlet Allocation (LDA) y un modelo para detectar tópicos diseñado para las ciencias sociales: Structural Topic Modeling. (STA)
+### LDA
 - [Slides - pdf](/clase4/DIPLO_TM_Clase_4.pdf)
 - [Explicación y práctica guiada LDA - Notebook](/clase4/notebooks/clase_4_topic_modeling_LDA.html)
 - [Explicación y práctica guiada LDA - RMarkdown](/clase4/notebooks/clase_4_topic_modeling_LDA.Rmd)
 - [Pŕactica independiente - Notebook](/clase4/notebooks/clase_4_practica_independiente.html)
 - [Pŕactica independiente - RMarkdown](/clase4/notebooks/clase_4_practica_independiente.Rmd)
 
-Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
+Pueden descargarse la totalidad de los materiales de LDA para trabajar en un único archivo .zip
 
 [![](imgs/Download.png)](clase4.zip)
 
-
-## Clase 5. ¿Cómo detectar temas en corpus II? Un modelo para detectar tópicos diseñado para las ciencias sociales: Structural Topic Modeling.
+### STM
 - [Slides - pdf](/clase5/DIPLO_TM_Clase_5.pdf)
 - [Explicación y práctica guiada STM - Notebook](/clase5/notebooks/clase_5_topic_modeling_STM.html)
 - [Explicación y práctica guiada STM - RMarkdown](/clase5/notebooks/clase_5_topic_modeling_STM.Rmd)
 
-Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
+Pueden descargarse la totalidad de los materiales de STM para trabajar en un único archivo .zip
 
 [![](imgs/Download.png)](clase5.zip)
 
-## Clase 6. Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec). Cierre del módulo
+## Clase 5. ¿Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec). 
 - [Slides - pdf](/clase6/DIPLO_TM_Clase_6.pdf)
 - [Explicación y práctica guiada STM - Notebook](/clase6/notebooks/clase_6_word2vec.html)
 - [Explicación y práctica guiada STM - RMarkdown](/clase6/notebooks/clase_6_word2vec.Rmd)
 
 Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
 
-[![](imgs/Download.png)](clase6.zip)
+## Clase 5. ¿Cómo se usa un modelo pre-entrenado? Usando word embeddings pre-entrenados como insumo.
+
 
 # Librerías a utilizar
 El taller se desarrollará en R y se hará un uso extensivo de las siguientes librerías:

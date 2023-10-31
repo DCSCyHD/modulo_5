@@ -1488,7 +1488,7 @@ border-radius: 0px;
 diccionarios</h1>
 <h3 class="subtitle">Los diarios de Emilio Renzi (tres tomos)</h3>
 <h4 class="author">Germán Rosati</h4>
-<h4 class="date">07 noviembre, 2022</h4>
+<h4 class="date">14 agosto, 2023</h4>
 
 </div>
 
@@ -1498,7 +1498,9 @@ diccionarios</h1>
 <p>En esta parte vamos a aplicar algunas de las herramientas que vimos
 recién a una tarea bastante clásica en Procesamiento de Lenguaje
 Natural: el análisis de sentimento, también conocido como minería de
-opiniones.</p>
+opiniones. Esta actividad nos va a servir también para tener una primera
+aproximación a una forma de trabajar en NLP: el uso de lexicones (o
+diccionarios).</p>
 <p>Supongamos que tenemos un conjunto de comentarios de Facebook o de
 lectores en un foro. Y queremos tener una idea del “tono” general de los
 comentarios. Es decir, queremos tener una idea si los comentarios son
@@ -1506,12 +1508,12 @@ positivos, negativos, si expresan cierto tipo de emociones, etc. Esta
 es, básicamente, la esencia del análisis de sentimiento: dado un texto
 (oración, párrafo, un tuit, etc.) queremos poder clasificarlo en
 términos de su “tono” o sus “emociones”.</p>
-<p>Una defincion un poco más formal diría algo así como: “identificar y
+<p>Una defincion un poco más formal diría algo así como identificar y
 extraer información subjetiva de los recursos. Desde el punto de vista
 de la minería de textos, el análisis de sentimientos es una tarea de
 clasificación masiva de documentos de manera automática, en función de
 la connotación positiva o negativa del lenguaje ocupado en el
-documento”.</p>
+documento.</p>
 <p>Una subtarea básica (la que vamos a encarar aquí) es el análisis de
 polaridad: o sea, analizar un texto en función de si su tono “positivo”
 o “negativo”. La clasificación del sentimiento más avanzada, “más allá
@@ -1529,7 +1531,8 @@ categoría y vincularlas de alguna forma (una resta o un ratio). Si las
 palabras positivas exceden a las negativas, entonces, el texto tendrá un
 carácter positivo.</p>
 <p>La segunda forma, que no vamos a tocar hoy, supone entrenar algún
-modelo que haga esa clasificación por nosotros.</p>
+modelo que haga esa clasificación por nosotros. Este enfoque es
+utilizable para cualquier tarea de análisis de sentimiento.</p>
 </div>
 <div id="analizando-los-diarios-de-emilio-renzi" class="section level3">
 <h3>Analizando los diarios de Emilio Renzi</h3>
@@ -1541,14 +1544,16 @@ uno de estos análisis de sentimiento.</p>
 <p>[<a href="https://www.tidytextmining.com/images/tmwr_0201.png" class="uri">https://www.tidytextmining.com/images/tmwr_0201.png</a>]</p>
 <p>Primero, cargamos nuestro dataset:</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-## ✔ ggplot2 3.3.6      ✔ purrr   0.3.5 
-## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
-## ✔ tidyr   1.2.1      ✔ stringr 1.4.1 
-## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.2     ✔ readr     2.1.4
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ ggplot2   3.4.2     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ purrr     1.0.1     
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 <pre class="r"><code>library(tidytext)</code></pre>
 <pre class="r"><code>renzi &lt;- read_csv(&#39;../data/renzi.csv&#39;)</code></pre>
 <pre><code>## Rows: 1997 Columns: 3
@@ -1573,7 +1578,7 @@ uno de estos análisis de sentimiento.</p>
 ##  8 1_diarios_renzi_años_de_formacion.txt       2 la casa tiene dos plantas, aba…
 ##  9 1_diarios_renzi_años_de_formacion.txt       2 yo pienso que tendría que volv…
 ## 10 1_diarios_renzi_años_de_formacion.txt       2 mi padre, desde el consultorio…
-## # … with 1,987 more rows</code></pre>
+## # ℹ 1,987 more rows</code></pre>
 <p>Ya tenemos organizado los tres tomos en un dataset con información
 sobre el tomo, el captítulo y la entrada del diario. Vamos a mejorar un
 poco las cateogrías de los tomos:</p>
@@ -1583,10 +1588,11 @@ poco las cateogrías de los tomos:</p>
                 tomo == &#39;2_diarios_renzi_los_años_felices.txt&#39; ~ &#39;II-Los años felices&#39;,
                 tomo == &#39;3_diarios_renzi_un_dia_en_la_vida.txt&#39; ~ &#39;III-Un día en la vida&#39;,
         ))</code></pre>
-<p>Ahora, dado que vamos a contar palabras, vamos a “unnestear” los
-tokens… en este caso, las palabras. Recordemos: estamos en el formato
-<code>tidy</code>: cada fila va a ser una palabra y vamos a generar una
-columna que numere cada una de las entradas.</p>
+<p>Ahora, dado que vamos a contar palabras, vamos a tokenizar el corpus.
+En este caso, los tokens van a ser las palabras individuales.
+Recordemos: estamos en el formato <code>tidy</code>: cada fila va a ser
+una palabra y vamos a generar una columna que numere cada una de las
+entradas.</p>
 <pre class="r"><code>tidy_renzi &lt;- renzi %&gt;%
         mutate(entry_number = row_number()) %&gt;%
         unnest_tokens(output = word, 
@@ -1605,7 +1611,7 @@ tidy_renzi</code></pre>
 ##  8 I-Años de formación       1            1 repito  
 ##  9 I-Años de formación       1            1 lo      
 ## 10 I-Años de formación       1            1 que     
-## # … with 386,567 more rows</code></pre>
+## # ℹ 386,567 more rows</code></pre>
 <p>Ahora, tenemos que cargar los lexicones. Pero primero, tenemos que
 eliminar las palabras muy frecuentes… las que llamamos stopwords.
 Cargamos, entonces, este listado de stopwords:</p>
@@ -1619,7 +1625,7 @@ Cargamos, entonces, este listado de stopwords:</p>
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <pre class="r"><code>tidy_renzi &lt;- tidy_renzi %&gt;%
         anti_join(stop_words)</code></pre>
-<pre><code>## Joining, by = &quot;word&quot;</code></pre>
+<pre><code>## Joining with `by = join_by(word)`</code></pre>
 <p>Y hacemos un “anti_join” (es decir, lo opuesto de un join): lo que
 nos va a devolver son todas las palabras que están en
 <code>tidy_renzi</code> pero no en <code>stop_words</code>. Nótese que
@@ -1643,21 +1649,14 @@ original</a></p>
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>sentiment_words_kaggle</code></pre>
-<pre><code>## # A tibble: 4,275 × 2
-##    word      sentiment
-##    &lt;chr&gt;     &lt;chr&gt;    
-##  1 como      positivo 
-##  2 gran      positivo 
-##  3 mayor     positivo 
-##  4 nuevo     positivo 
-##  5 general   positivo 
-##  6 obra      positivo 
-##  7 principal positivo 
-##  8 bien      positivo 
-##  9 poco      positivo 
-## 10 trabajo   positivo 
-## # … with 4,265 more rows</code></pre>
+<pre class="r"><code>sentiment_words_kaggle %&gt;%
+  group_by(sentiment) %&gt;%
+  summarise(n=n())</code></pre>
+<pre><code>## # A tibble: 2 × 2
+##   sentiment     n
+##   &lt;chr&gt;     &lt;int&gt;
+## 1 negativo   2720
+## 2 positivo   1555</code></pre>
 <p>El segundo fue elaborado por Agustín Gravano del Laboratorio de
 Inteligencia Artificial Aplicada de la UBA. Se trata de un diccioario
 llamado “SDAL” (por el acrónimo de “Spanish Dictionary of Affects in
@@ -1695,7 +1694,7 @@ original con más detalles está <a href="https://bibliotecadigital.exactas.uba.
 ##  8 aparecer            2          0    
 ##  9 seguir              2.4        0.548
 ## 10 especie             2.2        0.447
-## # … with 2,870 more rows</code></pre>
+## # ℹ 2,870 more rows</code></pre>
 <p>Como puede verse, este lexicon difiere respecto del anterior en que
 no tiene una clasificación de palabras en “positivas” o “negativas” sino
 que tiene un promedio de los votos de cada persona en una escala de 1 a
@@ -1708,7 +1707,23 @@ negativos y neutros, redondeando los decimales.</p>
                 round(mean_likeness) == 1 ~ &#39;negativo&#39;,
                 round(mean_likeness) == 2 ~ &#39;neutral&#39;,
                 round(mean_likeness) == 3 ~ &#39;positivo&#39;,
-        ))</code></pre>
+        ))
+
+sentiment_words_liia</code></pre>
+<pre><code>## # A tibble: 2,880 × 4
+##    word      mean_likeness std_likeness sentiment
+##    &lt;chr&gt;             &lt;dbl&gt;        &lt;dbl&gt; &lt;chr&gt;    
+##  1 población           1.8        0.447 neutral  
+##  2 obra                2.2        0.447 neutral  
+##  3 dormir              3          0     positivo 
+##  4 dar                 2.8        0.447 positivo 
+##  5 realizar            2.6        0.548 positivo 
+##  6 haber               2          0     neutral  
+##  7 amor                3          0     positivo 
+##  8 aparecer            2          0     neutral  
+##  9 seguir              2.4        0.548 neutral  
+## 10 especie             2.2        0.447 neutral  
+## # ℹ 2,870 more rows</code></pre>
 </div>
 <div id="los-sentimientos-de-renzi-a-lo-largo-de-su-vida" class="section level3">
 <h3>Los sentimientos de Renzi a lo largo de su vida</h3>
@@ -1723,7 +1738,7 @@ veces aparece cada palabra con un <code>count</code>.</p>
         summarise(n = n()) %&gt;%
         ungroup() %&gt;%
         arrange(desc(n))</code></pre>
-<pre><code>## Joining, by = &quot;word&quot;
+<pre><code>## Joining with `by = join_by(word)`
 ## `summarise()` has grouped output by &#39;tomo&#39;, &#39;sentiment&#39;. You can override using
 ## the `.groups` argument.</code></pre>
 <pre class="r"><code>tidy_renzi_sent_kag</code></pre>
@@ -1740,7 +1755,7 @@ veces aparece cada palabra con un <code>count</code>.</p>
 ##  8 II-Los años felices positivo  mil       139
 ##  9 I-Años de formación positivo  mejor     133
 ## 10 II-Los años felices positivo  mejor     133
-## # … with 4,740 more rows</code></pre>
+## # ℹ 4,740 more rows</code></pre>
 <p>Y, por si fuera poco, vamos a cambiarle el formato a la tabla para
 que nos quede una columna por sentimiento y, finalmente… vamos a
 calcular la resta entre la cantidad de términos positivos y la cantidad
@@ -1754,7 +1769,7 @@ de términos negativos:</p>
                     values_from=n,
                     values_fill=0) %&gt;%
         mutate(sentiment = positivo - negativo)</code></pre>
-<pre><code>## Joining, by = &quot;word&quot;
+<pre><code>## Joining with `by = join_by(word)`
 ## `summarise()` has grouped output by &#39;tomo&#39;, &#39;entry_number&#39;. You can override
 ## using the `.groups` argument.</code></pre>
 <pre class="r"><code>tidy_renzi_sent_kag</code></pre>
@@ -1771,11 +1786,12 @@ de términos negativos:</p>
 ##  8 I-Años de formación           10        1        3         2
 ##  9 I-Años de formación           11        1        2         1
 ## 10 I-Años de formación           12       12       12         0
-## # … with 1,851 more rows</code></pre>
+## # ℹ 1,851 more rows</code></pre>
 <p>Ahora ya podemos hacer un primer gráfico de la evolución de los
 “sentimientos” de Renzi a lo largo de su vida (al menos, a lo largo de
 las entradas de su diario)</p>
-<pre class="r"><code>ggplot(tidy_renzi_sent_kag, aes(entry_number, sentiment, color=tomo)) +
+<pre class="r"><code>tidy_renzi_sent_kag %&gt;%
+ggplot(aes(x=entry_number, y=sentiment, color=tomo)) +
         geom_line(show.legend = TRUE) +
         #geom_smooth(aes(index, sentiment, color=tomo)) +
         labs(x=&#39;Entrada del diario&#39;,

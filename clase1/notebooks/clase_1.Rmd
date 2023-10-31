@@ -1,5 +1,5 @@
 ---
-title: "Clase 1. Concepto de datos ordenados para la minería de texto"
+title: "Clase 1. Tidydata para Procesamiento de Lenguaje Natural"
 output: 
   html_document:
     toc: TRUE
@@ -22,7 +22,7 @@ La idea de "datos ordenados" o _tidy data_ es una forma de manejar de forma efec
 
 (Si en esta definición les resuena aquello que en las materias de Metodología de la Investigación se llamaba "estructura tripartita del dato" o lo que Juan Samaja llamaba "estructura cuatripartita del dato" están bien encaminades).
 
-En el contexto de minería de texto, los datos ordenados van a tener la siguente estructura: un **token** por fila. Un **token** es una unidad conceptual y/o analíticamente signifactivas con las que dividimos un documento. Un **token** puede ser una palabra (ese será el caso más frecuente en este curso) pero también podrían ser [n-gramas](https://es.wikipedia.org/wiki/N-grama), oraciones e incluso párrafos. De hecho, un primer paso en el preprocesamiento de texto es dividir el corpus en **tokens**. Para lo cual, es necesario, entonces, definir qué va a ser un **token**.
+En el contexto de NLP, los datos ordenados van a tener la siguente estructura: un **token** por fila. Un **token** es una unidad conceptual y/o analíticamente signifactivas con las que dividimos un documento. Un **token** puede ser una palabra (ese será el caso más frecuente en este curso) pero también podrían ser [n-gramas](https://es.wikipedia.org/wiki/N-grama), oraciones e incluso párrafos. De hecho, un primer paso en el preprocesamiento de texto es dividir el corpus en **tokens**. Para lo cual, es necesario, entonces, definir qué va a ser un **token**.
 
 Como puede verse esta estructura difiere de otras formas de almacenar el texto crudo
 
@@ -33,7 +33,7 @@ Como puede verse esta estructura difiere de otras formas de almacenar el texto c
 Como iremos viendo, va a ser muy fácil pasar del texto en formato tidy a otros formatos. Particularmente, vamos a estar yendo y viniendo entre textos en formato tidy y no-tidy para diferentes tareas. Así, cuando nos toque construir modelos seguramento vamos a tener que pasar a un  formato Matrix-documento-término (TFM). Pero cuando querramos generar gráficos o métricas que nos permitan interpretar ese modelo, seguramente vamos a tener que volver a formato tidy.
 
 ## Primer ejemplo
-Vamos a empezar con un ejemplo mínimo: un párrafo de Marx. En el famoso "Prólogo a la Contribución a la Crítica de la Economía Política" de 1859 escribió el siguiente párrafo que vamos a guardar en un objeto `character` que se va a llamar `marx`.
+Vamos a empezar con un ejemplo mínimo: un párrafo de Marx. En el famoso "Prólogo a la Contribución a la Crítica de la Economía Política" de 1859 escribió el siguiente párrafo que ha generado infinitas interpretaciones y polémicas. Vamos a guardarlo en un objeto `character` que se va a llamar `marx`.
 
 ```{r}
 marx <- c("El conjunto de estas relaciones de producción forma la estructura económica de la sociedad, la base real sobre la que se levanta la superestructura jurídica y política y a la que corresponden determinadas formas de conciencia social. El modo de producción de la vida material condiciona el proceso de la vida social política y espiritual en general. No es la conciencia del hombre la que determina su ser sino, por el contrario, el ser social es lo que determina su conciencia. Al llegar a una fase determinada de desarrollo las fuerzas productivas materiales de la sociedad entran en contradicción con las relaciones de producción existentes o, lo que no es más que la expresión jurídica de esto, con las relaciones de propiedad dentro de las cuales se han desenvuelto hasta allí. De formas de desarrollo de las fuerzas productivas, estas relaciones se convierten en trabas suyas, y se abre así una época de revolución social. Al cambiar la base económica se transforma, más o menos rápidamente, toda la inmensa superestructura erigida sobre ella.")
@@ -49,9 +49,9 @@ Para poder analizarlo como datos tidy, primero tenemos que llevarlo a un datafra
 marx_df <- tibble(line = 1, text = marx)
 marx_df
 ```
-¿Qué significa que este dataframe se ha impreso como un "tibble"? Un tibble es una clase moderna de dataframe dentro de R, disponible en los paquetes dplyr y tibble, que tiene un método de impresión conveniente, no convierte cadenas en factores y no usa nombres de fila. Tibbles son ideales para usar con herramientas ordenadas.
+¿Qué significa que este dataframe se ha impreso como una "tibble"? Una tibble es una clase de dataframe más "moderna" dentro de R, disponible en los paquetes `dplyr` y `tibble`. Las tibbles tienen un método de impresión conveniente para lo que queremos hacer: no convierten a las cadenas/strings en factores de forma automática y no usa nombres de fila (`ronames``). Las tibbles son ideales para usar con herramientas tidy.
 
-Sin embargo, tengamos en cuenta que este dataframe que contiene texto aún no es compatible con un análisis de texto tidy. No podemos filtrar las palabras ni contar las que ocurren con mayor frecuencia, ya que cada fila está formada por varias palabras combinadas. Necesitamos convertir esto para que tenga un **token** por documento por fila.
+Sin embargo, tengamos en cuenta que este dataframe que contiene texto aún no es compatible con un análisis de texto `tidy`. No podemos filtrar las palabras ni contar las que ocurren con mayor frecuencia, ya que cada fila está formada por varias palabras combinadas. Necesitamos convertir esto para que tenga un **token** por documento por fila.
 
 ¿Cuántos documentos tenemos en este ejemplo?
 
@@ -94,7 +94,7 @@ Un diagrama del flujo de trabajo puede verse a continuación:
 ![](https://www.tidytextmining.com/images/tmwr_0101.png)
 
 ## Ordenando algunos textos de Marx y Engels
-Vamos a trabajar con un dataset que el capo de [Diego Kosloski](https://sites.google.com/view/diego-kozlowski/home) escrapeó de la sección en español del [Marxist Internet Archive](https://www.marxists.org/espanol/). 
+Vamos a trabajar con un dataset que el capo de [Diego Kozlowski](https://sites.google.com/view/diego-kozlowski/home) escrapeó de la sección en español del [Marxist Internet Archive](https://www.marxists.org/espanol/). 
 
 Cargamos los datos:
 ```{r}
@@ -104,7 +104,7 @@ marx_engels
 
 ¿Qué estructura tiene este dataset?
 
-Vamos a transformarlo en un formato tidy:
+Vamos a transformarlo en un formato `tidy`:
 
 ```{r}
 marx_engels_tidy <- marx_engels %>%
@@ -117,9 +117,9 @@ marx_engels_tidy
 ```
 
 ## Eliminando stopwords
-El siguiente paso es la eliminación de las llamadas **stopwords**. Se trata de palabras que o bien por su función sintáctica (pronombres, preposiciones, adverbios, etc.) o por su frecuencia (aparecen en gran frecuencia) no aportan información al texto.
+El siguiente paso es la eliminación de las llamadas **stopwords**. Se trata de palabras que o bien por su función sintáctica (pronombres, preposiciones, adverbios, etc.) o por su frecuencia (aparecen en gran frecuencia) aportan poca información semántica al texto.
 
-En general, la forma estándar y más inmediata de lidiar con las stopwords es mediante su eliminación a través de una lista. La idea es matchear las palabras en nuestro corpus con las que estén en esa lista y eliminar las que coinciden. Carguemos la lista con las **stopwords**, al mismo tiempo, vamos a eliminar los acentos de esta tabla.
+En general, la forma estándar y más inmediata de lidiar con ellas es mediante su eliminación a través de una lista. La idea es matchear las palabras en nuestro corpus con las que estén en esa lista y eliminar las que coinciden. Carguemos la lista con las **stopwords**, al mismo tiempo, vamos a eliminar los acentos de esta tabla.
 
 ```{r}
 stop_words <- read_csv('https://raw.githubusercontent.com/Alir3z4/stop-words/master/spanish.txt', col_names=FALSE) %>%
@@ -165,7 +165,6 @@ marx_engels_tidy %>%
         ggplot(aes(n, word)) +
                 geom_col() +
                 labs(y = NULL)
-
 ```
 
 Podríamos evaluar ahora si Marx y Engels usan diferentes palabras en las cargas y notas y en sus libros. Para ello vamos a tener que procesar un poco el campo de `titulo`:

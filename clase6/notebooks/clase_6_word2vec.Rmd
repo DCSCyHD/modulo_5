@@ -32,11 +32,14 @@ La idea va a ser tratar de entrenar un [modelo word2vec](https://jalammar.github
 dialogos <- read_csv('../data/simpsons_script_lines.csv') %>%
         select(id, episode_id, raw_character_text, spoken_words) %>%
         arrange(episode_id, id)
-
 ```
 
-Hay valores faltantes en la primera columna que tienen que ver con dialogo que no es provisto por ninguno de los personajes, por ejemplo, voces en off, etc. Podemos removerlo como sigue:
+```{r}
+head(dialogos)
+```
 
+
+Hay valores faltantes en la primera columna que tienen que ver con dialogo que no es provisto por ninguno de los personajes, por ejemplo, voces en off, etc. Podemos removerlo como sigue:
 ```{r}
 dialogos <- dialogos %>%
                 drop_na()
@@ -109,7 +112,6 @@ Unimos los bigramas con "_":
 ```{r}
 uni_bigramas <- uni_bigramas %>%
         mutate(text = str_replace_all(bigram, " ", "_"))
-
 ```
 
 Y volvemos a rearmar la línea del diálogo.
@@ -118,13 +120,16 @@ uni_bigramas <- uni_bigramas %>%
         group_by(id, episode_id, raw_character_text) %>%
         summarize(text = str_c(text, collapse = " ")) %>%
         ungroup()
+
+
+uni_bigramas
 ```
 
 Bueno, el siguiente paso consta de entrenar el modelo word2vec con los datos. Para eso, le pasamos una serie de parametros que estan explicados en el codigo siguiente. 
 
 ```{r}
 # word2vec_s <- word2vec(x=uni_bigramas$text, # Pasamos la columna con texto
-#                        type='skip-gram', # Elegimos el método de ventana
+#                        type='skip-gram', #Elegimos el método de ventana
 #                        hs=FALSE,
 #                        min_count=20, # Ignora palabras cuya frecuencia es menor a esta
 #                       window=2, # Fijamos el tamaño de la ventana de contexto
@@ -166,10 +171,10 @@ predict(word2vec_s, newdata = c("burn"), type = "nearest", top_n = 30)
 
 También podemos jugar con las clásicas analogías:
 ¿Qué es al reverendo Alegría lo que Marge es a Homero?
-
 ```{r}
 wv <- predict(word2vec_s, newdata = c("marge", "reverend_lovejoy", "homer"), type = "embedding")
 wv <- wv["marge", ] - wv["homer", ] + wv["reverend_lovejoy", ]
+
 predict(word2vec_s, newdata = wv, type = "nearest", top_n = 3)
 ```
 
@@ -179,9 +184,7 @@ wv <- predict(word2vec_s, newdata = c("marge", "flanders", "homer"), type = "emb
 wv <- wv["marge", ] - wv["homer", ] + wv["flanders", ]
 predict(word2vec_s, newdata = wv, type = "nearest", top_n = 3)
 ```
-
 ¿Qué es a "mujer" lo que "Homero" es a "muchacho"? O lo mismo pero con "Bart"
-
 ```{r}
 wv <- predict(word2vec_s, newdata = c("woman", "homer", "guy"), type = "embedding")
 wv <- wv["homer", ] - wv["guy", ] + wv["woman", ]

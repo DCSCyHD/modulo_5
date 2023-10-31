@@ -1,5 +1,5 @@
 ---
-title: "Clase 1. Concepto de datos ordenados para la minería de texto"
+title: "Clase 1. Tidydata para Procesamiento de Lenguaje Natural"
 subtitle: "Práctica independiente"
 output: 
   html_document:
@@ -10,7 +10,7 @@ author: "Germán Rosati"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
-Vamos a trabajar con unos 340 textos de Lenin y Rosa Luxemburgo (también provenientes del dataset que Diego Kosloski escrapeó del Marxist Internet Archive).
+Vamos a trabajar con unos 340 textos de Lenin y Rosa Luxemburgo (también provenientes del dataset que Diego Koslowski escrapeó del Marxist Internet Archive).
 
 ```{r, results='hide'}
 library(tidyverse)

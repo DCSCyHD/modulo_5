@@ -18,14 +18,13 @@ library(tidytext)
 ```
 
 ## Introducción
-Un problema muy importante en NLP es tratar de entender de qué habla un texto sin leerlo. Esto supone, de alguna forma, intentar cuantificar los contenidos de un texto. Vamos a ir viendo unas cuántas técnicas relativamente sofisticadas vinculadas al modelado de tópicos más adelante, pero por ahora vamos a seguir contando palabras. ¿Podemos a partir del conteo de palabras llegar a tener una idea del contenido de un texto? Como vimos, una primera métrica de la importancia de una palabra es la llamada _term frequency_ ($tf$): la frecuencia con la que aparece una palabra en un documento.
+Un problema muy importante en NLP es tratar de generar alguna forma de input sobre el contenido de un texto sin leerlo en su totalidad ("lectura distante"). Esto suponeintentar cuantificar los contenidos de un texto. Vamos a ir viendo unas cuantas técnicas relativamente sofisticadas vinculadas al modelado de tópicos y a la constitución de embeddings de palabras más adelante, pero por ahora vamos a seguir contando palabras pero de forma más inteligente. ¿Podemos a partir del conteo de palabras llegar a tener una idea del contenido de un texto? Como vimos, una primera métrica de la importancia de una palabra es la llamada _term frequency_ ($tf$): la frecuencia con la que aparece una palabra en un documento.
 
-Sin embargo, hay palabras en un documento que aparecen muchas veces pero que no son importantes; en castellano, probablemente palabras como "el", "es", "de", etc. Podríamos adoptar el enfoque de agregar palabras como estas a una lista de palabras vacías (stopwords) y eliminarlas antes del análisis, pero es posible que algunas de estas palabras sean más importantes en algunos documentos que en otros. Una lista de stopwords puede ser un primer paso pero no es el único ni, necesariamente el más importante, para ajustar la frecuencia de los términos para palabras de uso común.
+Sin embargo, hay palabras en un documento que aparecen muchas veces pero que no son importantes; en castellano, probablemente palabras como "el", "es", "de", etc. Podríamos adoptar el enfoque de agregar palabras como estas a una lista de palabras vacías (stopwords) y eliminarlas antes del análisis, pero es posible que algunas de estas palabras sean más importantes en algunos documentos que en otros. Una lista de stopwords puede ser un primer paso pero no es el único ni, necesariamente, el más importante para ajustar la frecuencia de los términos para palabras de uso común.
 
 Vamos a trabajar con dos métricas. Podemos analizar la "informatividad" de un término observando la _inverse document frequency_ ($idf$). Esta métrica disminuye el peso de las palabras de uso común y aumenta el peso de las palabras que no se usan mucho en una colección de documentos. 
 
-Finalmente, podemos calcular la $tf-idf$ que combina ambas métricas multiplicándolas: es la frecuencia de cada término, ajustada por la importancia que tiene en el corpus.
-
+Finalmente, podemos calcular la $tf-idf$ que combina ambas métricas multiplicándolas: es la frecuencia de cada término, ajustada o ponderada por la importancia que tiene en el corpus.
 
 ## Term frequency en los diarios de Renzi
 Vamos a seguir con los 3 tomos de los diarios de Renzi. Examinemos primero $tf$ y luego $tf-idf$. Lo interesante de todo esto es que si nos mantenemos en nuestro formato "tidy" vamos a poder comenzar simplemente usando verbos dplyr como `group_by()` y `join()`. ¿Cuáles son las palabras más utilizadas en los diarios? (También vamos a calcular el total de palabras en cada novela aquí, para uso posterior).
@@ -75,13 +74,13 @@ book_words %>%
         mutate(tf = n/total) %>%
         ggplot(aes(tf, fill = tomo)) +
                 geom_histogram(show.legend = FALSE) +
-                xlim(NA, 0.00015) +
-                facet_wrap(~tomo,  scales = "free_y") +
+                xlim(NA, 0.0002) +
+                facet_wrap(~tomo) +
                 theme_minimal()
 
 ```
 
-Hay colas muy largas a la derecha para esos tomos (son muy raras) que no hemos mostrado en estos tramas. En general, los gráficos son similares en las novelas. Pocas palabras que ocurren mucho y muchas palabras que ocurrren poco.
+Hay colas muy largas a la derecha para esos tomos (son muy raras) que no hemos mostrado en estos tramas. En general, los gráficos son similares en los tres tomos. Pocas palabras que ocurren mucho y muchas palabras que ocurrren poco.
 
 ### Ley de Zipf
 Las distribuciones como las anteriores son bastante típicas en la mayoría de los lenguajes. De hecho, esos tipos de distribuciones de cola larga son tan comunes en cualquier corpus (como un libro, una gran cantidad de texto de un sitio web o palabras habladas) que la relación entre la frecuencia con la que se usa una palabra y su rango ha sido objeto de estudio; una versión clásica de esta relación se llama [ley de Zipf](https://en.wikipedia.org/wiki/Zipf%27s_law), en honor a George Zipf, un lingüista estadounidense del siglo XX. Si les interesa la historia de la ciencia, Benoît Mandelbrot (el matemático que inventó los fractales) se dió cuenta de que esta distribución es algo que se llama "ley de potencia" y utilizó el trabajo de Zipf para varias de sus aproxiaciones a los fractales.
@@ -93,7 +92,8 @@ donde $P_{n}$ representa la frecuencia de la n-ésima palabra más frecuente y e
 
 ```{r}
 freq_by_rank <- book_words %>% 
-  group_by(tomo) %>% 
+  group_by(tomo) %>%
+  arrange(tomo, desc(n)) %>%
   mutate(rank = row_number(), 
          `tf` = n/total) %>%
         ungroup()
@@ -130,10 +130,6 @@ head(book_tf_idf)
 
 Es importante notar que `idf` y, por lo tanto, `tf-idf` son cero para estas palabras extremadamente comunes (que en el ejercicio anterior, habíamos eliminado como stopwords). Todas estas son palabras que aparecen en los tres tomos de los diarios, por lo que el término `idf` (que entonces será el logaritmo natural de 1) es cero. 
 
-```{r}
-log(1)
-```
-
 La frecuencia inversa del documento (y por tanto `tf-idf`) es muy baja (cercana a cero) para las palabras que aparecen en muchos de los documentos de una colección; así es como este enfoque reduce el peso de las palabras comunes. La `idf` será un número mayor para las palabras que aparecen en una menor cantidad de documentos de la colección.
 
 Ordenemos la tabla de forma diferente para identificar las palabras más importantes:
@@ -147,6 +143,7 @@ book_tf_idf %>%
 Aquí vemos que varios nombres y apodos (carola, schucler, toto, etc.) son importantes en los tres tomos, aunque no se repiten a lo largo de los tomos.
 
 Visualicemos estos términos. Vamos a quedarnos (para cada tomo) con los principales 20 términos según tf-idf. 
+
 ```{r}
 library(forcats)
 
