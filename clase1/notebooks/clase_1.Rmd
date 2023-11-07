@@ -61,6 +61,7 @@ library(tidytext)
 
 marx_df %>%
   unnest_tokens(output=word, input=text)
+
 ```
 
 Usamos aquí dos argumentos básicos:
@@ -78,6 +79,7 @@ Es importante recordar que `marx_df` arriba tiene una columna llamada `text` que
 ```{r}
 marx_df %>%
   unnest_tokens(word, text, token='sentences')
+
 ```
 
 Ahora, tenemos una tibble en la que cada línea es una oración ("sentence") y no una palabra.
@@ -107,7 +109,7 @@ Vamos a transformarlo en un formato `tidy`:
 
 ```{r}
 marx_engels_tidy <- marx_engels %>%
-        unnest_tokens(word, texto)
+        unnest_tokens(output=word, input=texto)
 ```
 
 
@@ -124,6 +126,8 @@ En general, la forma estándar y más inmediata de lidiar con ellas es mediante 
 stop_words <- read_csv('https://raw.githubusercontent.com/Alir3z4/stop-words/master/spanish.txt', col_names=FALSE) %>%
         rename(word = X1) %>%
         mutate(word = stringi::stri_trans_general(word, "Latin-ASCII"))
+
+stop_words
 ```
 
 Ahora sí, podemos removerlas usando la funcion `anti_join`:
@@ -131,6 +135,8 @@ Ahora sí, podemos removerlas usando la funcion `anti_join`:
 ```{r}
 marx_engels_tidy <- marx_engels_tidy %>%
   anti_join(stop_words)
+
+marx_engels_tidy
 ```
 
 Fíjense cómo pasamos de aprimadamente 1.000.000 de palabras a 529.000 luego de eliminar las stop_words.
