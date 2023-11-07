@@ -82,9 +82,11 @@ sentiment_words_kaggle <- read_csv('../data/sentiment_lexicon_kaggle.csv')
 sentiment_words_kaggle %>%
   group_by(sentiment) %>%
   summarise(n=n())
+
+sentiment_words_kaggle
 ```
 
-El segundo fue elaborado por Agustín Gravano del Laboratorio de Inteligencia Artificial Aplicada de la UBA. Se trata de un diccioario llamado "SDAL" (por el acrónimo de "Spanish Dictionary of Affects in Language") de unos 2880 palabras que fueron clasificadas manualmente (a través de una especie de "encuesta web" en la que participaron unas 600 personas) en tres dimensiones: 
+El segundo fue elaborado por Agustín Gravano del Laboratorio de Inteligencia Artificial Aplicada de la UBA. Se trata de un diccionario llamado "SDAL" (por el acrónimo de "Spanish Dictionary of Affects in Language") de unos 2880 palabras que fueron clasificadas manualmente (a través de una especie de "encuesta web" en la que participaron unas 600 personas) en tres dimensiones: 
 
 - agrado (agradable / neutra / desagradable)
 - activación (activa / neutra / pasiva)

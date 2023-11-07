@@ -29,9 +29,7 @@ rosa_lenin <- read_csv('../data/lenin_luxemburgo.csv')
 ```
 
 ## 3. Eliminamos stopwords
-
 Primero cargamos el diccionario de stopwords
-
 ```{r}
 stop_words <- read_csv('../data/stop_words_complete.csv', col_names=FALSE) %>%
         rename(word = X1) %>%
