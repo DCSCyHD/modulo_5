@@ -1570,13 +1570,25 @@ clase única, vamos a usar CSS.</p>
           html_elements(&quot;a&quot;) %&gt;%
           html_attr(&quot;href&quot;)
 
-head(libros)</code></pre>
-<pre><code>## [1] &quot;/libro/narrativas-hispanicas/cuentos-completos/9788433999160/NH_664&quot;               
-## [2] &quot;/libro/narrativas-hispanicas/los-casos-del-comisario-croce/9788433998606/NH_611&quot;   
-## [3] &quot;/libro/narrativas-hispanicas/los-diarios-de-emilio-renzi-iii-/9788433998422/NH_592&quot;
-## [4] &quot;/libro/narrativas-hispanicas/los-diarios-de-emilio-renzi-ii-/9788433998187/NH_570&quot; 
-## [5] &quot;/libro/narrativas-hispanicas/los-diarios-de-emilio-renzi/9788433997982/NH_551&quot;     
-## [6] &quot;/libro/narrativas-hispanicas/antologia-personal/9788433997890/NH_542&quot;</code></pre>
+
+libros</code></pre>
+<pre><code>##  [1] &quot;/libro/narrativas-hispanicas/cuentos-completos/9788433999160/NH_664&quot;               
+##  [2] &quot;/libro/narrativas-hispanicas/los-casos-del-comisario-croce/9788433998606/NH_611&quot;   
+##  [3] &quot;/libro/narrativas-hispanicas/los-diarios-de-emilio-renzi-iii-/9788433998422/NH_592&quot;
+##  [4] &quot;/libro/narrativas-hispanicas/los-diarios-de-emilio-renzi-ii-/9788433998187/NH_570&quot; 
+##  [5] &quot;/libro/narrativas-hispanicas/los-diarios-de-emilio-renzi/9788433997982/NH_551&quot;     
+##  [6] &quot;/libro/narrativas-hispanicas/antologia-personal/9788433997890/NH_542&quot;              
+##  [7] &quot;/libro/narrativas-hispanicas/el-camino-de-ida/9788433997647/NH_517&quot;                
+##  [8] &quot;/libro/narrativas-hispanicas/blanco-nocturno/9788433972156/NH_476&quot;                 
+##  [9] &quot;/libro/narrativas-hispanicas/prision-perpetua/9788433971609/NH_422&quot;                
+## [10] &quot;/libro/narrativas-hispanicas/la-invasion/9788433971425/NH_404&quot;                     
+## [11] &quot;/libro/argumentos/critica-y-ficcion/9788433961587/A_267&quot;                           
+## [12] &quot;/libro/narrativas-hispanicas/el-ultimo-lector/9788433968777/NH_376&quot;                
+## [13] &quot;/libro/narrativas-hispanicas/la-ciudad-ausente/9788433968418/NH_340&quot;               
+## [14] &quot;/libro/narrativas-hispanicas/nombre-falso/9788433924933/NH_322&quot;                    
+## [15] &quot;/libro/narrativas-hispanicas/respiracion-artificial/9788433924711/NH_300&quot;          
+## [16] &quot;/libro/narrativas-hispanicas/plata-quemada/9788433924629/NH_291&quot;                   
+## [17] &quot;/libro/narrativas-hispanicas/formas-breves/9788433924636/NH_292&quot;</code></pre>
 <p>¿Qué se está haciendo acá?</p>
 <ol style="list-style-type: decimal">
 <li>le pedimos al paquete que traiga todos los elementos cuyo atributo
@@ -1632,7 +1644,7 @@ libro %&gt;% html_elements(&quot;h1&quot;)</code></pre>
 ## [2] &lt;h1&gt;Suscríbete&lt;/h1&gt;\n</code></pre>
 <p>La página nos trae también el botón para suscribirse. Por eso, vamos
 a especificar la búsqueda pidiéndole a RVest que nos traiga los
-elementos <code>&lt;h2&gt;</code> con
+elementos <code>&lt;h1&gt;</code> con
 <code>&lt;class titulo-libro&gt;</code>.</p>
 <p>Con <code>html_text2()</code> extraemos el texto del elemento.</p>
 <pre class="r"><code>libro %&gt;% html_elements(&quot;h1.titulo-libro&quot;) %&gt;% 
@@ -1666,7 +1678,7 @@ tabla_info</code></pre>
 ## 6 CÓDIGO          NH 664               
 ## 7 PUBLICACIÓN     17/02/2021</code></pre>
 <p>Pivoteamos para darle formato.</p>
-<pre class="r"><code>tabla_info%&gt;%
+<pre class="r"><code>tabla_info %&gt;%
         pivot_wider(names_from = &quot;X1&quot;, values_from = &quot;X2&quot;) %&gt;%
         rename(&quot;isbn&quot; = &quot;ISBN&quot;,
                &quot;ean&quot; = &quot;EAN&quot;,
@@ -1693,12 +1705,17 @@ en caso de toparnos con un error sin que se rompa la función.</p>
 <pre class="r"><code>scrapeo_anagrama &lt;- function(listado_links){
 
         #Creo listas y dataframes auxiliares donde voy a ir guardando la data. 
+        links &lt;- c()
         titulos &lt;- c()
         resumenes &lt;- c()
-        info_extra &lt;- data.frame(isbn = numeric(), ean  = numeric(), precio = character(), 
-                                 paginas  = numeric(), fecha_publicacion = character(), coleccion = character())
+        info_extra &lt;- data.frame(
+                isbn = numeric(), 
+                ean  = numeric(), 
+                precio = character(),
+                paginas  = numeric(), fecha_publicacion = character(), coleccion = character())
         
         for (l in listado_links){
+                links &lt;- append(links, l)
                 
                 libro &lt;- read_html(l)
                 
@@ -1748,7 +1765,7 @@ en caso de toparnos con un error sin que se rompa la función.</p>
                 
         }
         
-        df &lt;- data.frame(cbind(titulos, resumenes, info_extra)) #Junto en un dataframe la info conseguida
+        df &lt;- data.frame(cbind(links, titulos, resumenes, info_extra)) #Junto en un dataframe la info conseguida
         
         return(df)
 }
@@ -1772,7 +1789,25 @@ libros_piglia &lt;- scrapeo_anagrama(libros_links)</code></pre>
 ## [1] &quot;Voy por libro https://www.anagrama-ed.es/libro/narrativas-hispanicas/plata-quemada/9788433924629/NH_291&quot;
 ## [1] &quot;Voy por libro https://www.anagrama-ed.es/libro/narrativas-hispanicas/formas-breves/9788433924636/NH_292&quot;</code></pre>
 <pre class="r"><code>libros_piglia</code></pre>
-<pre><code>##                              titulos
+<pre><code>##                                                                                                           links
+## 1                 https://www.anagrama-ed.es/libro/narrativas-hispanicas/cuentos-completos/9788433999160/NH_664
+## 2     https://www.anagrama-ed.es/libro/narrativas-hispanicas/los-casos-del-comisario-croce/9788433998606/NH_611
+## 3  https://www.anagrama-ed.es/libro/narrativas-hispanicas/los-diarios-de-emilio-renzi-iii-/9788433998422/NH_592
+## 4   https://www.anagrama-ed.es/libro/narrativas-hispanicas/los-diarios-de-emilio-renzi-ii-/9788433998187/NH_570
+## 5       https://www.anagrama-ed.es/libro/narrativas-hispanicas/los-diarios-de-emilio-renzi/9788433997982/NH_551
+## 6                https://www.anagrama-ed.es/libro/narrativas-hispanicas/antologia-personal/9788433997890/NH_542
+## 7                  https://www.anagrama-ed.es/libro/narrativas-hispanicas/el-camino-de-ida/9788433997647/NH_517
+## 8                   https://www.anagrama-ed.es/libro/narrativas-hispanicas/blanco-nocturno/9788433972156/NH_476
+## 9                  https://www.anagrama-ed.es/libro/narrativas-hispanicas/prision-perpetua/9788433971609/NH_422
+## 10                      https://www.anagrama-ed.es/libro/narrativas-hispanicas/la-invasion/9788433971425/NH_404
+## 11                            https://www.anagrama-ed.es/libro/argumentos/critica-y-ficcion/9788433961587/A_267
+## 12                 https://www.anagrama-ed.es/libro/narrativas-hispanicas/el-ultimo-lector/9788433968777/NH_376
+## 13                https://www.anagrama-ed.es/libro/narrativas-hispanicas/la-ciudad-ausente/9788433968418/NH_340
+## 14                     https://www.anagrama-ed.es/libro/narrativas-hispanicas/nombre-falso/9788433924933/NH_322
+## 15           https://www.anagrama-ed.es/libro/narrativas-hispanicas/respiracion-artificial/9788433924711/NH_300
+## 16                    https://www.anagrama-ed.es/libro/narrativas-hispanicas/plata-quemada/9788433924629/NH_291
+## 17                    https://www.anagrama-ed.es/libro/narrativas-hispanicas/formas-breves/9788433924636/NH_292
+##                              titulos
 ## 1                  Cuentos completos
 ## 2      Los casos del comisario Croce
 ## 3  Los diarios de Emilio Renzi (III)
@@ -1848,7 +1883,8 @@ libros_piglia &lt;- scrapeo_anagrama(libros_links)</code></pre>
 <div id="actividad" class="section level3">
 <h3>Actividad</h3>
 <p>Traer de la página de Anagrama el listado de todos los autores que
-tienen disponibles.</p>
+tienen disponibles. El resultado final debe ser una tibble en la cual la
+primer columna es el link al autor y la segunda, el nombre.</p>
 <pre class="r"><code>###</code></pre>
 </div>
 </div>

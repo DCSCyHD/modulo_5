@@ -60,7 +60,8 @@ libros <- piglia %>%
           html_elements("a") %>%
           html_attr("href")
 
-head(libros)
+
+libros
 ```
 
 ¿Qué se está haciendo acá? 
@@ -95,7 +96,7 @@ libro <- read_html(libros_links[1])
 libro %>% html_elements("h1")
 ```
 
-La página nos trae también el botón para suscribirse. Por eso, vamos a especificar la búsqueda pidiéndole a RVest que nos traiga los elementos `<h2>` con `<class titulo-libro>`. 
+La página nos trae también el botón para suscribirse. Por eso, vamos a especificar la búsqueda pidiéndole a RVest que nos traiga los elementos `<h1>` con `<class titulo-libro>`. 
 
 Con `html_text2()` extraemos el texto del elemento. 
 
@@ -126,7 +127,7 @@ tabla_info
 Pivoteamos para darle formato. 
 
 ```{r}
-tabla_info%>%
+tabla_info %>%
         pivot_wider(names_from = "X1", values_from = "X2") %>%
         rename("isbn" = "ISBN",
                "ean" = "EAN",
@@ -204,12 +205,17 @@ Nos encontramos con algo que suele pasar bastante en el scrapeo: hay una página
 scrapeo_anagrama <- function(listado_links){
 
         #Creo listas y dataframes auxiliares donde voy a ir guardando la data. 
+        links <- c()
         titulos <- c()
         resumenes <- c()
-        info_extra <- data.frame(isbn = numeric(), ean  = numeric(), precio = character(), 
-                                 paginas  = numeric(), fecha_publicacion = character(), coleccion = character())
+        info_extra <- data.frame(
+                isbn = numeric(), 
+                ean  = numeric(), 
+                precio = character(),
+                paginas  = numeric(), fecha_publicacion = character(), coleccion = character())
         
         for (l in listado_links){
+                links <- append(links, l)
                 
                 libro <- read_html(l)
                 
@@ -259,7 +265,7 @@ scrapeo_anagrama <- function(listado_links){
                 
         }
         
-        df <- data.frame(cbind(titulos, resumenes, info_extra)) #Junto en un dataframe la info conseguida
+        df <- data.frame(cbind(links, titulos, resumenes, info_extra)) #Junto en un dataframe la info conseguida
         
         return(df)
 }
@@ -272,7 +278,7 @@ libros_piglia
 ```
 
 ### Actividad
-Traer de la página de Anagrama el listado de todos los autores que tienen disponibles. 
+Traer de la página de Anagrama el listado de todos los autores que tienen disponibles. El resultado final debe ser una tibble en la cual la primer columna es el link al autor y la segunda, el nombre.
 ```{r}
 ###
 ```

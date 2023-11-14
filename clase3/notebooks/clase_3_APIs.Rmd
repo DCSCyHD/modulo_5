@@ -19,11 +19,10 @@ Una API es un servidor que nos provee acceso a la data de alguna aplicación o s
 
 ![Diagrama API](../imgs/api_request.jpg) 
 
-- Devuelven la información en formato JSON. Consiste en objetos ordenados por pares de `nombre:valor` separados por comas y puestos entre llaves `{}`. Para leer este formato vamos a necesitar el paquete `rjson`.
+- Devuelven la información en formato JSON. Consiste en objetos ordenados por pares de `nombre:valor` separados por comas y puestos entre llaves `{}`. Para leer este formato vamos a necesitar el paquete `rjson`. En el ejemplo que vamos a ver no va a ser necesario porque la API tiene un parámetro de consulta que permite obtener la información en formato csv.
 
 ```{r}
 library(httr)
-library(rjson)
 library(tidyverse)
 ```
 
@@ -73,6 +72,7 @@ api %>%
         labs(x='Año',
              y='% población c/ menos de 2.5 U$S diarios') +
         theme_minimal() +
+        theme( axis.text.x = element_text(size = 8)) +
         facet_wrap(~reporting_level)
 ```
 
