@@ -4,7 +4,6 @@ output:
   html_document:
     toc: TRUE
     toc_float: TRUE
-author: "Germán Rosati"
 
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---

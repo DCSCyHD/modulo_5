@@ -1,0 +1,357 @@
+---
+title: "Modelado de tópicos Vol. 2. Structural Topic Modeling"
+subtitle: "Temas en revistas con targets diferentes"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+author: "Germán Rosati"
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+```{r echo=TRUE, results='hide'}
+library(tidyverse)
+library(stm)
+library(topicmodels)
+library(tidytext)
+library(tictoc)
+```
+
+
+## Introducción
+En general, una tarea que es muy frecuente en el análisis de textos es intentar dividir nuestro corpus en cierta cantidad de grupos para poder entenderlos por separado. Algo así como hacer una primera lectura de nuestro corpus sin tener que leer los documentos uno por uno. Las técnicas de modelado de tópicos son una gran aliada para este tipo de taras. 
+
+En este notebook vamos a introducir una técnica para efecutar esta tarea que se diferencia de Latent Dirichlet Allocation (LDA) en varios aspectos.
+
+### Structural Topic Modeling (STM). Analizando revistas para mujeres y para hombres
+STM provee un marco general para el modelado de tópicos pero su característica fundamental es que permite incorporar información de covariables a nivel de documento.  
+
+Este punto es sumamente importante porque permite flexibilizar uno de los supuestos más fuertes de LDA: que los tópicos son constantes para todo el corpus. STM permite incorporar la influencia de ciertas covariables sobre los tópicos en dos aspectos:
+
+- la prevalencia de los tópicos (el peso de cada tópico en cada documento)
+- el contenido de los tópicos (la probabilidad de cada palabra de aparecer en el corpus)
+
+Estas covariables pueden mejorar la inferencia y la interpretabilidad de los temas detectados. 
+
+En estos links pueden encontrar algunos papers que detallan algunos de los supuestos y métodos de estimación de STM
+
+- [The Structural Topic Model and Applied Social Science](https://scholar.princeton.edu/files/bstewart/files/stmnips2013.pdf)
+- [A Model of Text for Experimentation in the Social Sciences](https://scholar.princeton.edu/sites/default/files/bstewart/files/a_model_of_text_for_experimentation_in_the_social_sciences.pdf)
+
+Y aquí [el sitio del paquete implmenetado en R](https://www.structuraltopicmodel.com/).
+
+Si bien no nos vamos a meter en detalle en la matemática del modelo diremos que en STM se reemplazan las distribuciones de probabilidad que se usan en LDA por modelos lineales generalizados para poder correlacionar las covariables con la distribución de tópicos por documentos y de palabras por tópico.
+
+Veamos un ejemplo con el mismo corpus que utilizamos la semana pasada:
+
+```{r}
+revistas <- read_csv('../data/revistas_limpias_final.csv')
+
+head(revistas)
+```
+
+
+Vamos a normalizar, primero, los campos de texto. Con esta instrucción cambiamos el encoding de texto de los campos `text` y `title` y lo pasamos a ASCII. Esta es una forma bastante rápida de eliminar tildes, ñ y otros acentos.
+
+```{r}
+revistas <- revistas %>%
+                mutate(text = stringi::stri_trans_general(text, "Latin-ASCII"),
+                       titulo = stringi::stri_trans_general(titulo, "Latin-ASCII"))
+```
+
+Eliminamos los dígitos que encontremos en el texto...
+
+```{r}
+revistas <- revistas %>%
+          mutate(text = str_replace_all(text, '[[:digit:]]+', ''))
+```
+
+
+Ahora podemos tokenizarlo:
+
+```{r}
+revistas_tidy <- revistas %>%
+                unnest_tokens(word, text)
+```
+
+```{r}
+stop_words <- read_delim('../data/stopwords.txt', 
+                         delim = '\t',
+                         col_names = c('word')) %>%
+                        mutate(word=stringi::stri_trans_general(word, "Latin-ASCII"))
+
+
+## Aquí agregamos algunas palabras al listado de stopwords...
+stop_words <- stop_words %>%
+                bind_rows( tibble(word=c('ano', 'anos', 'ohlala', 'foto', 'the'))) 
+```
+
+```{r}
+revistas_tidy <- revistas_tidy %>%
+                anti_join(stop_words)
+
+metadata <- revistas_tidy %>%
+                  select(id, categoria) %>%
+                  distinct() %>%
+                  left_join(revistas %>% select(id, text))
+```
+
+Primero, generamos nuestra tabla tidy de conteos
+
+```{r}
+word_counts <- revistas_tidy %>%
+        group_by(id, word) %>%
+        summarise(n=n()) %>%
+        ungroup()
+```
+
+### Modelado de tópicos: STM
+Para hacer el modelado de temas como se implementa aquí, necesitamos generar una `DocumentFrequencyMatrix`, un tipo especial de matriz del paquete `quanteda` (por supuesto, esto es solo una implementación específica del concepto general de una TFM). 
+
+Tenemos hasta aquí nuestra estructura de datos habitual: un token por fila y una columna de conteo. Vamos a transformarla ahora a una DFM del paquete :
+
+```{r}
+revistas_dfm <- word_counts %>%
+                cast_dfm(id, word, n)
+
+revistas_dfm
+```
+
+
+```{r}
+# 
+# stm_15 <- stm(documents = revistas_dfm,
+#      K = 15,
+#      prevalence = ~categoria,
+#      max.em.its = 75, 
+#      data = metadata,
+#      init.type = "Spectral")
+# write_rds(stm_15, '../models/stm_15_prev_cont.rds')
+#
+
+stm_15 <- read_rds('../models/stm_15_prev.rds')
+
+```
+
+Generamos las dos matrices fundamentales: la de palabras x tópico y la documentos x tópico
+
+```{r}
+betas_stm <- tidy(stm_15, matrix='beta')
+doc_2_topics_stm <- tidy(stm_15, matrix='theta')
+```
+
+Primero, veamos las matrices de palabras por topicos.
+
+```{r}
+ betas_stm %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 15) %>% 
+  ungroup() %>%
+  arrange(topic, -beta) %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales='free_y') +
+  scale_y_reordered() +
+  theme_minimal()
+
+```
+
+En el caso de STM podemos ver los siguientes tópicos:
+
+1. Entretenimientos/espectáculos
+2. Misc.
+3. Moda, look
+4. Moda, diseño
+5. Pareja
+6. Deportes
+7. Espectáculos/series
+8. Música y discos
+9. Autos (tecnología? economía?)
+10. Música y cocina (salidas, quizás...)
+11. Vinos
+12. Cuidado del pelo
+13. Cocina y restaurantes
+14. Alimentación, cuidado del cuerpo
+15. Niños y educación
+
+
+### Algunas herramientas de validación de STM
+Ahora bien, una vez que hemos estimado nuestro modelo de tópicos STM es sumamente importante proceder a la validación del mismo. Vamos a ver que el paquete `stm` tiene implementadas algunas funciones que hacen bastante fácil esta tarea de validación. 
+
+Vamos a ver dos posibles formas de avanzar en una validación del modelo. La primera, es analizar las palabras que forman parte de cada tópico. Es decir, lo que hemos venido haciendo. Pero con una diferencia: hasta aquí habíamos trabajado con las palabras que tienen mayor $\beta$ es decir, mayor probabilidad de pertenecer a cada tópico. STM nos permite obtener otros listados de palabras. Llamemos a la siguiente función:
+
+```{r}
+labelTopics(stm_15)
+```
+
+Esta salida nos muestra cuatro listados de palabras. Vamos a centrarnos en las dos primeras.
+
+- Highest prob: son las palabras dentro de cada tema con la mayor probabilidad (deducidas directamente del parámetro de distribución tema-palabra $\beta$). Son las que usamos en los plots de más arriba.
+
+- FREX: es una métrica que intenta combinar la frecuencia ($\beta$) con la exclusividad. Es decir, las palabras con alta FREX son palabras que distinguen temas: es decir, son frecuentes y exclusivas. Esto se calcula tomando la media armónica del rango por probabilidad dentro del tópico (frecuencia, es decir, el parámetro $\beta$) y la exclusividad es una medida que trata de cuantificar el uso relativo de un término en un tópico en relación al uso que se le da en otros tópicos.
+
+Fijémonos el tópico 9:
+
+``` 
+Topic 9 Top Words:
+ 	 Highest Prob: sistema, mundo, mercado, argentina, tecnologia, empresa, modelo 
+ 	 FREX: nm, torque, usb, llantas, suv, hardware, abs 
+ 	 Lift: aa, aaa, aac, aade, aapresid, aaro, aasbo 
+ 	 Score: pulgadas, torque, nm, llantas, suv, cv, gb 
+```
+
+Si vemos las palabras de alto $\beta$ pareciera que habla de economía o algo así. Pero si vemos las de FREX aparecen temas vinculados a autos. Un paso siguiente para validar este tópico sería tratar de leer documentos con alta frecuencia de este tópico.
+
+Para examinar documentos que están altamente asociados con temas, la función `findThoughts()` puede ser usada. Esta función imprimirá los documentos altamente asociados con cada tema. Leer estos documentos es útil para comprender el contenido de un tema e interpretar su definicion. 
+
+```{r}
+findThoughts(stm_15, 
+             texts=metadata %>% mutate(text = str_sub(text, 1, 200)) %>% select(text) %>% pull(), 
+             n=10, 
+             topics=9)
+```
+
+Al ver los primeros 10 documentos parece claro que se trata de tópico que habla de autos, sobre todo.
+ 
+
+#### Actividad
+Repetir el ejercicio de validación con el tópico 5. ¿Qué pueden decir al respecto?
+```{r}
+labelTopics(stm_15, topic=5)
+```
+
+
+```{r}
+findThoughts(stm_15, 
+             texts=metadata %>% mutate(text = str_sub(text, 1, 200)) %>% select(text) %>% pull(), 
+             n=10, 
+             topics=5)
+```
+
+
+### Comparando con un modelo LDA
+Vamos a entrenar un LDA de 15 tópicos. La idea es tenerlo como "benchmark" para comparar los resultados con los que van a salir de STM.
+
+Generamos la DTM:
+```{r}
+revistas_dtm <- word_counts %>% 
+                  cast_dtm(id, word, n)
+
+revistas_dtm
+```
+
+Entrenamos el LDA (en realidad, lo tenemos pre-entrenado)
+
+```{r}
+#lda_15 <- LDA(revistas_dtm, k=15, control = list(seed = 9514))
+lda_15 <- read_rds('../models/lda_15.rds')
+```
+
+Generamos las matrices de betas y gammas:
+
+```{r}
+betas_lda <- tidy(lda_15, matrix='beta')
+doc_2_topics_lda <- tidy(lda_15, matrix='gamma')
+```
+
+Y veamos las palabras más relevantes en cada tópico de lDA
+
+```{r}
+ betas_lda %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 15) %>% 
+  ungroup() %>%
+  arrange(topic, -beta) %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales='free_y') +
+  scale_y_reordered() +
+  theme_minimal() +
+  theme(text = element_text(size = 5))
+```
+Podemos etiquetar de alguna forma estos tópicos
+
+1. Misc.
+2. Entretenimiento general (libros, películas, series, TV)
+3. Alimentación y salud (con otras palabras raras)
+4. Pareja y cuerpo
+5. Músca
+6. Cuidado del cuerpo
+7. Cocina
+8. Misc.
+9. Moda (ropa, zapatos, etc.)
+10. Deportes
+11. Entretenimiento (TV, series)
+12. Tecnología/autos (?)
+13. Economía/tecnología
+14. Vinos
+15. Cocina y gastronomía
+
+
+| Tópico nro. 	| STM                                  	| LDA                                                     	|
+|-------------	|--------------------------------------	|---------------------------------------------------------	|
+| 1           	| Entretenimientos/espectáculos        	| Misc.                                                   	|
+| 2           	| Misc.                                	| Entretenimiento general (libros, películas, series, TV) 	|
+| 3           	| Moda, look                           	| Alimentación y salud (con otras palabras raras)         	|
+| 4           	| Moda, diseño                         	| Pareja y cuerpo                                         	|
+| 5           	| Horóscopo                           	| Músca                                                   	|
+| 6           	| Deportes                             	| Cuidado del cuerpo                                      	|
+| 7           	| Espectáculos/series                  	| Cocina                                                  	|
+| 8           	| Música y discos                      	| Misc.                                                   	|
+| 9           	| Autos (tecnología? economía?)        	| Moda (ropa, zapatos, etc.)                              	|
+| 10          	| Música y cocina (salidas, quizás...) 	| Deportes                                                	|
+| 11          	| Vinos                                	| Entretenimiento (TV, series)                            	|
+| 12          	| Cuidado del pelo                     	| Tecnología/autos (?)                                    	|
+| 13          	| Cocina y restaurantes                	| Economía/tecnología                                     	|
+| 14          	| Alimentación, cuidado del cuerpo     	| Vinos                                                   	|
+| 15          	| Niños y educación                    	| Cocina y gastronomía                                    	|
+
+
+Vemos cómo hay algunos tópicos que aparecen en ambos modelos: vinos, entretenimiento, cocina y gastronomía. No obstante, STM pareciera ser un poco más específico. Hay menos tópicos no interpretables y a su vez, pareciera haber menos mezclas en los tópicos.
+
+Por ejemplo, en LDA vemos que el tópico 4 parece hablar de dos cosas diferentes: pareja y cuidado del cuerpo. En cambio, estos dos temas aparecen separados como dos tópicos diferenciados en STM.
+
+A su vez, en LDA vemos que hay un tópico que habla de "entretenimiento en general". En cambio, hay 3 tópicos al respecto en STM y con temas bien delimitados.
+
+Por último, veamos cómo se distribuye la prevalencia de cada tópico según nuestra variable de corte:
+
+```{r}
+doc_2_topics_stm <- doc_2_topics_stm %>%
+  rename(id=document) %>%
+  left_join(metadata)
+
+doc_2_topics_stm %>%
+  group_by(categoria, topic) %>%
+  summarise(mean = mean(gamma)) %>%
+  drop_na() %>%
+  ggplot(aes(x=categoria, y=mean, fill=categoria)) + 
+    geom_col(position='dodge') +
+    facet_wrap(~topic) +
+    theme_minimal()
+```
+
+```{r}
+doc_2_topics_lda <- doc_2_topics_lda %>%
+  rename(id=document) %>%
+  mutate(id=as.integer(id)) %>%
+  left_join(metadata)
+
+doc_2_topics_lda %>%
+  group_by(categoria, topic) %>%
+  summarise(mean = mean(gamma)) %>%
+  drop_na() %>%
+  ggplot(aes(x=categoria, y=mean, fill=categoria)) + 
+    geom_col(position='dodge') +
+    facet_wrap(~topic) +
+    theme_minimal()
+```
+
+Pareciera que se observan diferencias más marcadas en el modelo STM. Lo cual era esperable, en tanto era el objetivo de introducir covariables.
+
+- los tópicos 3, 4 y 5 son predominantemente femeninos y con diferencias fuertes: entre unos 8 y 15 puntos porcentuales.
+- los tópicos 1, 6, 9 y 10 son, en cambio, predominantemente masculinos.
+
+Estas diferencias aparecen aunque más atenuadas en el caso de LDA.

@@ -57,24 +57,20 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 
 ## Clase 4. ¿Cómo detectar temas en corpus I? Introducción al modelado de tópicos. Latent Dirichlet Allocation (LDA) y un modelo para detectar tópicos diseñado para las ciencias sociales: Structural Topic Modeling. (STA)
 ### LDA
-- [Slides - pdf](/clase4/DIPLO_TM_Clase_4.pdf)
-- [Explicación y práctica guiada LDA - Notebook](/clase4/notebooks/clase_4_topic_modeling_LDA.html)
-- [Explicación y práctica guiada LDA - RMarkdown](/clase4/notebooks/clase_4_topic_modeling_LDA.Rmd)
-- [Pŕactica independiente - Notebook](/clase4/notebooks/clase_4_practica_independiente.html)
-- [Pŕactica independiente - RMarkdown](/clase4/notebooks/clase_4_practica_independiente.Rmd)
-
-Pueden descargarse la totalidad de los materiales de LDA para trabajar en un único archivo .zip
-
-[![](imgs/Download.png)](clase4.zip)
+- [Slides - pdf](/clase4/DIPLO_TM_Clase_4a.pdf)
+- [Explicación y práctica guiada LDA - Notebook](/clase4/notebooks/clase_4a_topic_modeling_LDA.html)
+- [Explicación y práctica guiada LDA - RMarkdown](/clase4/notebooks/clase_4a_topic_modeling_LDA.Rmd)
+- [Pŕactica independiente - Notebook](/clase4/notebooks/clase_4b_practica_independiente.html)
+- [Pŕactica independiente - RMarkdown](/clase4/notebooks/clase_4b_practica_independiente.Rmd)
 
 ### STM
-- [Slides - pdf](/clase5/DIPLO_TM_Clase_5.pdf)
-- [Explicación y práctica guiada STM - Notebook](/clase5/notebooks/clase_5_topic_modeling_STM.html)
-- [Explicación y práctica guiada STM - RMarkdown](/clase5/notebooks/clase_5_topic_modeling_STM.Rmd)
+- [Slides - pdf](/clase4/DIPLO_TM_Clase_4b.pdf)
+- [Explicación y práctica guiada STM - Notebook](/clase4/notebooks/clase_4c_topic_modeling_STM.html)
+- [Explicación y práctica guiada STM - RMarkdown](/clase4/notebooks/clase_4c_topic_modeling_STM.Rmd)
 
-Pueden descargarse la totalidad de los materiales de STM para trabajar en un único archivo .zip
+Pueden descargarse la totalidad de los materiales de la clase para trabajar en un único archivo .zip
 
-[![](imgs/Download.png)](clase5.zip)
+[![](imgs/Download.png)](clase4.zip)
 
 ## Clase 5. ¿Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec). 
 - [Slides - pdf](/clase6/DIPLO_TM_Clase_6.pdf)

@@ -4,7 +4,6 @@ output:
   html_document:
     toc: TRUE
     toc_float: TRUE
-author: "Germán Rosati"
 
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
@@ -35,9 +34,7 @@ library(tidyverse)
 Lo interesante (entre otras cosas) de este proyecto es que no te hace bajar un mamotreto de datos sino que... tiene una API, bastante completa para trabajar. De hecho, podemos jugar con diferentes umbrales de pobreza absoluta. Si U$S nos parece demasiado bajo podemos utilizar otro umbral más alto y la API nos va a devolver cálculos de pobreza para dichos umbrales.
 
 ```{r}
-#povcalnet <- GET("http://iResearch.worldbank.org/PovcalNet/PovcalNetAPI.ashx?C0=CHN&PL0=2.5&Y0=All&format=#json")
-
-api<-GET("https://api.worldbank.org/pip/v1/pip?country=CHN&year=all&povline=2.5&fill_gaps=false&format=csv")
+api <- GET("https://api.worldbank.org/pip/v1/pip?country=CHN&year=all&povline=2.5&fill_gaps=false&format=csv")
 ```
 
 La búsqueda tiene varias partes:
@@ -84,7 +81,7 @@ api %>%
 Traer las estimaciones de pobreza de Brasil con un umbral de pobreza de U$S2 para todos los años disponibles y graficarlo. 
 
 ```{r}
-
+###
 ```
 
 ## Autenticación 

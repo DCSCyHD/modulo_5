@@ -1,0 +1,51 @@
+---
+title: "Modelado de tópicos Vol. 1. Latent Dirichlet Allocation"
+subtitle: "Práctica Independiente. Un modelo de 10 tópicos"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+author: "Germán Rosati"
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+## Introducción
+Habíamos dicho que el ejemplo de la clase era un poco de juguete. Una de las ventajas del topic modeling es poder detectar gran cantidad de tópicos y, en muchos casos, esos tópicos tienen una gran granularidad.
+
+Es por ello que la idea de esta actividad es que puedan interpretar un modelo con una mayor cantidad de tópicos y generar algunas de las visualizaciones que vimos en la clase.
+
+### Cargar las librerías y el modelo preentrenado
+Dado que entrenar un modelo de 10 tópicos puede tardar un rato (10-20 minutos) para este corpus hemos preentrenado uno. Pueden cargarlo ejecutando esta celda:
+```{r}
+library(tidyverse)
+library(topicmodels)
+library(tidytext)
+library(tictoc)
+```
+
+```{r}
+lda_10 <- read_rds('../models/lda_10.rds')
+lda_10
+```
+
+Si quisieran entrenarlo ustedes mismos o probar otras especificaciones, pueden hacerlo simplemente cambiando el parámetro k:
+```{r}
+#lda_10 <- LDA(disc_dtm, k=10, control = list(seed = 9875))
+```
+
+
+### Generar el gráfico de palabras por tópicos
+```{r}
+###
+```
+
+### Realizar la interpretación de cada uno de los tópicos
+
+
+
+### Construir una visualización que permita realizar un análisis de la composición de tópicos según la categoría de la revista.
+```{r}
+###
+```
+
