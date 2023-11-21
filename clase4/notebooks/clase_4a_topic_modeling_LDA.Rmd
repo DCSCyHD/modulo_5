@@ -5,7 +5,6 @@ output:
   html_document:
     toc: TRUE
     toc_float: TRUE
-author: "Germán Rosati"
 
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
@@ -48,7 +47,7 @@ Vamos a usar el siguiente dataset que contiene artículos tomados de dos revista
 
 Una versión del mismo fue utilizado para el [siguiente paper](https://www.tandfonline.com/doi/pdf/10.1080/14680777.2022.2047090) que puede serles de utilidad como una aplicación posible del modelado de tópicos.
 
-Estamos interesados en poder identificar qué temas existen en las revistas para hombres y mujeres cada uno pero no estamos interesados en leer todos los discursos. Por eso vamos a usar LDA en este corpus.
+Estamos interesados en poder identificar qué temas existen en las revistas para hombres y mujeres cada uno pero quisiéramos evitar la lectura de la totalidad de los artículos. Por eso vamos a usar LDA en este corpus.
 
 Como vemos, el corpus aún no ha sido procesado. Empecemos, entonces, por ahí y podemos, de paso, repasar las diferentes etapas.
 
@@ -84,7 +83,6 @@ revistas_tidy %>%
 ```
 
 Vemos que, claramente, tenemos que hacer una limpieza de stopwords.
-
 ```{r}
 stop_words <- read_delim('../data/stopwords.txt', 
                          delim = '\t',
@@ -125,7 +123,7 @@ Ahora sí, estamos en condiciones de avanzar en nuestro modelado de tópicos.
 ### Modelado de tópicos
 Para hacer el modelado de temas como se implementa aquí, necesitamos generar una `DocumentTermMatrix`, un tipo especial de matriz del paquete tm (por supuesto, esto es solo una implementación específica del concepto general de una TFM). 
 
-Las filas corresponden a documentos (textos descriptivos en nuestro caso) y las columnas corresponden a términos (es decir, palabras); es una matriz dispersa y los valores son recuentos de palabras. Primero, generamos nuestra tabla tidy de conteos
+Las filas corresponden a documentos (textos descriptivos en nuestro caso) y las columnas corresponden a términos (es decir, palabras); es una matriz dispersa y los valores son recuentos de palabras. Primero, generamos nuestra tabla tidy de conteos:
 ```{r}
 word_counts <- revistas_tidy %>%
         group_by(id, word) %>%
@@ -143,7 +141,7 @@ disc_dtm <- word_counts %>%
 disc_dtm
 ```
 
-Vemos que este conjunto de datos contiene documentos (cada uno de ellos un discurso) y términos (palabras). Observe que esta matriz de documento-término de ejemplo es (muy cercana a) 100% dispersa, lo que significa que casi todas las entradas en esta matriz son cero. Cada entrada distinta de cero corresponde a una determinada palabra que aparece en un determinado documento.
+Vemos que este conjunto de datos contiene documentos (cada uno de ellos un discurso) y términos (palabras). Observe que esta matriz de documento-término de ejemplo es 100% dispersa (segurmente, hay un efecto redondeo allí), lo que significa que casi todas las entradas en esta matriz son cero. Cada entrada distinta de cero corresponde a una determinada palabra que aparece en un determinado documento.
 
 
 ### Ahora sí, vamos a modelar los tópicos
@@ -166,7 +164,7 @@ ap_topics %>%
   mutate(beta = round(100*beta,6))
 ```
 
-La función `tidy`conviritó el modelo a un formato de un tópico-término por fila. Para cada combinación, el modelo calcula la probabilidad de que ese término se genere a partir de ese tópico. Por ejemplo, el término "cesped" tiene una probabilidad de 3.21x10-13  de ser generado a partir del tema 1. Esta valor baja sensiblemente en el resto de los tópicos.
+La función `tidy`conviritó el modelo a un formato de un tópico-término por fila. Para cada combinación, el modelo calcula la probabilidad de que ese término se genere a partir de ese tópico. Por ejemplo, el término "abajo" tiene una probabilidad de 0.02482 d ser generado a partir del tema 2. Esta valor baja sensiblemente en el resto de los tópicos.
 
 Podríamos usar el `slice_max()` de `dplyr` para encontrar los 15 términos que son más comunes dentro de cada tema. Dado que tenemos una tibble, podemos usar una visualización de `ggplot2`.
 ```{r}
@@ -278,4 +276,3 @@ doc_2_topics %>%
 ```
 
 Vemos cómo las revistas de mujeres parecen concentrarse en los tópicos 1 y 3, mientras que las de hombres, en los tópicos 1, 2 y 4. Siendo el tópico 3 el menos prevalente.
-

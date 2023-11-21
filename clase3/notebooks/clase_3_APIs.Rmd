@@ -62,6 +62,8 @@ Hasta acá la data todavía está en un formato que no nos sirve. La informació
 
 ```{r}
 api <- read_csv(rawToChar(api$content))
+
+api
 ```
 
 Hagamos un gráfico breve para ver la evolución de la pobreza en este umbral según zonas urbanas y rurales:
@@ -72,13 +74,13 @@ api %>%
         labs(x='Año',
              y='% población c/ menos de 2.5 U$S diarios') +
         theme_minimal() +
-        theme( axis.text.x = element_text(size = 8)) +
+        theme(axis.text.x = element_text(size = 8)) +
         facet_wrap(~reporting_level)
 ```
 
 ## Actividad
 
-Traer las estimaciones de pobreza de Brasil con un umbral de pobreza de U$S2 para todos los años disponibles y graficarlo. 
+Traer las estimaciones de pobreza de Brasil con un umbral de pobreza de U$S2 para todos los años disponibles y graficarlo.
 
 ```{r}
 ###

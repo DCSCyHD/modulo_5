@@ -9,7 +9,6 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Germán Rosati" />
 
 
 <title>Modelado de tópicos Vol. 1. Latent Dirichlet Allocation</title>
@@ -1481,8 +1480,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Modelado de tópicos Vol. 1. Latent
 Dirichlet Allocation</h1>
 <h3 class="subtitle">Temas en revistas con targets diferentes</h3>
-<h4 class="author">Germán Rosati</h4>
-<h4 class="date">11 septiembre, 2023</h4>
+<h4 class="date">21 noviembre, 2023</h4>
 
 </div>
 
@@ -1576,8 +1574,9 @@ dos revistas con diferentes targets:</p>
 paper</a> que puede serles de utilidad como una aplicación posible del
 modelado de tópicos.</p>
 <p>Estamos interesados en poder identificar qué temas existen en las
-revistas para hombres y mujeres cada uno pero no estamos interesados en
-leer todos los discursos. Por eso vamos a usar LDA en este corpus.</p>
+revistas para hombres y mujeres cada uno pero quisiéramos evitar la
+lectura de la totalidad de los artículos. Por eso vamos a usar LDA en
+este corpus.</p>
 <p>Como vemos, el corpus aún no ha sido procesado. Empecemos, entonces,
 por ahí y podemos, de paso, repasar las diferentes etapas.</p>
 </div>
@@ -1704,7 +1703,7 @@ del concepto general de una TFM).</p>
 <p>Las filas corresponden a documentos (textos descriptivos en nuestro
 caso) y las columnas corresponden a términos (es decir, palabras); es
 una matriz dispersa y los valores son recuentos de palabras. Primero,
-generamos nuestra tabla tidy de conteos</p>
+generamos nuestra tabla tidy de conteos:</p>
 <pre class="r"><code>word_counts &lt;- revistas_tidy %&gt;%
         group_by(id, word) %&gt;%
         summarise(n=n()) %&gt;%
@@ -1734,10 +1733,10 @@ disc_dtm</code></pre>
 ## Weighting          : term frequency (tf)</code></pre>
 <p>Vemos que este conjunto de datos contiene documentos (cada uno de
 ellos un discurso) y términos (palabras). Observe que esta matriz de
-documento-término de ejemplo es (muy cercana a) 100% dispersa, lo que
-significa que casi todas las entradas en esta matriz son cero. Cada
-entrada distinta de cero corresponde a una determinada palabra que
-aparece en un determinado documento.</p>
+documento-término de ejemplo es 100% dispersa (segurmente, hay un efecto
+redondeo allí), lo que significa que casi todas las entradas en esta
+matriz son cero. Cada entrada distinta de cero corresponde a una
+determinada palabra que aparece en un determinado documento.</p>
 </div>
 <div id="ahora-sí-vamos-a-modelar-los-tópicos" class="section level3">
 <h3>Ahora sí, vamos a modelar los tópicos</h3>
@@ -1780,8 +1779,8 @@ ap_topics %&gt;%
 <p>La función <code>tidy</code>conviritó el modelo a un formato de un
 tópico-término por fila. Para cada combinación, el modelo calcula la
 probabilidad de que ese término se genere a partir de ese tópico. Por
-ejemplo, el término “cesped” tiene una probabilidad de 3.21x10-13 de ser
-generado a partir del tema 1. Esta valor baja sensiblemente en el resto
+ejemplo, el término “abajo” tiene una probabilidad de 0.02482 d ser
+generado a partir del tema 2. Esta valor baja sensiblemente en el resto
 de los tópicos.</p>
 <p>Podríamos usar el <code>slice_max()</code> de <code>dplyr</code> para
 encontrar los 15 términos que son más comunes dentro de cada tema. Dado
