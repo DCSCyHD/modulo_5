@@ -74,12 +74,15 @@ Pueden descargarse la totalidad de los materiales de la clase para trabajar en u
 
 ## Clase 5. ¿Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec). 
 - [Slides - pdf](/clase5/DIPLO_TM_Clase_5.pdf)
-- [Explicación y práctica guiada STM - Notebook](/clase6/notebooks/clase_5_word2vec.html)
-- [Explicación y práctica guiada STM - RMarkdown](/clase6/notebooks/clase_5_word2vec.Rmd)
+- [Explicación y práctica guiada - Notebook](/clase5/notebooks/clase_5_word2vec.html)
+- [Explicación y práctica guiada - RMarkdown](/clase5/notebooks/clase_5_word2vec.Rmd)
 
 Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
 
-## Clase 5. ¿Cómo se usa un modelo pre-entrenado? Usando word embeddings pre-entrenados como insumo.
+## Clase 6. ¿Cómo se usa un modelo pre-entrenado? Usando word embeddings pre-entrenados como insumo.
+- [Explicación y práctica guiada - Notebook](/clase6/notebooks/clase_6_clasificacion.html)
+- [Explicación y práctica guiada - RMarkdown](/clase6/notebooks/clase_6_clasificacion.Rmd)
+
 
 
 # Librerías a utilizar
