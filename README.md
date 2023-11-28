@@ -83,8 +83,6 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 - [Explicación y práctica guiada - Notebook](/clase6/notebooks/clase_6_clasificacion.html)
 - [Explicación y práctica guiada - RMarkdown](/clase6/notebooks/clase_6_clasificacion.Rmd)
 
-
-
 # Librerías a utilizar
 El taller se desarrollará en R y se hará un uso extensivo de las siguientes librerías:
 
