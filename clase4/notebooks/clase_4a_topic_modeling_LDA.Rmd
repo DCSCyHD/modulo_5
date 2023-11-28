@@ -148,6 +148,8 @@ Vemos que este conjunto de datos contiene documentos (cada uno de ellos un discu
 Ahora usemos el paquete `topicmodels` para estimar un modelo LDA. ¿Cuántos temas le diremos al algoritmo que haga? Esta es una pregunta muy parecida a la de un clustering de k-medias. La respuesta es desilusionadora: no lo sabemos. No queda otra opción que ir probando. Por ahora y a los fines prácticos de esta primera aproximación vamos a probar un modelo muy simple: 4 temas.
 ```{r}
 lda_4 <- LDA(disc_dtm, k=4, control = list(seed = 1234))
+
+lda_4
 ```
 
 Vemos que entrenar el modelo es simple: una línea de código. Lo difícil viene ahora.
@@ -239,7 +241,7 @@ doc_2_topics %>%
   mutate(gamma = round(gamma, 5))
 ```
 
-Por ejemplo, el modelo estima que  alrededor del 68% de las palabras en el documento 9 se generaron a partir del tema 3. O menos del 1% de las palabras del documento 1 se generan a partir del tópico 1.
+Por ejemplo, el modelo estima que  alrededor del 68% de las palabras en el documento 9 se generaron a partir del tema 3. O menos del 1% de las palabras del documento 1 se generan a partir del tópico 3.
 
 Para verificar esta respuesta, podríamos ordenar la matriz documento-término (ver Capítulo 5.1) y verificar cuáles eran las palabras más comunes en ese documento
 ```{r}

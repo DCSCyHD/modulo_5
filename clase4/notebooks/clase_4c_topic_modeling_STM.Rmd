@@ -92,6 +92,9 @@ metadata <- revistas_tidy %>%
                   select(id, categoria) %>%
                   distinct() %>%
                   left_join(revistas %>% select(id, text))
+
+
+metadata
 ```
 
 Primero, generamos nuestra tabla tidy de conteos:
@@ -100,6 +103,8 @@ word_counts <- revistas_tidy %>%
         group_by(id, word) %>%
         summarise(n=n()) %>%
         ungroup()
+
+word_counts
 ```
 
 ### Modelado de tópicos: STM

@@ -278,7 +278,7 @@ libros_piglia
 ```
 
 ### Actividad
-Traer de la página de Anagrama el listado de todos los autores que tienen disponibles. El resultado final debe ser una tibble en la cual la primer columna es el link al autor y la segunda, el nombre.
+Traer de la página de Anagrama el listado de todos los autores que tienen disponibles. El resultado final debe ser una tibble en la cual la primera columna es el link al autor y la segunda, el nombre.
 ```{r}
 ###
 ```
