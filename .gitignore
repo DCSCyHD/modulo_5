@@ -1,5 +1,6 @@
 # Specific folders
 /data/
+/modulo_5/clasellms/gemini_key.txt
 
 # History files
 .Rhistory
