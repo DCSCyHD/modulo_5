@@ -4,11 +4,14 @@ library(gemini.R)
 api <- read_lines('./clasellms/gemini_key.txt')
 setAPI(api)
 
-df <- read_csv('./clase6/data/amazon_reviews_train_sample.csv')
-df <- df[sample(1:nrow(df)), ] 
-df_list <- split(df, sample(1:16, nrow(df), replace=T))
-
-df_list %>% write_rds('./clasellms/data/reviews_amazon_listsplit.rds')
+# df <- read_csv('./clase6/data/amazon_reviews_train_sample.csv')
+# 
+# set.seed(876)
+# df <- df[sample(1:nrow(df)), ] 
+# df_list <- split(df, sample(1:16, nrow(df), replace=T))
+# 
+#df_list %>% write_rds('./clasellms/data/reviews_amazon_listsplit.rds')
+df_list <- read_rds('./clasellms/data/reviews_amazon_listsplit.rds')
 
 prompt <- "A continuación vas a recibir un texto de una reseña de compra online.
 Quisiera que la clasifiques positiva o negativa usando las siguientes categorías:
@@ -41,8 +44,8 @@ Texto:
 it_list <- 0
 for (l in df_list){
         it_list <- it_list + 1
-        if (file.exists(paste0('./clasellms/data/', it_list, '_reviews_llms.rds'))){
-                pass
+        if (file.exists(paste0('./clasellms/data/', it_list, '_reviews_llms_prompt1.rds'))){
+                next
         }else{
                 
         it <- 0
@@ -59,7 +62,7 @@ for (l in df_list){
                 rtas[[id]] <- rta
                 
                 if (it %% 100 == 0){
-                        name <- paste0('./clasellms/data/', it_list, '_reviews_llms.rds')
+                        name <- paste0('./clasellms/data/', it_list, '_reviews_llms_prompt1.rds')
                         write_rds(rtas, name)
                         }
                 }

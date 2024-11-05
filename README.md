@@ -72,19 +72,23 @@ Pueden descargarse la totalidad de los materiales de la clase para trabajar en u
 
 [![](imgs/Download.png)](clase4.zip)
 
-## Clase 5. ¿Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec). 
-- [Slides - pdf](/clase5/DIPLO_TM_Clase_5.pdf)
+## Clase 5. A. ¿Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec). B. ¿Cómo se usa un modelo pre-entrenado? Usando word embeddings pre-entrenados como insumo.
+- [Slides Embeddings- pdf](/clase5/DIPLO_TM_Clase_5a.pdf)
 - [Explicación y práctica guiada - Notebook](/clase5/notebooks/clase_5_word2vec.html)
 - [Explicación y práctica guiada - RMarkdown](/clase5/notebooks/clase_5_word2vec.Rmd)
+- [Slides Clasificación- pdf](/clase5/DIPLO_TM_Clase_5b.pdf)
+- [Explicación y práctica guiada - Notebook](/clase5/notebooks/clase_5b_clasificacion.html)
+- [Explicación y práctica guiada - RMarkdown](/clase5/notebooks/clase_5b_clasificacion.Rmd)
+
 
 [![](imgs/Download.png)](clase5.zip)
 
 Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
 
-## Clase 6. ¿Cómo se usa un modelo pre-entrenado? Usando word embeddings pre-entrenados como insumo.
-- [Slides - pdf](/clase6/DIPLO_TM_Clase_6.pdf)
-- [Explicación y práctica guiada - Notebook](/clase6/notebooks/clase_6_clasificacion.html)
-- [Explicación y práctica guiada - RMarkdown](/clase6/notebooks/clase_6_clasificacion.Rmd)
+## Clase 6. ¿Qué son los LLMs y cómo usarlos? Un primer ejercicio con modelos grandes de lenguaje 
+- [Slides - pdf](/clase6/)
+- [Explicación y práctica guiada - Notebook](/clase6/notebooks/)
+- [Explicación y práctica guiada - RMarkdown](/clase6/notebooks/)
 
 [![](imgs/Download.png)](clase6.zip)
 
