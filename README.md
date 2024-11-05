@@ -102,7 +102,7 @@ El taller se desarrollará en R y se hará un uso extensivo de las siguientes li
 - `textclean`
 - `word2vec`
 
-Pueden instalarse utilizando las instrucciones:
+Pueden instalarse utilizando las siguientes instrucciones:
 
 ```{r}
 install.packages('tidytext')
