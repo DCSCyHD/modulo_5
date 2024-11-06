@@ -61,10 +61,8 @@ for (l in df_list){
                 cat(rta)
                 rtas[[id]] <- rta
                 
-                if (it %% 100 == 0){
-                        name <- paste0('./clasellms/data/', it_list, '_reviews_llms_prompt1.rds')
+                name <- paste0('./clasellms/data/', it_list, '_reviews_llms_prompt1.rds')
                         write_rds(rtas, name)
-                        }
                 }
         }
         tictoc::toc()

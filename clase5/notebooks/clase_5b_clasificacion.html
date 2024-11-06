@@ -1481,7 +1481,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Clasificación de texto</h1>
 <h3 class="subtitle">Analizando reseñas de Amazon</h3>
 <h4 class="author">Germán Rosati</h4>
-<h4 class="date">09 octubre, 2023</h4>
+<h4 class="date">06 noviembre, 2024</h4>
 
 </div>
 
@@ -1573,10 +1573,10 @@ embeddings pre-entrenados.</p>
 <p>Veamos primero un poco nuestro dataset:</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.3     ✔ readr     2.1.4
-## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
 ## ✔ purrr     1.0.2     
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
@@ -1584,13 +1584,13 @@ embeddings pre-entrenados.</p>
 ## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 <pre class="r"><code>library(tidytext)
 library(tidymodels)</code></pre>
-<pre><code>## ── Attaching packages ────────────────────────────────────── tidymodels 1.1.1 ──
-## ✔ broom        1.0.5     ✔ rsample      1.2.0
-## ✔ dials        1.2.0     ✔ tune         1.1.2
-## ✔ infer        1.0.5     ✔ workflows    1.1.3
-## ✔ modeldata    1.2.0     ✔ workflowsets 1.0.1
-## ✔ parsnip      1.1.1     ✔ yardstick    1.2.0
-## ✔ recipes      1.0.8     
+<pre><code>## ── Attaching packages ────────────────────────────────────── tidymodels 1.2.0 ──
+## ✔ broom        1.0.5      ✔ rsample      1.2.1 
+## ✔ dials        1.2.1      ✔ tune         1.2.1 
+## ✔ infer        1.0.7      ✔ workflows    1.1.4 
+## ✔ modeldata    1.3.0      ✔ workflowsets 1.1.0 
+## ✔ parsnip      1.2.1      ✔ yardstick    1.3.1 
+## ✔ recipes      1.0.10     
 ## ── Conflicts ───────────────────────────────────────── tidymodels_conflicts() ──
 ## ✖ scales::discard() masks purrr::discard()
 ## ✖ dplyr::filter()   masks stats::filter()
@@ -1598,7 +1598,7 @@ library(tidymodels)</code></pre>
 ## ✖ dplyr::lag()      masks stats::lag()
 ## ✖ yardstick::spec() masks readr::spec()
 ## ✖ recipes::step()   masks stats::step()
-## • Use suppressPackageStartupMessages() to eliminate package startup messages</code></pre>
+## • Use tidymodels_prefer() to resolve common conflicts.</code></pre>
 <pre class="r"><code>library(textrecipes)
 library(textclean)</code></pre>
 <pre class="r"><code>reviews &lt;- read_csv(&#39;../data/amazon_reviews_train_sample.csv&#39;) %&gt;%
@@ -1716,22 +1716,21 @@ del modelo.</p>
 valor numérico para <span class="math inline">\(lambda\)</span>.</p>
 <p>Luego, podemos crear una grilla para tunear los valores:</p>
 <pre class="r"><code>#grid_lasso &lt;- tibble(penalty=seq(0,0.2, 0.01))
-grid_lasso &lt;- grid_regular(penalty(), levels = 30)
+grid_lasso &lt;- grid_regular(penalty(), levels = 10)
 grid_lasso</code></pre>
-<pre><code>## # A tibble: 30 × 1
-##     penalty
-##       &lt;dbl&gt;
-##  1 1   e-10
-##  2 2.21e-10
-##  3 4.89e-10
-##  4 1.08e- 9
-##  5 2.40e- 9
-##  6 5.30e- 9
-##  7 1.17e- 8
-##  8 2.59e- 8
-##  9 5.74e- 8
-## 10 1.27e- 7
-## # ℹ 20 more rows</code></pre>
+<pre><code>## # A tibble: 10 × 1
+##          penalty
+##            &lt;dbl&gt;
+##  1 0.0000000001 
+##  2 0.00000000129
+##  3 0.0000000167 
+##  4 0.000000215  
+##  5 0.00000278   
+##  6 0.0000359    
+##  7 0.000464     
+##  8 0.00599      
+##  9 0.0774       
+## 10 1</code></pre>
 <p>La función <code>grid_regular()</code> pertenece al paquete
 <code>dials</code>. Permite elegir valores para probar en un parámetro
 como la penalización de regularización; aquí, solicitamos 30 valores
@@ -1769,7 +1768,7 @@ tune_lasso_idf &lt;- tune_grid(
         control = control_resamples(save_pred = TRUE)
 )
 tictoc::toc()</code></pre>
-<pre><code>## 658.572 sec elapsed</code></pre>
+<pre><code>## 695.245 sec elapsed</code></pre>
 <p>Ahora, en lugar de un conjunto de métricas, tenemos un conjunto de
 métricas para cada valor de la penalización de regularización.</p>
 </div>
@@ -1783,30 +1782,32 @@ recopilación de métricas es útil para comparar y seleccionar el mejor
 modelo en función de los resultados obtenidos en diferentes
 configuraciones de hiperparámetros.</p>
 <pre class="r"><code>collect_metrics(tune_lasso_idf)</code></pre>
-<pre><code>## # A tibble: 60 × 7
-##     penalty .metric  .estimator  mean     n std_err .config              
-##       &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;                
-##  1 1   e-10 accuracy binary     0.771     5 0.00135 Preprocessor1_Model01
-##  2 1   e-10 roc_auc  binary     0.844     5 0.00188 Preprocessor1_Model01
-##  3 2.21e-10 accuracy binary     0.771     5 0.00135 Preprocessor1_Model02
-##  4 2.21e-10 roc_auc  binary     0.844     5 0.00188 Preprocessor1_Model02
-##  5 4.89e-10 accuracy binary     0.771     5 0.00135 Preprocessor1_Model03
-##  6 4.89e-10 roc_auc  binary     0.844     5 0.00188 Preprocessor1_Model03
-##  7 1.08e- 9 accuracy binary     0.771     5 0.00135 Preprocessor1_Model04
-##  8 1.08e- 9 roc_auc  binary     0.844     5 0.00188 Preprocessor1_Model04
-##  9 2.40e- 9 accuracy binary     0.771     5 0.00135 Preprocessor1_Model05
-## 10 2.40e- 9 roc_auc  binary     0.844     5 0.00188 Preprocessor1_Model05
-## # ℹ 50 more rows</code></pre>
+<pre><code>## # A tibble: 30 × 7
+##          penalty .metric     .estimator  mean     n std_err .config             
+##            &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
+##  1 0.0000000001  accuracy    binary     0.771     5 0.00135 Preprocessor1_Model…
+##  2 0.0000000001  brier_class binary     0.212     5 0.00171 Preprocessor1_Model…
+##  3 0.0000000001  roc_auc     binary     0.844     5 0.00188 Preprocessor1_Model…
+##  4 0.00000000129 accuracy    binary     0.771     5 0.00135 Preprocessor1_Model…
+##  5 0.00000000129 brier_class binary     0.212     5 0.00171 Preprocessor1_Model…
+##  6 0.00000000129 roc_auc     binary     0.844     5 0.00188 Preprocessor1_Model…
+##  7 0.0000000167  accuracy    binary     0.771     5 0.00135 Preprocessor1_Model…
+##  8 0.0000000167  brier_class binary     0.212     5 0.00171 Preprocessor1_Model…
+##  9 0.0000000167  roc_auc     binary     0.844     5 0.00188 Preprocessor1_Model…
+## 10 0.000000215   accuracy    binary     0.771     5 0.00135 Preprocessor1_Model…
+## # ℹ 20 more rows</code></pre>
 <p>Podemos ver los mejores resultados utilizando show_best() y
 seleccionando una métrica, como el área bajo la curva ROC (ROC AUC).</p>
 <p>Por ejemplo, puedes utilizar la siguiente sintaxis para ver los
 mejores resultados en términos de ROC AUC:</p>
-<pre class="r"><code>show_best(tune_lasso_idf, &quot;roc_auc&quot;, n=2)</code></pre>
+<pre class="r"><code>show_best(tune_lasso_idf , n=2)</code></pre>
+<pre><code>## Warning in show_best(tune_lasso_idf, n = 2): No value of `metric` was given;
+## &quot;roc_auc&quot; will be used.</code></pre>
 <pre><code>## # A tibble: 2 × 7
-##   penalty .metric .estimator  mean     n std_err .config              
-##     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;                
-## 1 0.00386 roc_auc binary     0.928     5 0.00295 Preprocessor1_Model23
-## 2 0.00174 roc_auc binary     0.922     5 0.00188 Preprocessor1_Model22</code></pre>
+##    penalty .metric .estimator  mean     n  std_err .config              
+##      &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;    &lt;dbl&gt; &lt;chr&gt;                
+## 1 0.00599  roc_auc binary     0.924     5 0.00296  Preprocessor1_Model08
+## 2 0.000464 roc_auc binary     0.895     5 0.000983 Preprocessor1_Model07</code></pre>
 <p>El mejor valor para el área bajo la curva ROC (ROC AUC) de esta
 ejecución de tuneo es 0.922. Podemos extraer el mejor parámetro de
 regularización para este valor de ROC AUC de nuestros resultados de
@@ -1820,19 +1821,18 @@ estándar del mejor modelo numéricamente.</p>
   select_by_one_std_err(metric = &quot;roc_auc&quot;, -penalty)
 
 chosen_auc_idf</code></pre>
-<pre><code>## # A tibble: 1 × 9
-##   penalty .metric .estimator  mean     n std_err .config            .best .bound
-##     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt;  &lt;dbl&gt;
-## 1 0.00386 roc_auc binary     0.928     5 0.00295 Preprocessor1_Mod… 0.928  0.925</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##   penalty .config              
+##     &lt;dbl&gt; &lt;chr&gt;                
+## 1 0.00599 Preprocessor1_Model08</code></pre>
 </div>
 <div id="estimación-final" class="section level3">
 <h3>Estimación final</h3>
-<p>A continuación, finalicemos nuestro flujo de trabajo sintonizable con
+<p>A continuación, finalicemos nuestro flujo de trabajo tuneable con
 este penalizador de regularización en particular. Este es el término de
 penalización de regularización que nuestros resultados de sintonización
 indican que nos proporciona el mejor modelo.</p>
 <pre class="r"><code>final_params_lasso_idf &lt;- finalize_workflow(wf_idf, chosen_auc_idf)
-
 final_params_lasso_idf</code></pre>
 <pre><code>## ══ Workflow ════════════════════════════════════════════════════════════════════
 ## Preprocessor: Recipe
@@ -1849,7 +1849,7 @@ final_params_lasso_idf</code></pre>
 ## Logistic Regression Model Specification (classification)
 ## 
 ## Main Arguments:
-##   penalty = 0.00385662042116347
+##   penalty = 0.00599484250318942
 ##   mixture = 1
 ## 
 ## Computational engine: glmnet</code></pre>
@@ -1858,8 +1858,8 @@ worflow tiene valores finales para todos los argumentos. La receta de
 preprocesamiento ha sido evaluada en los datos de entrenamiento, y
 sintonizamos la penalización de regularización para que tengamos un
 valor de penalización de 0.00385662042116347. ¡Este flujo de trabajo
-está listo para funcionar! Ahora puede ajustarse a nuestros datos de
-entrenamiento.</p>
+está listo para funcionar!</p>
+<p>Ahora puede ajustarse a nuestros datos de entrenamiento.</p>
 <pre class="r"><code>fitted_lasso_idf &lt;- fit(final_params_lasso_idf, train_idf)
 fitted_lasso_idf</code></pre>
 <pre><code>## ══ Workflow [trained] ══════════════════════════════════════════════════════════
@@ -1936,13 +1936,13 @@ evaluarlo en nuestros datos de prueba. Solo necesitamos pasarle esta
 función nuestro modelo/flujo de trabajo finalizado y nuestra división de
 datos.</p>
 <pre class="r"><code>final_fitted &lt;- last_fit(final_params_lasso_idf, reviews_split_idf)
-
 collect_metrics(final_fitted)</code></pre>
-<pre><code>## # A tibble: 2 × 4
-##   .metric  .estimator .estimate .config             
-##   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
-## 1 accuracy binary         0.863 Preprocessor1_Model1
-## 2 roc_auc  binary         0.931 Preprocessor1_Model1</code></pre>
+<pre><code>## # A tibble: 3 × 4
+##   .metric     .estimator .estimate .config             
+##   &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
+## 1 accuracy    binary         0.852 Preprocessor1_Model1
+## 2 roc_auc     binary         0.926 Preprocessor1_Model1
+## 3 brier_class binary         0.114 Preprocessor1_Model1</code></pre>
 <p>O de forma equivalente:</p>
 <pre class="r"><code>preds_idf &lt;- test_idf %&gt;%
         select(stars) %&gt;%
@@ -1957,11 +1957,11 @@ bind_rows(f_meas(preds_idf, stars, .pred_class))</code></pre>
 <pre><code>## # A tibble: 5 × 3
 ##   .metric   .estimator .estimate
 ##   &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt;
-## 1 roc_auc   binary         0.931
-## 2 accuracy  binary         0.863
-## 3 precision binary         0.859
-## 4 recall    binary         0.868
-## 5 f_meas    binary         0.864</code></pre>
+## 1 roc_auc   binary         0.926
+## 2 accuracy  binary         0.852
+## 3 precision binary         0.847
+## 4 recall    binary         0.860
+## 5 f_meas    binary         0.853</code></pre>
 </div>
 </div>
 <div id="word-embeddings-como-features" class="section level2">
@@ -2015,51 +2015,39 @@ cargarlo . La función también permite cargar (si quisieran hacerlo) un
 </div>
 <div id="tokenización-y-construcción-de-features-mediante-el-embedding" class="section level3">
 <h3>Tokenización y construcción de features mediante el embedding</h3>
-<p>Si bien existe un método <code>step_word_embeddings()</code> análogo
-al <code>step_tfidf()</code> que realizaría la vectorización, vamos a
-hacer “a mano” para tratar de entender qué pasa (y porque además, el
-método tiene algunos comportamientos raros).</p>
-<p>La secuencia de operaciones que vamos a realizar es la siguiente:</p>
+<p>Existe un método <code>step_word_embeddings()</code> análogo al
+<code>step_tfidf()</code> que realizará la vectorización:</p>
+<pre class="r"><code>reviews_rec_embed &lt;- recipe(stars ~ ., data = reviews_embed) %&gt;% # definimos variables y roles
+        update_role(&quot;review_id&quot;, new_role = &quot;ID&quot;) %&gt;% # actualizamos el rol del ID
+        step_tokenize(review_body) %&gt;% #Tokenizamos
+        step_word_embeddings(review_body, 
+                             embeddings=embedding,
+                             aggregation = &quot;mean&quot;)</code></pre>
+<pre class="r"><code>tictoc::tic()
+rev_embed &lt;- reviews_rec_embed %&gt;% prep() %&gt;% bake(reviews_embed)
+tictoc::toc()</code></pre>
+<pre><code>## 137.943 sec elapsed</code></pre>
+<p>La secuencia de operaciones que se va a realizar por detrás de
+bambalinas es la siguiente:</p>
 <ol style="list-style-type: decimal">
 <li>Tokenización pero sin pasar todo a minúscula y sin eliminar la
 puntuación.</li>
-</ol>
-<pre class="r"><code>reviews_tidy &lt;- reviews_embed %&gt;%
-                unnest_tokens(word, review_body, 
-                              to_lower=TRUE,
-                              strip_punct=TRUE)</code></pre>
-<ol start="2" style="list-style-type: decimal">
 <li>Left-join de la tabla tokenizada de cada review con el embedding. De
 esta forma, cada palabra va a estar representada por un vector de 300
 dimensiones, que se corresponde con un vector del embedding
 pre-entrenado.</li>
-</ol>
-<pre class="r"><code>reviews_tidy &lt;- reviews_tidy %&gt;%
-        left_join(embedding) %&gt;%
-        drop_na()</code></pre>
-<pre><code>## Joining with `by = join_by(word)`</code></pre>
-<ol start="3" style="list-style-type: decimal">
-<li>Por último, agrupamos por cada review y calculamos el promedio para
+<li>Por último, se agrupa por cada review y se calcula el promedio para
 cada dimensión de cada palabra que forma parte de una review.</li>
 </ol>
-<pre class="r"><code>tictoc::tic()
-reviews_embed &lt;- reviews_tidy %&gt;%
-        group_by(review_id, stars) %&gt;%
-        summarise(across(V1:V300, ~mean(.x, na.rm=TRUE))) %&gt;%
-        ungroup()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;review_id&#39;. You can override using the
-## `.groups` argument.</code></pre>
-<pre class="r"><code>tictoc::toc()</code></pre>
-<pre><code>## 71.764 sec elapsed</code></pre>
 <p>De esta forma, reemplazamos cada palabra de una review por sus
 coordenadas en el embedding. Luego, calculamos algo así como el
 centroide, es decir, la coordenada promedio. Así, una reseña que era una
 lista de palabras ahora es lista de coordenadas en 300 dimensiones.</p>
-<p><img src="data:image/png;base64,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" /> Fuente: <a href="https://elgatoylacaja.com/psiquiatriapp">El Gato y la Caja</a></p>
+<p><img src="../imgs/egc_esquizo.png" /> Fuente: <a href="https://elgatoylacaja.com/psiquiatriapp">El Gato y la Caja</a></p>
 <p>Ahora tenemos todo listo para repetir el flujo anterior.</p>
 <pre class="r"><code>## Split
 set.seed(664)
-reviews_split &lt;- initial_split(reviews_embed, strata = stars)
+reviews_split &lt;- initial_split(rev_embed, strata = stars)
 
 train_embed &lt;- training(reviews_split)
 test_embed &lt;- testing(reviews_split)
@@ -2082,7 +2070,7 @@ wf_embed &lt;- workflow() %&gt;%
         add_model(lasso_spec)
 
 # espefico la grilla
-grid_lasso &lt;- grid_regular(penalty(), levels = 30)
+grid_lasso &lt;- grid_regular(penalty(), levels = 10)
 
 ## Seteo de validación cruzada
 set.seed(234)
@@ -2099,26 +2087,31 @@ tune_lasso_embed &lt;- tune_grid(
         control = control_resamples(save_pred = TRUE)
 )
 tictoc::toc()</code></pre>
-<pre><code>## 16.913 sec elapsed</code></pre>
+<pre><code>## 15.307 sec elapsed</code></pre>
 </div>
 <div id="evaluación-1" class="section level3">
 <h3>Evaluación</h3>
 <p>Veamos los dos mejores modelos en términos de ROC:</p>
-<pre class="r"><code>show_best(tune_lasso_embed, &quot;roc_auc&quot;, n=2)</code></pre>
-<pre><code>## # A tibble: 2 × 7
-##    penalty .metric .estimator  mean     n std_err .config              
-##      &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;                
-## 1 0.000788 roc_auc binary     0.914     5 0.00190 Preprocessor1_Model21
-## 2 0.000356 roc_auc binary     0.913     5 0.00195 Preprocessor1_Model20</code></pre>
+<pre class="r"><code>show_best(tune_lasso_embed)</code></pre>
+<pre><code>## Warning in show_best(tune_lasso_embed): No value of `metric` was given;
+## &quot;roc_auc&quot; will be used.</code></pre>
+<pre><code>## # A tibble: 5 × 7
+##         penalty .metric .estimator  mean     n std_err .config              
+##           &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;                
+## 1 0.000464      roc_auc binary     0.916     5 0.00328 Preprocessor1_Model07
+## 2 0.0000000001  roc_auc binary     0.915     5 0.00327 Preprocessor1_Model01
+## 3 0.00000000129 roc_auc binary     0.915     5 0.00327 Preprocessor1_Model02
+## 4 0.0000000167  roc_auc binary     0.915     5 0.00327 Preprocessor1_Model03
+## 5 0.000000215   roc_auc binary     0.915     5 0.00327 Preprocessor1_Model04</code></pre>
 <p>Veamos el mejor modelo dentro de 1 error estándar:</p>
 <pre class="r"><code>chosen_auc_embed &lt;- tune_lasso_embed %&gt;%
   select_by_one_std_err(metric = &quot;roc_auc&quot;, -penalty)
 
 chosen_auc_embed</code></pre>
-<pre><code>## # A tibble: 1 × 9
-##   penalty .metric .estimator  mean     n std_err .config            .best .bound
-##     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt;  &lt;dbl&gt;
-## 1 0.00174 roc_auc binary     0.913     5 0.00186 Preprocessor1_Mod… 0.914  0.912</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    penalty .config              
+##      &lt;dbl&gt; &lt;chr&gt;                
+## 1 0.000464 Preprocessor1_Model07</code></pre>
 </div>
 <div id="entrenamiento-final" class="section level3">
 <h3>Entrenamiento final</h3>
@@ -2136,7 +2129,7 @@ final_params_lasso_embed</code></pre>
 ## Logistic Regression Model Specification (classification)
 ## 
 ## Main Arguments:
-##   penalty = 0.00174332882219999
+##   penalty = 0.000464158883361278
 ##   mixture = 1
 ## 
 ## Computational engine: glmnet</code></pre>
@@ -2157,11 +2150,11 @@ bind_rows(f_meas(preds_embed, stars, .pred_class))</code></pre>
 <pre><code>## # A tibble: 5 × 3
 ##   .metric   .estimator .estimate
 ##   &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt;
-## 1 roc_auc   binary         0.917
-## 2 accuracy  binary         0.839
-## 3 precision binary         0.826
-## 4 recall    binary         0.86 
-## 5 f_meas    binary         0.842</code></pre>
+## 1 roc_auc   binary         0.914
+## 2 accuracy  binary         0.833
+## 3 precision binary         0.822
+## 4 recall    binary         0.85 
+## 5 f_meas    binary         0.836</code></pre>
 <p><strong>TF-IDF</strong></p>
 <pre class="r"><code>roc_auc(preds_idf, stars, .pred_Negativa) %&gt;%
 bind_rows(accuracy(preds_idf, stars, .pred_class)) %&gt;%
@@ -2171,11 +2164,11 @@ bind_rows(f_meas(preds_idf, stars, .pred_class))</code></pre>
 <pre><code>## # A tibble: 5 × 3
 ##   .metric   .estimator .estimate
 ##   &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt;
-## 1 roc_auc   binary         0.931
-## 2 accuracy  binary         0.863
-## 3 precision binary         0.859
-## 4 recall    binary         0.868
-## 5 f_meas    binary         0.864</code></pre>
+## 1 roc_auc   binary         0.926
+## 2 accuracy  binary         0.852
+## 3 precision binary         0.847
+## 4 recall    binary         0.860
+## 5 f_meas    binary         0.853</code></pre>
 </div>
 </div>
 

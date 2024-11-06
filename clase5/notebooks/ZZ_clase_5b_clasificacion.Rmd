@@ -121,7 +121,7 @@ Luego, podemos crear una grilla para tunear los valores:
 
 ```{r}
 #grid_lasso <- tibble(penalty=seq(0,0.2, 0.01))
-grid_lasso <- grid_regular(penalty(), levels = 10)
+grid_lasso <- grid_regular(penalty(), levels = 30)
 grid_lasso
 ```
 
@@ -171,7 +171,7 @@ Podemos ver los mejores resultados utilizando show_best() y seleccionando una m�
 Por ejemplo, puedes utilizar la siguiente sintaxis para ver los mejores resultados en términos de ROC AUC:
 
 ```{r}
-show_best(tune_lasso_idf , n=2)
+show_best(tune_lasso_idf, "roc_auc", n=2)
 ```
 
 El mejor valor para el área bajo la curva ROC (ROC AUC) de esta ejecución de tuneo es 0.922. Podemos extraer el mejor parámetro de regularización para este valor de ROC AUC de nuestros resultados de sintonización con `select_best()`, o podemos elegir un modelo más simple con una regularización más alta utilizando `select_by_pct_loss()` o `select_by_one_std_err()`.
@@ -186,16 +186,15 @@ chosen_auc_idf
 ```
 
 ### Estimación final
-A continuación, finalicemos nuestro flujo de trabajo tuneable con este penalizador de regularización en particular. Este es el término de penalización de regularización que nuestros resultados de sintonización indican que nos proporciona el mejor modelo.
+A continuación, finalicemos nuestro flujo de trabajo sintonizable con este penalizador de regularización en particular. Este es el término de penalización de regularización que nuestros resultados de sintonización indican que nos proporciona el mejor modelo.
 
 ```{r}
 final_params_lasso_idf <- finalize_workflow(wf_idf, chosen_auc_idf)
+
 final_params_lasso_idf
 ```
 
-En lugar de `penalty = tune()` como antes, ahora nuestro worflow tiene valores finales para todos los argumentos. La receta de preprocesamiento ha sido evaluada en los datos de entrenamiento, y sintonizamos la penalización de regularización para que tengamos un valor de penalización de 0.00385662042116347. ¡Este flujo de trabajo está listo para funcionar! 
-
-Ahora puede ajustarse a nuestros datos de entrenamiento.
+En lugar de `penalty = tune()` como antes, ahora nuestro worflow tiene valores finales para todos los argumentos. La receta de preprocesamiento ha sido evaluada en los datos de entrenamiento, y sintonizamos la penalización de regularización para que tengamos un valor de penalización de 0.00385662042116347. ¡Este flujo de trabajo está listo para funcionar! Ahora puede ajustarse a nuestros datos de entrenamiento.
 
 ```{r}
 fitted_lasso_idf <- fit(final_params_lasso_idf, train_idf)
@@ -207,6 +206,7 @@ Podemos utilizar la función `last_fit()` para ajustar nuestro modelo una últim
 
 ```{r}
 final_fitted <- last_fit(final_params_lasso_idf, reviews_split_idf)
+
 collect_metrics(final_fitted)
 ```
 
@@ -262,34 +262,39 @@ load_embeddings <- function(path=NULL, type=c("w2v", "ft")){
 
 embedding <- load_embeddings(path = "../../../../WordEmbeddings/Word2Vec/sbw_vectors.bin",
                              type = "w2v")
-
 ```
  
 Como puede verse, es necesario previamente descargar el archivo .bin (con la información en formato binario) del embedding para poder cargarlo . La función también permite cargar (si quisieran hacerlo) un .bin entrenado mediante [FastText](https://fasttext.cc/docs/en/crawl-vectors.html).
 
 ### Tokenización y construcción de features mediante el embedding
-Existe un método `step_word_embeddings()` análogo al `step_tfidf()` que realizará la vectorización:
+Si bien existe un método `step_word_embeddings()` análogo al `step_tfidf()` que realizaría la vectorización, vamos a hacer "a mano" para tratar de entender qué pasa (y porque además, el método tiene algunos comportamientos raros).
 
-```{r}
-reviews_rec_embed <- recipe(stars ~ ., data = reviews_embed) %>% # definimos variables y roles
-        update_role("review_id", new_role = "ID") %>% # actualizamos el rol del ID
-        step_tokenize(review_body) %>% #Tokenizamos
-        step_word_embeddings(review_body, 
-                             embeddings=embedding,
-                             aggregation = "mean")
-```
-
-```{r}
-tictoc::tic()
-rev_embed <- reviews_rec_embed %>% prep() %>% bake(reviews_embed)
-tictoc::toc()
-```
-
-La secuencia de operaciones que se va a realizar por detrás de bambalinas es la siguiente:
+La secuencia de operaciones que vamos a realizar es la siguiente:
 
 1. Tokenización pero sin pasar todo a minúscula y sin eliminar la puntuación.
+```{r}
+reviews_tidy <- reviews_embed %>%
+                unnest_tokens(word, review_body, 
+                              to_lower=TRUE,
+                              strip_punct=TRUE)
+```
+
 2. Left-join de la tabla tokenizada de cada review con el embedding. De esta forma, cada palabra va a estar representada por un vector de 300 dimensiones, que se corresponde con un vector del embedding pre-entrenado.
-3. Por último, se agrupa por cada review y se calcula el promedio para cada dimensión de cada palabra que forma parte de una review.
+```{r}
+reviews_tidy <- reviews_tidy %>%
+        left_join(embedding) %>%
+        drop_na()
+```
+
+3. Por último, agrupamos por cada review y calculamos el promedio para cada dimensión de cada palabra que forma parte de una review.
+```{r}
+tictoc::tic()
+reviews_embed <- reviews_tidy %>%
+        group_by(review_id, stars) %>%
+        summarise(across(V1:V300, ~mean(.x, na.rm=TRUE))) %>%
+        ungroup()
+tictoc::toc()
+```
 
 De esta forma, reemplazamos cada palabra de una review por sus coordenadas en el embedding. Luego, calculamos algo así como el centroide, es decir, la coordenada promedio. Así, una reseña que era una lista de palabras ahora es lista de coordenadas en 300 dimensiones.
 
@@ -300,7 +305,7 @@ Ahora tenemos todo listo para repetir el flujo anterior.
 ```{r}
 ## Split
 set.seed(664)
-reviews_split <- initial_split(rev_embed, strata = stars)
+reviews_split <- initial_split(reviews_embed, strata = stars)
 
 train_embed <- training(reviews_split)
 test_embed <- testing(reviews_split)
@@ -323,7 +328,7 @@ wf_embed <- workflow() %>%
         add_model(lasso_spec)
 
 # espefico la grilla
-grid_lasso <- grid_regular(penalty(), levels = 10)
+grid_lasso <- grid_regular(penalty(), levels = 30)
 
 ## Seteo de validación cruzada
 set.seed(234)
@@ -346,7 +351,7 @@ tictoc::toc()
 ### Evaluación
 Veamos los dos mejores modelos en términos de ROC:
 ```{r}
-show_best(tune_lasso_embed)
+show_best(tune_lasso_embed, "roc_auc", n=2)
 ```
 
 Veamos el mejor modelo dentro de 1 error estándar:
