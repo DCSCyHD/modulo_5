@@ -76,9 +76,6 @@ parse_clasif <- function(string){
         return(clasif)
 }
 
-
-
-
 parse_expl <- function(string){
         expl <- str_trim(str_replace_all(str_extract(string, "(?<=expl).*"), ":|'", ""))
         return(expl)
