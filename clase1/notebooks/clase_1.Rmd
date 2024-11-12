@@ -25,7 +25,7 @@ En el contexto de NLP, los datos ordenados van a tener la siguente estructura: u
 
 Como puede verse esta estructura difiere de otras formas de almacenar el texto crudo
 
-- Cadena: el texto puede, por supuesto, almacenarse como cadenas, es decir, vectores de caracteres, dentro de R y, a menudo, los datos de texto se leen primero en la memoria de esta forma.
+- Cadena: el texto puede, por supuesto, almacenarse como cadenas, es decir, concatenaciones de caracteres, dentro de R y, a menudo, los datos de texto se leen primero en la memoria de esta forma.
 - Corpus: estos tipos de objetos suelen contener cadenas sin procesar anotadas con metadatos y detalles adicionales.
 - Matriz documento-término: esta es una matriz dispersa que describe una colección (es decir, un corpus) de documentos con una fila para cada documento y una columna para cada término. El valor de la matriz suele ser el recuento de palabras o tf-idf.
 
@@ -78,7 +78,7 @@ Es importante recordar que `marx_df` arriba tiene una columna llamada `text` que
 
 ```{r}
 marx_df %>%
-  unnest_tokens(word, text, token='sentences')
+  unnest_tokens(output=word, input=text, token='sentences')
 
 ```
 
@@ -172,7 +172,7 @@ marx_engels_tidy %>%
                 labs(y = NULL)
 ```
 
-Podríamos evaluar ahora si Marx y Engels usan diferentes palabras en las cargas y notas y en sus libros. Para ello vamos a tener que procesar un poco el campo de `titulo`:
+Podríamos evaluar ahora si Marx y Engels usan diferentes palabras en las cartas y notas y en sus libros. Para ello vamos a tener que procesar un poco el campo de `titulo`:
 
 ```{r}
 marx_engels_tidy <- marx_engels_tidy %>%
@@ -210,6 +210,7 @@ Y ahora podemos hacer un gráfico en el que comparamos la frecuencia de uso de l
 freqs %>%
 ggplot( aes(notas, libros)) +
   geom_jitter(alpha = 0.05, size = 2.5, width = 0.25, height = 0.25) +
+  #geom_point(alpha = 0.05, size = 2.5, width = 0.25, height = 0.25) +
   geom_text(aes(label = word), check_overlap = TRUE, vjust = 1.5) +
   scale_x_log10() +
   scale_y_log10() +
