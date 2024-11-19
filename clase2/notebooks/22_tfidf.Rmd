@@ -18,7 +18,7 @@ library(tidytext)
 ```
 
 ## Introducción
-Un problema muy importante en NLP es tratar de generar alguna forma de input sobre el contenido de un texto sin leerlo en su totalidad ("lectura distante"). Esto suponeintentar cuantificar los contenidos de un texto. Vamos a ir viendo unas cuantas técnicas relativamente sofisticadas vinculadas al modelado de tópicos y a la constitución de embeddings de palabras más adelante, pero por ahora vamos a seguir contando palabras pero de forma más inteligente. ¿Podemos a partir del conteo de palabras llegar a tener una idea del contenido de un texto? Como vimos, una primera métrica de la importancia de una palabra es la llamada _term frequency_ ($tf$): la frecuencia con la que aparece una palabra en un documento.
+Un problema muy importante en NLP es tratar de generar alguna forma de input sobre el contenido de un texto sin leerlo en su totalidad ("lectura distante"). Esto supone intentar cuantificar los contenidos de un texto. Vamos a ir viendo en próximas clases unas cuantas técnicas relativamente sofisticadas vinculadas al modelado de tópicos y a la constitución de embeddings de palabras más adelante, pero por ahora vamos a seguir contando palabras aunque de forma más inteligente. ¿Podemos a partir del conteo de palabras llegar a tener una idea del contenido de un texto? Como vimos, una primera métrica de la importancia de una palabra es la llamada _term frequency_ ($tf$): la frecuencia con la que aparece una palabra en un documento.
 
 Sin embargo, hay palabras en un documento que aparecen muchas veces pero que no son importantes; en castellano, probablemente palabras como "el", "es", "de", etc. Podríamos adoptar el enfoque de agregar palabras como estas a una lista de palabras vacías (stopwords) y eliminarlas antes del análisis, pero es posible que algunas de estas palabras sean más importantes en algunos documentos que en otros. Una lista de stopwords puede ser un primer paso pero no es el único ni, necesariamente, el más importante para ajustar la frecuencia de los términos para palabras de uso común.
 
@@ -114,7 +114,7 @@ freq_by_rank %>%
         theme_minimal()
 ```
 
-Observemos que el gráfico anterior está en coordenadas log-log. Los tres tomos de los diarios de REnzi son similares: la relación entre rango y frecuencia tiene una pendiente negativa.
+Observemos que el gráfico anterior está en coordenadas log-log. Los tres tomos de los diarios de Renzi son similares: la relación entre rango y frecuencia tiene una pendiente negativa.
 
 ## Calculando todas las métricas: la función `bind_tfi_idf()`
 Repitámoslo una vez más: la idea de la métrica $tf-idf$ es encontrar las palabras importantes para el contenido de cada documento disminuyendo el peso de las palabras de uso común y aumentando el peso de las palabras que no se usan mucho en una colección o corpus de documentos. El cálculo de $tf-idf$ intenta encontrar las palabras que son importantes (es decir, comunes) en un texto, pero informativas (no demasiado comunes).

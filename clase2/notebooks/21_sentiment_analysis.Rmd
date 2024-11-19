@@ -12,7 +12,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 ## Introducción
 En esta parte vamos a aplicar algunas de las herramientas que vimos recién a una tarea bastante clásica en Procesamiento de Lenguaje Natural: el análisis de sentimento, también conocido como minería de opiniones. Esta actividad nos va a servir también para tener una primera aproximación a una forma de trabajar en NLP: el uso de lexicones (o diccionarios).
 
-Supongamos que tenemos un conjunto de comentarios de Facebook o de lectores en un foro. Y queremos tener una idea del "tono" general de los comentarios. Es decir, queremos tener una idea si los comentarios son positivos, negativos, si expresan cierto tipo de emociones, etc. Esta es, básicamente, la esencia del análisis de sentimiento: dado un texto (oración, párrafo, un tuit, etc.) queremos poder clasificarlo en términos de su "tono" o sus "emociones".
+Supongamos que tenemos un conjunto de comentarios de Facebook o de lectores en un foro. Y queremos tener una idea del "tono" general de los comentarios. Es decir, queremos tener una idea acerca de si los comentarios son positivos, negativos, si expresan cierto tipo de emociones, etc. Esta es, básicamente, la esencia del análisis de sentimiento: dado un texto (oración, párrafo, un tuit, etc.) queremos poder clasificarlo en términos de su "tono" o sus "emociones".
 
 Una defincion un poco más formal diría algo así como identificar y extraer información subjetiva de los recursos. Desde el punto de vista de la minería de textos, el análisis de sentimientos es una tarea de clasificación masiva de documentos de manera automática, en función de la connotación positiva o negativa del lenguaje ocupado en el documento.
 
@@ -24,7 +24,7 @@ En este caso, vamos a trabajar con la "polaridad", es decir, con el carácter po
 La segunda forma, que no vamos a tocar hoy, supone entrenar algún modelo que haga esa clasificación por nosotros. Este enfoque es utilizable para cualquier tarea de análisis de sentimiento.
 
 ### Analizando los diarios de Emilio Renzi
-En esta clase, vamos a tomar nuetro dataset con los tres tomos de os diarios de Renzi (aka Ricardo Piglia... o al revés...) y vamos a implementar uno de estos análisis de sentimiento.
+En esta clase, vamos a tomar nuetro dataset con los tres tomos de los diarios de Renzi (aka Ricardo Piglia... o al revés...) y vamos a implementar uno de estos análisis de sentimiento.
 
 ![](../imgs/diarios.jpg)
 
@@ -43,7 +43,7 @@ renzi <- read_csv('../data/renzi.csv')
 renzi
 ```
 
-Ya tenemos organizado los tres tomos en un dataset con información sobre el tomo, el captítulo y la entrada del diario. Vamos a mejorar un poco las cateogrías de los tomos:
+Ya tenemos organizado los tres tomos en un dataset con información sobre el tomo, el capítulo y la entrada del diario. Vamos a mejorar un poco las cateogrías de los tomos:
 
 ```{r}
 renzi <- renzi %>%
@@ -54,7 +54,7 @@ renzi <- renzi %>%
         ))
 ```
 
-Ahora, dado que vamos a contar palabras, vamos a tokenizar el corpus. En este caso, los tokens van a ser las palabras individuales. Recordemos: estamos en el formato `tidy`: cada fila va a ser una palabra y vamos a generar una columna que numere cada una de las entradas.
+Ahora, dado que vamos a contar palabras, vamos a tokenizar el corpus. En este caso, los tokens van a ser las palabras individuales. Recordemos: estamos en el formato `tidy`, cada fila va a ser una palabra y vamos a generar una columna que numere cada una de las entradas.
 
 ```{r}
 tidy_renzi <- renzi %>%
@@ -73,7 +73,7 @@ tidy_renzi <- tidy_renzi %>%
         anti_join(stop_words)
 ```
 
-Y hacemos un "anti_join" (es decir, lo opuesto de un join): lo que nos va a devolver son todas las palabras que están en `tidy_renzi` pero no en `stop_words`. Nótese que pasamos de unas 386.500 palabras a unas 192.300.
+Y hacemos un "anti_join" (es decir, lo opuesto de un join): lo que nos va a devolver son todas las palabras que están en `tidy_renzi` pero no en `stop_words`. Nótese que pasamos de unas 386.500 palabras a unas 193.000.
 
 Ahora sí estamos en condiciones de avanzar en el análisis de sentimiento. Vamos a cargar dos lexicones. El primero, viene de [este sitio de Kaggle](https://www.kaggle.com/rtatman/sentiment-lexicons-for-81-languages). Este fue generado  este  a través de un "grafo de conocimiento", una representación gráfica de entidades del mundo real y los vínculos entre ellas. La intuición general es que las palabras que están estrechamente vinculadas en un grafo de conocimiento probablemente tengan polaridades de sentimiento similares. Particularmente, si les interesa el proceso de construcción de este lexicon (que forma parte de un proyecto que generó diccionarios para 81 lenguajes) pueden consultar [el paper original](https://aclanthology.org/P14-2063.pdf)
 
