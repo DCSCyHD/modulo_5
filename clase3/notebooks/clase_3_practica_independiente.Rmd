@@ -8,7 +8,7 @@ output:
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
-Vamos a hacer el mismo ejercicio para Piglia con la editorial Anagrama pero con la "Biblioteca del Pensamiento Socialista" de la [Editorial Siglo XXI](https://sigloxxieditores.com.ar/).
+Vamos a hacer el mismo ejercicio para Piglia con la editorial Anagrama pero con la "Colección Sociología y Política" de la [Editorial Siglo XXI](https://sigloxxieditores.com.ar/).
 
 ```{r, results='hide'}
 library(rvest)

@@ -8,7 +8,7 @@ output:
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
-Vamos a hacer el mismo ejercicio para Piglia con la editorial Anagrama pero con la "Biblioteca del Pensamiento Socialista" de la [Editorial Siglo XXI](https://sigloxxieditores.com.ar/).
+Vamos a hacer el mismo ejercicio para Piglia con la editorial Anagrama pero con la "Colección Sociología y Política" de la [Editorial Siglo XXI](https://sigloxxieditores.com.ar/).
 
 ```{r, results='hide'}
 library(rvest)
@@ -46,37 +46,37 @@ for (i in 1:4){
 ## 3. Scrapeamos todo...
 Hacemos una función que inserte en una tabla el título, le autore, resumen y precio: 
 ```{r}
-
 scrap_book_sxxi <- function(l){
         
-        libro <- read_html(links[1])
+        libro <- read_html(l)
         
         tit <-  libro %>%
                         html_elements("h1") %>%
                         html_text2() %>%
                         first()
-        
+                
         aut <-  libro %>%
                         html_elements("a.author") %>%
-                        html_elements("a") %>%
-                        html_text()
+                        #html_elements("a") %>%
+                        html_text2()
         
+
         res <- libro %>%
                         html_elements("div.woocommerce-product-details__short-description") %>%
-                        html_text2()
-
+                        html_text2() 
+        
 
         prec <- libro %>%
                         html_elements("div.price") %>%
-                        html_elements("bdi") %>%
-                        html_text()
-        
+                        html_text2() 
+
+
         return(
           tibble(
                 titulo=tit,
                 autore=aut,
-         #       sinopsis=res,
-                precio=prec
+                sinopsis=res,
+                precio_pesos=prec
         ))
 
         
@@ -84,26 +84,26 @@ scrap_book_sxxi <- function(l){
 ```
 
 
-```{r}
-scrap_book_sxxi(links[1])
-```
 
 
 Y ahora la corremos en un loop:
 
 ```{r}
+tictoc::tic()
 books <- tibble(
                 titulo=character(),
                 autore=character(),
                 sinopsis=character(),
-                precio=character()
+                precio_pesos=character()
                 )
 
-for (l in links[1:2]){
-                b <- scrap_book_sxxi(l=l)
-                print(b)
-                books <- books %>% bind_rows(b)
+for (l in links){
+        print(l)
+                #b <- scrap_book_sxxi(l=l)
+                #books <- books %>% bind_rows(b)
 }
+
+tictoc::toc()
 ```
 
 ```{r}
