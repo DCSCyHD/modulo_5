@@ -97,3 +97,5 @@ Por ejemplo, para hacer una consulta al Sistema Integrado de Información Sanita
 `https://sisa.msal.gov.ar/sisa/services/rest/establecimiento/buscar?provincia=1&redEstablecimiento=5Post:{"usuario":"jperez","clave":"xxxx"}`
 
 Existen varias librerías hechas para hacer pedidos a APIS que requieren autenticación de manera simple (spotifyr, instaR, twitteR).
+
+Vamos a usar herramientas de autenticación en la última clase cuando trabajemos con [gemini](https://ai.google.dev/) el LLM de Google.

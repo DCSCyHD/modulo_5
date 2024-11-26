@@ -27,14 +27,15 @@ Leemos o buscamos el perfil del autor.
 Traemos los links de los libros
 ```{r}
 links <- c()
-for (i in 1:2){
-        link <- paste0("https://sigloxxieditores.com.ar/tienda/page/", i, "/?coleccion=biblioteca-del-pensamiento-socialista")
+for (i in 1:4){
+        link <- paste0("https://sigloxxieditores.com.ar/catalogo/page/", i, "/?coleccion=filter_colecciones=sociologia-y-politica")
+
         
         soc <- read_html(link)
 
         libros <- soc %>% 
-          html_elements("div.info-product") %>% 
-          html_elements("a.product-title") %>%
+          html_elements("div.product-wrapper")%>% 
+          html_elements("a.product-image-link") %>%
           html_attr("href")
 
         links <- append(links, libros)
@@ -48,25 +49,25 @@ Hacemos una función que inserte en una tabla el título, le autore, resumen y p
 
 scrap_book_sxxi <- function(l){
         
-        libro <- read_html(l)
+        libro <- read_html(links[1])
         
         tit <-  libro %>%
-                        html_elements("h4") %>%
+                        html_elements("h1") %>%
                         html_text2() %>%
                         first()
         
         aut <-  libro %>%
-                        html_elements("div.author") %>%
+                        html_elements("a.author") %>%
                         html_elements("a") %>%
                         html_text()
         
         res <- libro %>%
-                        html_elements("p.descripcion-corta") %>%
+                        html_elements("div.woocommerce-product-details__short-description") %>%
                         html_text2()
 
 
         prec <- libro %>%
-                        html_elements("div.precio-producto") %>%
+                        html_elements("div.price") %>%
                         html_elements("bdi") %>%
                         html_text()
         
@@ -74,13 +75,19 @@ scrap_book_sxxi <- function(l){
           tibble(
                 titulo=tit,
                 autore=aut,
-                sinopsis=res,
+         #       sinopsis=res,
                 precio=prec
         ))
 
         
 }
 ```
+
+
+```{r}
+scrap_book_sxxi(links[1])
+```
+
 
 Y ahora la corremos en un loop:
 
@@ -92,7 +99,7 @@ books <- tibble(
                 precio=character()
                 )
 
-for (l in links){
+for (l in links[1:2]){
                 b <- scrap_book_sxxi(l=l)
                 print(b)
                 books <- books %>% bind_rows(b)

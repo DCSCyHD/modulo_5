@@ -1478,7 +1478,7 @@ border-radius: 0px;
 
 
 <h1 class="title toc-ignore">Clase 3 - Web scraping con RVest</h1>
-<h4 class="date">14 noviembre, 2023</h4>
+<h4 class="date">26 noviembre, 2024</h4>
 
 </div>
 
@@ -1538,10 +1538,10 @@ importamos a ella y otras librerías auxiliares que nos van a servir.</p>
 <pre class="r"><code>library(rvest)
 library(tidyverse)</code></pre>
 <pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.3     ✔ readr     2.1.4
-## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
 ## ✔ purrr     1.0.2     
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter()         masks stats::filter()
@@ -1672,7 +1672,7 @@ tabla_info</code></pre>
 ##   &lt;chr&gt;           &lt;chr&gt;                
 ## 1 ISBN            978-84-339-9916-0    
 ## 2 EAN             9788433999160        
-## 3 PVP CON IVA     24.9 €               
+## 3 PVP CON IVA     25.9 €               
 ## 4 NÚM. DE PÁGINAS 832                  
 ## 5 COLECCIÓN       Narrativas hispánicas
 ## 6 CÓDIGO          NH 664               
@@ -1690,7 +1690,7 @@ tabla_info</code></pre>
 <pre><code>## # A tibble: 1 × 6
 ##   isbn              ean           precio paginas coleccion     fecha_publicacion
 ##   &lt;chr&gt;             &lt;chr&gt;         &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;         &lt;chr&gt;            
-## 1 978-84-339-9916-0 9788433999160 24.9 € 832     Narrativas h… 17/02/2021</code></pre>
+## 1 978-84-339-9916-0 9788433999160 25.9 € 832     Narrativas h… 17/02/2021</code></pre>
 <div id="sistematizando-el-scrapeo" class="section level3">
 <h3>Sistematizando el scrapeo</h3>
 <p>Ahora que identificamos cómo buscar estos elementos uno por uno en la
@@ -1844,23 +1844,23 @@ libros_piglia &lt;- scrapeo_anagrama(libros_links)</code></pre>
 ## 16                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 Esta novela cuenta una historia real. Se trata de un caso de la crónica policial que tuvo como escenarios Buenos Aires y Montevideo en 1965. En septiembre de ese año una banda asalta un banco en San Fernando, provincia de Buenos Aires. También participan varios políticos y policías que se harán con su parte del botín una vez que el robo haya funcionado. El plan se cumple. Sin embargo, en la huida, los maleantes deciden traicionar a sus socios y escapar con toda la plata. La policía no lo va a permitir.Ricardo Piglia tuvo acceso a materiales confidenciales: los legajos judiciales, la transcripción de las grabaciones secretas realizadas por la policía en el departamento de Herrera y Obes durante el dramático asedio, las declaraciones testimoniales y la crónica periodística. El conjunto del material documental permitió a Piglia armar la historia y reconstruir los personajes, el habla, la época, la trama y el drama con una precisión admirable.Ésta es una historia de amor, traiciones, resistencia y heroísmo, donde Malito, el Nene Brignone, el Gaucho Dorda y el Cuervo Mereles –protagonistas de escenas memorables- entran en la literatura de manera desafiante. El ritmo de plata quemada es implacable, no da tregua ni concede nada. Es dura y conmovedora, deslumbrante y verdadera.«En la mejor tradición de la literatura argentina que intima con la violencia ilegal, Piglia ha escrito una gran novela amoral. Escribe con la sola convicción de la mirada, se despoja del decoro de las buenas escrituras, se deja caer sin la red de estilo y se ampara en la inteligencia y la destreza prácticas del arte de narrar» (Graciela Speranza, Clarín).«Dura, rigurosa, contundente, Plata quemada reconstruye un suceso policial de ribetes operísticos, ocurrido en los años 60, y que Piglia investigó durante largo tiempo» (Hugo Caligaris, La Nación).«Delito, paranoia, complot y marginalidad: Ricardo Piglia encontró en la historia real de asaltantes de bancos, la cifra de su propia literatura. Entre la ficción y la no ficción, Plata quemada es una novela dura que mira sociedad desde el crimen» (Martín Kohan, Los Inrockuptibles).«Respiración artificial, La ciudad ausente y Prisión perpetua son, a estas alturas, clásicos indispensables de la literatura nacional, y Ricardo Piglia se ha convertido –quizás a pesar suyo- en un referente ineludible del panorama literario argentino» (Astrid Pikielny, La Nación).
 ## 17                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   Premio Bartolomé MarchLa obra de Ricardo Piglia pertenece a la mejor literatura contemporánea en cualquier lengua. Sus cuentos, sus novelas, sus nouvelles, sus guiones cinematográficos, sus ensayos críticos y sus trabajos académicos ofrecen al lector una de las experiencias estéticas e intelectuales más intensas que se pueden dar en la cultura actual.La poética de Piglia es el resultado de toda una vida dedicada a la puesta en acto de dos grandes movimientos apasionados: narrar y descifrar el acto de narrar.Formas breves es una composición en busca de la frase justa, la imagen justa y a la vez la idea justa. Al terminar el libro, se tiene la sensación de haber estado en un laboratorio y asimismo en una fiesta de lo posible. En palabras de Piglia, los textos de este volumen «pueden ser leídos como páginas perdidas en el diario de un escritor y también como los primeros ensayos y tentativas de una autobiografía futura». Y añade: «Podría entenderse como un ejercicio de crítica que parte de relatos breves y que a la vez los contiene».«Las formas breves tienen mucho que ver con las sombras breves de Walter Benjamin, tanto como con su interés por las iluminaciones profanas» (Martín Kohan, Les Inrockkuptibles).«Estos textos borran intencionadamente los límites entre la ficción narrativa y la crítica» (Alicia Dujovne Ortiz).«Por las páginas de este libro desfilan todos los nombres que constituyen la biblioteca personal de Ricardo Piglia: Borges, Arlt, Macedonio Fernández (sobre todos), Kafka, Hemingway, Chéjov» (Daniel Link).
 ##                 isbn           ean precio        paginas fecha_publicacion
-## 1  978-84-339-9916-0 9788433999160 24.9 €            832        17/02/2021
-## 2  978-84-339-9860-6 9788433998606 16.9 €            188        12/09/2018
+## 1  978-84-339-9916-0 9788433999160 25.9 €            832        17/02/2021
+## 2  978-84-339-9860-6 9788433998606 17.9 €            188        12/09/2018
 ## 3  978-84-339-9842-2 9788433998422 21.9 €            296        13/09/2017
 ## 4  978-84-339-9818-7 9788433998187 21.9 €            424        14/09/2016
 ## 5  978-84-339-9798-2 9788433997982 21.9 €            360        23/09/2015
 ## 6  978-84-339-9789-0 9788433997890 19.9 €            304        01/01/2015
-## 7  978-84-339-9764-7 9788433997647 17.9 €            296        04/09/2013
+## 7  978-84-339-9764-7 9788433997647 18.9 €            296        04/09/2013
 ## 8  978-84-339-7215-6 9788433972156 19.9 €            304        30/08/2010
-## 9  978-84-339-7160-9 9788433971609   15 €            160        03/09/2007
+## 9  978-84-339-7160-9 9788433971609 17.9 €            160        03/09/2007
 ## 10 978-84-339-7142-5 9788433971425   15 €            200        31/10/2006
-## 11 978-84-339-6158-7 9788433961587 17.9 € No disponibles        18/04/2006
-## 12 978-84-339-6877-7 9788433968777 16.9 €            192        01/03/2005
-## 13 978-84-339-6841-8 9788433968418 16.9 €            176        01/03/2003
-## 14 978-84-339-2493-3 9788433924933 16.9 €            192        01/01/2002
+## 11 978-84-339-6158-7 9788433961587 18.9 € No disponibles        18/04/2006
+## 12 978-84-339-6877-7 9788433968777 17.9 €            192        01/03/2005
+## 13 978-84-339-6841-8 9788433968418 17.9 €            176        01/03/2003
+## 14 978-84-339-2493-3 9788433924933 17.9 €            192        01/01/2002
 ## 15 978-84-339-2471-1 9788433924711 17.9 €            224        01/02/2001
 ## 16 978-84-339-2462-9 9788433924629 17.9 €            232        01/10/2000
-## 17 978-84-339-2463-6 9788433924636 14.9 €            144        01/10/2000
+## 17 978-84-339-2463-6 9788433924636 16.9 €            144        01/10/2000
 ##                coleccion
 ## 1  Narrativas hispánicas
 ## 2  Narrativas hispánicas
@@ -1884,7 +1884,7 @@ libros_piglia &lt;- scrapeo_anagrama(libros_links)</code></pre>
 <h3>Actividad</h3>
 <p>Traer de la página de Anagrama el listado de todos los autores que
 tienen disponibles. El resultado final debe ser una tibble en la cual la
-primer columna es el link al autor y la segunda, el nombre.</p>
+primera columna es el link al autor y la segunda, el nombre.</p>
 <pre class="r"><code>###</code></pre>
 </div>
 </div>

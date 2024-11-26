@@ -92,7 +92,7 @@ El segundo fue elaborado por Agustín Gravano del Laboratorio de Inteligencia Ar
 - activación (activa / neutra / pasiva)
 - imaginabilidad (fácil de imaginar / neutra / difícil de imaginar)
 
-Nosotros vamos a trabajar con la primera dimmensión.
+Nosotros vamos a trabajar con la primera dimensión.
 El paper original con más detalles está [acá](https://bibliotecadigital.exactas.uba.ar/download/technicalreport/technicalreport_n00001.pdf).
 
 
