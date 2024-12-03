@@ -1480,17 +1480,17 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Modelado de tópicos Vol. 1. Latent
 Dirichlet Allocation</h1>
 <h3 class="subtitle">Temas en revistas con targets diferentes</h3>
-<h4 class="date">21 noviembre, 2023</h4>
+<h4 class="date">03 diciembre, 2024</h4>
 
 </div>
 
 
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.3     ✔ readr     2.1.4
-## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
 ## ✔ purrr     1.0.2     
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
@@ -1746,7 +1746,10 @@ pregunta muy parecida a la de un clustering de k-medias. La respuesta es
 desilusionadora: no lo sabemos. No queda otra opción que ir probando.
 Por ahora y a los fines prácticos de esta primera aproximación vamos a
 probar un modelo muy simple: 4 temas.</p>
-<pre class="r"><code>lda_4 &lt;- LDA(disc_dtm, k=4, control = list(seed = 1234))</code></pre>
+<pre class="r"><code>lda_4 &lt;- LDA(disc_dtm, k=4, control = list(seed = 1234))
+
+lda_4</code></pre>
+<pre><code>## A LDA_VEM topic model with 4 topics.</code></pre>
 <p>Vemos que entrenar el modelo es simple: una línea de código. Lo
 difícil viene ahora.</p>
 </div>
@@ -1909,7 +1912,7 @@ ese documento que se generan a partir de ese tema.</p>
 ## # ℹ 7,850 more rows</code></pre>
 <p>Por ejemplo, el modelo estima que alrededor del 68% de las palabras
 en el documento 9 se generaron a partir del tema 3. O menos del 1% de
-las palabras del documento 1 se generan a partir del tópico 1.</p>
+las palabras del documento 1 se generan a partir del tópico 3.</p>
 <p>Para verificar esta respuesta, podríamos ordenar la matriz
 documento-término (ver Capítulo 5.1) y verificar cuáles eran las
 palabras más comunes en ese documento</p>

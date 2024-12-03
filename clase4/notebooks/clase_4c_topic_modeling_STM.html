@@ -1480,24 +1480,24 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Modelado de tópicos Vol. 2. Structural
 Topic Modeling</h1>
 <h3 class="subtitle">Temas en revistas con targets diferentes</h3>
-<h4 class="date">21 noviembre, 2023</h4>
+<h4 class="date">03 diciembre, 2024</h4>
 
 </div>
 
 
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.3     ✔ readr     2.1.4
-## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
 ## ✔ purrr     1.0.2     
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()
 ## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 <pre class="r"><code>library(stm)</code></pre>
-<pre><code>## stm v1.3.6.1 successfully loaded. See ?stm for help. 
+<pre><code>## stm v1.3.7 successfully loaded. See ?stm for help. 
 ##  Papers, resources, and other materials at structuraltopicmodel.com</code></pre>
 <pre class="r"><code>library(topicmodels)
 library(tidytext)
@@ -1601,6 +1601,21 @@ stop_words &lt;- stop_words %&gt;%
                   distinct() %&gt;%
                   left_join(revistas %&gt;% select(id, text))</code></pre>
 <pre><code>## Joining with `by = join_by(id)`</code></pre>
+<pre class="r"><code>metadata</code></pre>
+<pre><code>## # A tibble: 3,930 × 3
+##       id categoria text                                                         
+##    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                                                        
+##  1     1 Hombre    &quot;Ninguno tenia la plata necesaria ni el apellido indicado pa…
+##  2     2 Hombre    &quot;Del bidon que habria drogado a Branco en Italia  a la manip…
+##  3     3 Hombre    &quot;Las ciudades contemporaneas estan repletas, atestadas de ge…
+##  4     4 Hombre    &quot;\n\r\nEn el  empece a ir a la cancha y ahi fue la primera v…
+##  5     5 Hombre    &quot;\nComprar un auto cero kilometro es una experiencia, ademas…
+##  6     6 Hombre    &quot;\n\r\n\r\nGoran Bregovic, musico y compositor nacido en Sar…
+##  7     7 Hombre    &quot;\nPierre es de esas personas a las que se les tiene sana en…
+##  8     8 Hombre    &quot;\n\&quot;Ahora estoy haciendo el proyecto mas importante de mi c…
+##  9     9 Hombre    &quot;\n\r\n\r\n% de sal, % de verduras. Lo demas son conservante…
+## 10    10 Hombre    &quot;\nUna performance es una accion artistica que usa elementos…
+## # ℹ 3,920 more rows</code></pre>
 <p>Primero, generamos nuestra tabla tidy de conteos:</p>
 <pre class="r"><code>word_counts &lt;- revistas_tidy %&gt;%
         group_by(id, word) %&gt;%
@@ -1608,6 +1623,21 @@ stop_words &lt;- stop_words %&gt;%
         ungroup()</code></pre>
 <pre><code>## `summarise()` has grouped output by &#39;id&#39;. You can override using the `.groups`
 ## argument.</code></pre>
+<pre class="r"><code>word_counts</code></pre>
+<pre><code>## # A tibble: 889,157 × 3
+##       id word            n
+##    &lt;dbl&gt; &lt;chr&gt;       &lt;int&gt;
+##  1     1 aag             2
+##  2     1 abajo           2
+##  3     1 abandonarlo     1
+##  4     1 abierto         1
+##  5     1 abiertos        1
+##  6     1 abre            1
+##  7     1 abrian          1
+##  8     1 aca             5
+##  9     1 aceptaran       1
+## 10     1 acumulacion     1
+## # ℹ 889,147 more rows</code></pre>
 </div>
 <div id="modelado-de-tópicos-stm" class="section level3">
 <h3>Modelado de tópicos: STM</h3>
@@ -2032,7 +2062,7 @@ según nuestra variable de corte:</p>
 Lo cual era esperable, en tanto era el objetivo de introducir
 covariables.</p>
 <ul>
-<li>los tópicos 3, 4 y 5 son predominantemente femeninos y con
+<li>los tópicos 3, 4, 5 y 14 son predominantemente femeninos y con
 diferencias fuertes: entre unos 8 y 15 puntos porcentuales.</li>
 <li>los tópicos 1, 6, 9 y 10 son, en cambio, predominantemente
 masculinos.</li>

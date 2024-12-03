@@ -339,7 +339,7 @@ doc_2_topics_lda %>%
 
 Pareciera que se observan diferencias más marcadas en el modelo STM. Lo cual era esperable, en tanto era el objetivo de introducir covariables.
 
-- los tópicos 3, 4 y 5 son predominantemente femeninos y con diferencias fuertes: entre unos 8 y 15 puntos porcentuales.
+- los tópicos 3, 4, 5 y 14 son predominantemente femeninos y con diferencias fuertes: entre unos 8 y 15 puntos porcentuales.
 - los tópicos 1, 6, 9 y 10 son, en cambio, predominantemente masculinos.
 
 Estas diferencias aparecen aunque más atenuadas en el caso de LDA.
