@@ -83,7 +83,20 @@ api %>%
 Traer las estimaciones de pobreza de Brasil con un umbral de pobreza de U$S2 para todos los años disponibles y graficarlo.
 
 ```{r}
-###
+bra <- GET("https://api.worldbank.org/pip/v1/pip?country=BRA&year=all&povline=2&fill_gaps=false&format=csv")
+
+bra <- read_csv(rawToChar(bra$content))
+
+bra
+
+bra %>% 
+        ggplot(aes(x=survey_year, y=headcount, color=reporting_level))+
+        geom_line() +
+        labs(x='Año',
+             y='% población c/ menos de 2 U$S diarios') +
+        theme_minimal() +
+        theme(axis.text.x = element_text(size = 8)) +
+        facet_wrap(~reporting_level)
 ```
 
 ## Autenticación 

@@ -101,14 +101,16 @@ La página nos trae también el botón para suscribirse. Por eso, vamos a especi
 Con `html_text2()` extraemos el texto del elemento. 
 
 ```{r}
-libro %>% html_elements("h1.titulo-libro") %>% 
+libro %>% 
+        html_elements("h1.titulo-libro") %>% 
         html_text2()
 ```
 
 Vamos a hacer lo mismo para el resumen: este lo identificamos porque está en el elemento div con clase textContent. 
 
 ```{r}
-libro %>% html_element(".textContent") %>%
+libro %>% 
+        html_element(".textContent") %>%
         html_text2() %>%
         str_squish() #Borramos los espacios en blanco de más
 
@@ -140,6 +142,13 @@ tabla_info %>%
 
 ### Sistematizando el scrapeo
 Ahora que identificamos cómo buscar estos elementos uno por uno en la página hay que sistematizar una función que loopee el listado de links que tenemos para encontrar esos elementos. Probemos esta función a ver qué pasa:
+
+```{r}
+for (l in libros_links){
+        print(l)
+}
+```
+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
 
@@ -239,7 +248,7 @@ scrapeo_anagrama <- function(listado_links){
                 
                 tabla_info <-  tryCatch(
                     {
-                    tabla_info%>%
+                    tabla_info %>%
                         pivot_wider(names_from = "X1", values_from = "X2") %>%
                         rename("isbn" = "ISBN",
                                "ean" = "EAN",

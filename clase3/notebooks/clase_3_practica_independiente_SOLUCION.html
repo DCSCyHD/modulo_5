@@ -1478,20 +1478,20 @@ border-radius: 0px;
 
 
 <h1 class="title toc-ignore">Clase 3. Práctica independiente</h1>
-<h4 class="date">14 noviembre, 2023</h4>
+<h4 class="date">03 diciembre, 2024</h4>
 
 </div>
 
 
 <p>Vamos a hacer el mismo ejercicio para Piglia con la editorial
-Anagrama pero con la “Biblioteca del Pensamiento Socialista” de la <a href="https://sigloxxieditores.com.ar/">Editorial Siglo XXI</a>.</p>
+Anagrama pero con la “Colección Sociología y Política” de la <a href="https://sigloxxieditores.com.ar/">Editorial Siglo XXI</a>.</p>
 <pre class="r"><code>library(rvest)
 library(tidyverse)</code></pre>
 <pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.3     ✔ readr     2.1.4
-## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
 ## ✔ purrr     1.0.2     
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter()         masks stats::filter()
@@ -1509,18 +1509,21 @@ busco?)</p>
 <h2>2. Generar lista de links</h2>
 <p>Traemos los links de los libros</p>
 <pre class="r"><code>links &lt;- c()
-for (i in 1:2){
-        link &lt;- paste0(&quot;https://sigloxxieditores.com.ar/tienda/page/&quot;, i, &quot;/?coleccion=biblioteca-del-pensamiento-socialista&quot;)
+for (i in 1:4){
+        link &lt;- paste0(&quot;https://sigloxxieditores.com.ar/catalogo/page/&quot;, i, &quot;/?filter_colecciones=sociologia-y-politica&quot;)
+
         
         soc &lt;- read_html(link)
 
         libros &lt;- soc %&gt;% 
-          html_elements(&quot;div.info-product&quot;) %&gt;% 
-          html_elements(&quot;a.product-title&quot;) %&gt;%
+          html_elements(&quot;div.product-wrapper&quot;)%&gt;% 
+          html_elements(&quot;a.product-image-link&quot;) %&gt;%
           html_attr(&quot;href&quot;)
 
         links &lt;- append(links, libros)
 }</code></pre>
+<pre class="r"><code>link</code></pre>
+<pre><code>## [1] &quot;https://sigloxxieditores.com.ar/catalogo/page/4/?filter_colecciones=sociologia-y-politica&quot;</code></pre>
 </div>
 <div id="scrapeamos-todo" class="section level2">
 <h2>3. Scrapeamos todo…</h2>
@@ -1531,142 +1534,160 @@ resumen y precio:</p>
         libro &lt;- read_html(l)
         
         tit &lt;-  libro %&gt;%
-                        html_elements(&quot;h4&quot;) %&gt;%
+                        html_elements(&quot;h1&quot;) %&gt;%
                         html_text2() %&gt;%
                         first()
-        
-        aut &lt;-  libro %&gt;%
-                        html_elements(&quot;div.author&quot;) %&gt;%
-                        html_elements(&quot;a&quot;) %&gt;%
-                        html_text()
-        
-        res &lt;- libro %&gt;%
-                        html_elements(&quot;p.descripcion-corta&quot;) %&gt;%
-                        html_text2()
 
+        aut &lt;-  libro %&gt;%
+                        html_elements(&quot;a.author&quot;) %&gt;%
+                        #html_attr(&quot;main&quot;) %&gt;%
+                        html_text2() %&gt;%
+                        first()
+
+        res &lt;- libro %&gt;%
+                html_elements(&quot;div.woocommerce-product-details__short-description&quot;) %&gt;%
+                html_text2()
+        
+        res2 &lt;- res[2]
+        
         prec &lt;- libro %&gt;%
-                        html_elements(&quot;div.precio-producto&quot;) %&gt;%
-                        html_elements(&quot;bdi&quot;) %&gt;%
-                        html_text()
+                html_element(&quot;div.price&quot;) %&gt;%
+                html_text2()
         
         return(
-          tibble(
-                titulo=tit,
-                autore=aut,
-                sinopsis=res,
-                precio=prec
+                  tibble(
+                        titulo=tit,
+                        autore=aut,
+                        sinopsis=res2,
+                        precio_pesos=prec
         ))
-
         
 }</code></pre>
 <p>Y ahora la corremos en un loop:</p>
-<pre class="r"><code>books &lt;- tibble(
+<pre class="r"><code>tictoc::tic()
+books &lt;- tibble(
                 titulo=character(),
                 autore=character(),
                 sinopsis=character(),
-                precio=character()
+                precio_pesos=character()
                 )
 
 for (l in links){
+        print(l)
                 b &lt;- scrap_book_sxxi(l=l)
-                print(b)
                 books &lt;- books %&gt;% bind_rows(b)
 }</code></pre>
-<pre><code>## # A tibble: 1 × 4
-##   titulo                               autore    sinopsis                 precio
-##   &lt;chr&gt;                                &lt;chr&gt;     &lt;chr&gt;                    &lt;chr&gt; 
-## 1 DIECIOCHO BRUMARIO DE LUIS BONAPARTE karl marx &quot;Esta deslumbrante crón… $7,300
-## # A tibble: 1 × 4
-##   titulo           autore    sinopsis precio 
-##   &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;    &lt;chr&gt;  
-## 1 EL CAPITAL VOL.7 karl marx &quot;&quot;       $14,400
-## # A tibble: 1 × 4
-##   titulo           autore    sinopsis precio 
-##   &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;    &lt;chr&gt;  
-## 1 EL CAPITAL VOL.8 karl marx &quot;&quot;       $14,400
-## # A tibble: 1 × 4
-##   titulo           autore    sinopsis precio 
-##   &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;    &lt;chr&gt;  
-## 1 EL CAPITAL VOL.6 karl marx &quot;&quot;       $14,400
-## # A tibble: 1 × 4
-##   titulo           autore    sinopsis precio 
-##   &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;    &lt;chr&gt;  
-## 1 EL CAPITAL VOL.5 karl marx &quot;&quot;       $14,400
-## # A tibble: 1 × 4
-##   titulo           autore    sinopsis precio 
-##   &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;    &lt;chr&gt;  
-## 1 EL CAPITAL VOL.4 karl marx &quot;&quot;       $14,400
-## # A tibble: 1 × 4
-##   titulo                        autore                  sinopsis          precio
-##   &lt;chr&gt;                         &lt;chr&gt;                   &lt;chr&gt;             &lt;chr&gt; 
-## 1 FEMINISMOS PARA LA REVOLUCIÓN laura fernández cordero &quot;¿Qué era el fem… $10,6…
-## # A tibble: 1 × 4
-##   titulo    autore                 sinopsis                               precio
-##   &lt;chr&gt;     &lt;chr&gt;                  &lt;chr&gt;                                  &lt;chr&gt; 
-## 1 ANTOLOGÍA josé carlos mariátegui &quot;Llamado el \&quot;primer marxista de Amér… $12,2…
-## # A tibble: 1 × 4
-##   titulo                autore          sinopsis                          precio
-##   &lt;chr&gt;                 &lt;chr&gt;           &lt;chr&gt;                             &lt;chr&gt; 
-## 1 MANIFIESTO SOCIALISTA Bhaskar Sunkara &quot;¿Qué viene a decirnos un manifi… $11,2…
-## # A tibble: 3 × 4
-##   titulo                                              autore     sinopsis precio
-##   &lt;chr&gt;                                               &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt; 
-## 1 MANIFIESTO POR UN ARTE REVOLUCIONARIO INDEPENDIENTE andre bre… Present… $6,200
-## 2 MANIFIESTO POR UN ARTE REVOLUCIONARIO INDEPENDIENTE diego riv… Present… $6,200
-## 3 MANIFIESTO POR UN ARTE REVOLUCIONARIO INDEPENDIENTE leon trot… Present… $6,200
-## # A tibble: 1 × 4
-##   titulo             autore       sinopsis                                precio
-##   &lt;chr&gt;              &lt;chr&gt;        &lt;chr&gt;                                   &lt;chr&gt; 
-## 1 CONTRAHEGEMONÍA YA nancy fraser &quot;El capitalismo financiero muestra su … $4,990
-## # A tibble: 1 × 4
-##   titulo                         autore       sinopsis                    precio
-##   &lt;chr&gt;                          &lt;chr&gt;        &lt;chr&gt;                       &lt;chr&gt; 
-## 1 ¿QUÉ ENTIENDO YO POR MARXISMO? alain badiou A doscientos años del naci… $4,600
-## # A tibble: 1 × 4
-##   titulo                     autore         sinopsis                      precio
-##   &lt;chr&gt;                      &lt;chr&gt;          &lt;chr&gt;                         &lt;chr&gt; 
-## 1 LA BIBLIA DEL PROLETARIADO horacio tarcus &quot;El capital es la obra que c… $6,600
-## # A tibble: 3 × 4
-##   titulo               autore           sinopsis                          precio
-##   &lt;chr&gt;                &lt;chr&gt;            &lt;chr&gt;                             &lt;chr&gt; 
-## 1 MANIFIESTO COMUNISTA friedrich engels Escrito en 1848 por dos revoluci… $7,300
-## 2 MANIFIESTO COMUNISTA horacio tarcus   Escrito en 1848 por dos revoluci… $7,300
-## 3 MANIFIESTO COMUNISTA karl marx        Escrito en 1848 por dos revoluci… $7,300
-## # A tibble: 1 × 4
-##   titulo               autore          sinopsis                           precio
-##   &lt;chr&gt;                &lt;chr&gt;           &lt;chr&gt;                              &lt;chr&gt; 
-## 1 ANTOLOGÍA DE GRAMSCI antonio gramsci &quot;Esta Antología presenta al lecto… $13,4…
-## # A tibble: 1 × 4
-##   titulo    autore    sinopsis                                            precio
-##   &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;                                               &lt;chr&gt; 
-## 1 ANTOLOGÍA karl marx &quot;Una vez superado el clima de antimarxismo dominan… $13,4…
-## # A tibble: 1 × 4
-##   titulo           autore    sinopsis                                     precio
-##   &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;                                        &lt;chr&gt; 
-## 1 EL CAPITAL VOL.2 karl marx &quot;La edición de Siglo XXI de El capital está… $11,1…
-## # A tibble: 1 × 4
-##   titulo           autore    sinopsis                                     precio
-##   &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;                                        &lt;chr&gt; 
-## 1 EL CAPITAL VOL.1 karl marx &quot;La edición de Siglo XXI de El capital está… $11,1…
-## # A tibble: 1 × 4
-##   titulo           autore    sinopsis                                     precio
-##   &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;                                        &lt;chr&gt; 
-## 1 EL CAPITAL VOL.3 karl marx &quot;La edición de Siglo XXI de El capital está… $11,1…</code></pre>
+<pre><code>## [1] &quot;https://sigloxxieditores.com.ar/libro/lo-que-el-progresismo-no-ve/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/de-bobo-nada/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/mundo-visto-desde-america-latina-el/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/conocer-es-comparar/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/punto-de-vista/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/nosotros-contra-ellos/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/el-populismo-en-america-central/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/el-nuevo-regimen-de-las-desigualdades-solitarias/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/el-diablo-en-la-ciudad/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/como-hacen-los-pobres-para-sobrevivir/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/introduccion-a-foucault-2/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/el-poder-de-los-afectos-en-la-politica/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/otro-capitalismo-tiene-que-ser-posible/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/que-pudo-y-que-no-pudo-el-estado/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/el-99-contra-el-1/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-sociedad-argentina-en-la-pospandemia/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/las-sociologias-de-marx-durkheim-y-weber/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/contra-el-homo-resignatus/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/las-crisis-de-la-democracia/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/el-entorno-digital/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/populismo/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/manual-de-escritura-para-cientificos-sociales-2/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-escuela-bajo-sospecha/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/entre-narcos-y-policias/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/vivir-la-fe/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/para-que-molestarnos-en-hacer-oir-nuestras-voces/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/el-viejo-y-el-nuevo-poder-economico-en-la-argentina/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-epoca-de-las-pasiones-tristes-2/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/repensar-las-desigualdades/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-gendarmeria-desde-adentro/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/fake-news-trolls-y-otros-encantos/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/introduccion-heterodoxa-a-las-ciencias-sociales/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-rebelion-de-los-que-nadie-quiere-ver/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/historia-del-movimiento-evita/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/muertes-que-importan/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-argentina-en-el-siglo-xxi/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-teoria-social-ahora/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/por-un-populismo-de-izquierda/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/datos-pruebas-e-ideas/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/los-anos-del-kirchnerismo/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/por-que-funciona-el-populismo/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/lo-que-nos-une/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-argentina-transgenica/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/como-se-construye-un-policia/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/castigar-al-projimo/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/radiografia-del-nuevo-campo-argentino/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/en-defensa-de-la-sociologia/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/psiquiatria-psicoanalisis-y-cultura-comunista/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/america-latina-entre-la-desigualdad-y-la-esperanza/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/el-leviatan-azul/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/mozart-el-asesinato-y-los-limites-del-sentido-comun/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-fuerza-del-orden/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/por-que-preferimos-la-desigualdad/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-tercerizacion-laboral/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-riqueza-escondida-de-las-naciones/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/para-hablar-de-la-sociedad/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/los-anos-de-la-alianza/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/el-cuidado-infantil-en-el-siglo-xxi/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/humor-politico-en-tiempos-de-represion/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/marx-en-la-argentina/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/los-condenados-de-la-ciudad/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/nuestros-anos-sesentas/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/politica-y-transparencia/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/politica-y-o-violencia/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/violencias-de-estado/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/el-fanatico-de-la-opera/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/manual-de-sociologia-de-la-religion/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/para-que-sirve-realmente-un-sociologo/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/peronismo-y-cultura-de-izquierda/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-escuela-y-la-cuestion-social/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/etica-posmoderna/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/estudios-sobre-los-origenes-del-peronismo/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/los-anos-de-menem/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/repensar-la-justicia-social/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/el-jazz-en-accion/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/nacion-y-narracion/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/los-tres-peronismos/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/en-busca-de-respeto/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/las-dos-caras-de-un-gueto/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/discutir-alfonsin/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/el-sentimiento-de-inseguridad/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/el-politico-y-el-cientifico/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/los-trucos-del-oficio/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/outsiders/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/sobre-la-violencia-revolucionaria/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/vanguardia-internacionalismo-y-politica/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/cambio-de-epoca/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-nacion-en-tiempo-heterogeneo/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/nuevos-temas-en-la-agenda-de-politica-educativa/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-sociologia-ahora/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/la-zona-gris/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/centro-editor-de-america-latina/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/entre-las-cuerdas/&quot;
+## [1] &quot;https://sigloxxieditores.com.ar/libro/anos-de-alfonsin-los/&quot;</code></pre>
+<pre class="r"><code>tictoc::toc()</code></pre>
+<pre><code>## 110.34 sec elapsed</code></pre>
 <pre class="r"><code>books</code></pre>
-<pre><code>## # A tibble: 23 × 4
-##    titulo                                              autore    sinopsis precio
-##    &lt;chr&gt;                                               &lt;chr&gt;     &lt;chr&gt;    &lt;chr&gt; 
-##  1 DIECIOCHO BRUMARIO DE LUIS BONAPARTE                karl marx &quot;Esta d… $7,300
-##  2 EL CAPITAL VOL.7                                    karl marx &quot;&quot;       $14,4…
-##  3 EL CAPITAL VOL.8                                    karl marx &quot;&quot;       $14,4…
-##  4 EL CAPITAL VOL.6                                    karl marx &quot;&quot;       $14,4…
-##  5 EL CAPITAL VOL.5                                    karl marx &quot;&quot;       $14,4…
-##  6 EL CAPITAL VOL.4                                    karl marx &quot;&quot;       $14,4…
-##  7 FEMINISMOS PARA LA REVOLUCIÓN                       laura fe… &quot;¿Qué e… $10,6…
-##  8 ANTOLOGÍA                                           josé car… &quot;Llamad… $12,2…
-##  9 MANIFIESTO SOCIALISTA                               Bhaskar … &quot;¿Qué v… $11,2…
-## 10 MANIFIESTO POR UN ARTE REVOLUCIONARIO INDEPENDIENTE andre br… &quot;Presen… $6,200
-## # ℹ 13 more rows</code></pre>
+<pre><code>## # A tibble: 94 × 4
+##    titulo                                           autore sinopsis precio_pesos
+##    &lt;chr&gt;                                            &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;       
+##  1 Lo que el progresismo no ve                      Sabin… &quot;¿Qué l… $19990      
+##  2 De bobo, nada                                    LUISI… &quot;El ant… $21990      
+##  3 El mundo visto desde América Latina              Ana C… &quot;Uno de… $16490      
+##  4 Conocer es comparar                              Mora … &quot;Los es… $23690      
+##  5 Punto de vista                                   Sofia… &quot;1978. … $27690      
+##  6 Nosotros contra ellos                            Ernes… &quot;Hay un… $26590      
+##  7 El populismo en América Central                  Harry… &quot;Améric… $28990      
+##  8 El nuevo régimen de las desigualdades solitarias Franç… &quot;Hasta … $26590      
+##  9 El diablo en la ciudad                           Loic … &quot;En el … $27790      
+## 10 Cómo hacen los pobres para sobrevivir            Javie… &quot;¿Cómo … $25290      
+## # ℹ 84 more rows</code></pre>
 </div>
 
 
