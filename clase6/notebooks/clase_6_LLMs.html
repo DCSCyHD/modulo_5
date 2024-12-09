@@ -1485,8 +1485,8 @@ Lenguaje (LLMs)</h1>
 </div>
 
 
-<div id="introducción" class="section level2">
-<h2>Introducción</h2>
+<div id="introducción" class="section level1">
+<h1>Introducción</h1>
 <p>Este notebook ofrece una introducción a los Large Language Models
 (LLMs), centrándose en el modelo Gemini desarrollado por Google. Se
 exploran los conceptos básicos de los transformers, el mecanismo de
@@ -1500,8 +1500,8 @@ para identificar las limitaciones del modelo.</p>
 potencialidades y cómo aplicarlos a tareas de procesamiento de lenguaje
 natural en el ámbito de las ciencias sociales.</p>
 </div>
-<div id="qué-es-un-transformer" class="section level2">
-<h2>¿Qué es un transformer?</h2>
+<div id="qué-es-un-transformer" class="section level1">
+<h1>¿Qué es un transformer?</h1>
 <p>Un <strong>transformer</strong> es un tipo de modelo de machine
 learning diseñado para trabajar con datos secuenciales, como texto, pero
 con una capacidad mucho mayor que los modelos tradicionales. Su diseño
@@ -1523,8 +1523,8 @@ relaciones analizando cómo cada palabra interactúa con las demás.</p>
 <p>Modelos previos, como las RNNs, procesaban las palabras una por una,
 pero olvidaban información a medida que avanzaban. Además, eran lentos y
 no podían mirar toda la frase al mismo tiempo.</p>
-<div id="cómo-funcionan-los-transformers" class="section level3">
-<h3>¿Cómo funcionan los transformers?</h3>
+<div id="cómo-funcionan-los-transformers" class="section level2">
+<h2>¿Cómo funcionan los transformers?</h2>
 <p>Los transformers usan un mecanismo clave llamado
 <strong>“atención”</strong>, específicamente el <strong>mecanismo de
 atención autoconsciente</strong> (<strong>self-attention</strong>). Este
@@ -1555,8 +1555,8 @@ probable en función del contexto.</p>
 la representación de cada palabra para incluir información relevante
 sobre las palabras relacionadas.</p>
 </div>
-<div id="pasos-principales-del-self-attention" class="section level3">
-<h3>Pasos principales del self-attention</h3>
+<div id="pasos-principales-del-self-attention" class="section level2">
+<h2>Pasos principales del self-attention</h2>
 <p><strong>1. Representación inicial: embeddings</strong> Cada palabra
 se convierte en un vector numérico, llamado <strong>embedding</strong>,
 que captura información sobre su significado. Por ejemplo: - “perro” →
@@ -1648,8 +1648,8 @@ una representación ajustada que incluye información contextual. Por
 ejemplo: - “él” → nuevo vector que indica que probablemente se refiere
 al “niño” por la relación fuerte con “pulgas”.</p>
 </div>
-<div id="cómo-ayuda-el-self-attention" class="section level3">
-<h3>Cómo ayuda el self-attention</h3>
+<div id="cómo-ayuda-el-self-attention" class="section level2">
+<h2>Cómo ayuda el self-attention</h2>
 <p>El self-attention analiza relaciones complejas en toda la oración. En
 nuestro ejemplo: - Decide que “él” se refiere al “niño” porque “pulgas”
 tiene más sentido en ese contexto (el modelo aprende esto durante el
@@ -1675,8 +1675,8 @@ tareas complejas como traducción, resumen y generación de texto.</li>
 interactuamos con un LLM?</p>
 </div>
 </div>
-<div id="cómo-usar-un-llm-y-qué-es-el-prompt-engineering" class="section level2">
-<h2>Cómo usar un LLM y qué es el prompt engineering</h2>
+<div id="cómo-usar-un-llm-y-qué-es-el-prompt-engineering" class="section level1">
+<h1>Cómo usar un LLM y qué es el prompt engineering</h1>
 <p>Ya mencionamos que un LLM es una herramienta sumamente útil que
 permite realizar diversas tareas basadas en texto: desde resúmenes y
 clasificaciones hasta generación de contenido y análisis de
@@ -1720,8 +1720,8 @@ solicitudes al modelo.</li>
 ajustar el prompt según sea necesario. La iteración es clave para
 obtener resultados óptimos.</p></li>
 </ol>
-<div id="estrategias-de-prompt-engineering" class="section level3">
-<h3>Estrategias de prompt engineering</h3>
+<div id="estrategias-de-prompt-engineering" class="section level2">
+<h2>Estrategias de prompt engineering</h2>
 <p>Hay varias formas de diseñar un prompt.</p>
 <ol style="list-style-type: decimal">
 <li><strong>Zero-shot prompting</strong> Pide al modelo realizar una
@@ -2158,7 +2158,7 @@ calcular las métricas habituales.</p>
 ## ✖ dplyr::lag()      masks stats::lag()
 ## ✖ yardstick::spec() masks readr::spec()
 ## ✖ recipes::step()   masks stats::step()
-## • Dig deeper into tidy modeling with R at https://www.tmwr.org</code></pre>
+## • Use tidymodels_prefer() to resolve common conflicts.</code></pre>
 <pre class="r"><code>accuracy(rtas_df, stars, llm_stars) %&gt;%
 bind_rows(precision(rtas_df, stars, llm_stars)) %&gt;%
 bind_rows(recall(rtas_df, stars, llm_stars)) %&gt;%
@@ -2200,11 +2200,11 @@ sesgos en los datos de entrenamiento.</p>
 <pre><code>## # A tibble: 5 × 2
 ##   review_body                                                           llm_expl
 ##   &lt;chr&gt;                                                                 &lt;chr&gt;   
-## 1 Problemas en la entrega, llego mas tarde de lo esperado. Atencion al… &quot;La res…
-## 2 Un calendario, no se puede decir mas.                                 &quot;El tex…
-## 3 Esta muy bien y encaja perfectamente, el único problema que le veo e… &quot;La res…
-## 4 es un poco pequeño y el imán no tiene demasiada fuerza, pero por el … &quot;La res…
-## 5 Una funda que se ajusta a su descripción, muy fina y se ajusta a la … &quot;La res…</code></pre>
+## 1 Queria una buena sombra para mi jardin,perfecto buena calidad una pe… &quot;La res…
+## 2 Cumple con el servicio, pero la durabilidad es bastante inferior      &quot;La res…
+## 3 Está bien y no se quedan los pelos pegados pero mi perro no quería e… &quot;La res…
+## 4 El juego está muy bien, pero la maleta de plástico venía tocada y ag… &quot;La res…
+## 5 Me gusta porque es una sorpresa y lo que no me gusta es que no se pu… &quot;La res…</code></pre>
 <p>Ahora, los “falsos positivos”, según la matriz de confusión solamente
 tenemos 4, así que podemos analizarlos todos</p>
 <pre class="r"><code>rtas_df %&gt;%

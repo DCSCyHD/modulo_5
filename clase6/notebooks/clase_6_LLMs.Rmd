@@ -9,14 +9,14 @@ output:
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
-## Introducción
+# Introducción
 Este notebook ofrece una introducción a los Large Language Models (LLMs), centrándose en el modelo Gemini desarrollado por Google. Se exploran los conceptos básicos de los transformers, el mecanismo de self-attention, el prompt engineering y estrategias para interactuar con un LLM. 
 
 Como caso de aplicación, se retoma el dataset de reseñas de Amazon del Módulo 4 para clasificarlas en "positivo" o "negativo" utilizando Gemini. Se analizan los resultados y se realiza un análisis de errores para identificar las limitaciones del modelo.
 
 El objetivo principal es comprender cómo funcionan los LLMs, sus potencialidades y cómo aplicarlos a tareas de procesamiento de lenguaje natural en el ámbito de las ciencias sociales.
 
-## ¿Qué es un transformer?
+# ¿Qué es un transformer?
 Un **transformer** es un tipo de modelo de machine learning diseñado para trabajar con datos secuenciales, como texto, pero con una capacidad mucho mayor que los modelos tradicionales. Su diseño resuelve algunos de los problemas que tenían métodos previos, como los modelos recurrentes (**RNNs**) o las redes LSTM.
 
 Los transformers son la base de los modelos de lenguaje más avanzados, como los LLMs (e.g., ChatGPT).
@@ -33,7 +33,7 @@ Hay cierta ambigüedad: ¿a quién se refiere "él"? ¿Al perro o al niño? El *
   
 Modelos previos, como las RNNs, procesaban las palabras una por una, pero olvidaban información a medida que avanzaban. Además, eran lentos y no podían mirar toda la frase al mismo tiempo.
 
-### ¿Cómo funcionan los transformers?
+## ¿Cómo funcionan los transformers?
 Los transformers usan un mecanismo clave llamado **"atención"**, específicamente el **mecanismo de atención autoconsciente** (**self-attention**). Este mecanismo les permite:
 
 1. **Mirar todas las palabras al mismo tiempo** (paralelismo).
@@ -55,8 +55,7 @@ En nuestro ejemplo:
 
 El **self-attention** calcula estas relaciones y ajusta la representación de cada palabra para incluir información relevante sobre las palabras relacionadas.
 
-
-### Pasos principales del self-attention
+## Pasos principales del self-attention
 **1. Representación inicial: embeddings**
 Cada palabra se convierte en un vector numérico, llamado **embedding**, que captura información sobre su significado. Por ejemplo:
 - "perro" → [0.2, 0.5, 0.8]
@@ -105,7 +104,7 @@ Cada palabra ahora tiene una representación ajustada que incluye información c
 - "él" → nuevo vector que indica que probablemente se refiere al "niño" por la relación fuerte con "pulgas".
 
 
-### Cómo ayuda el self-attention
+## Cómo ayuda el self-attention
 El self-attention analiza relaciones complejas en toda la oración. En nuestro ejemplo:
 - Decide que "él" se refiere al "niño" porque "pulgas" tiene más sentido en ese contexto (el modelo aprende esto durante el entrenamiento).
 
@@ -122,7 +121,7 @@ Enseguida vamos a ver un ejemplo concreto de uso.
 
 Pero antes tenemos que introducir una última cuestión. ¿Cómo interactuamos con un LLM?
 
-## Cómo usar un LLM y qué es el prompt engineering
+# Cómo usar un LLM y qué es el prompt engineering
 Ya mencionamos que un LLM es una herramienta sumamente útil que permite realizar diversas tareas basadas en texto: desde resúmenes y clasificaciones hasta generación de contenido y análisis de sentimientos. Sin embargo, su eficacia depende de cómo interactuemos con él. Aquí entra en juego el concepto de **prompt engineering**. Es la tarea que consiste en diseñar instrucciones claras y efectivas para maximizar la calidad de las respuestas del modelo.
 
 Un LLM, como Gemini, está entrenado en vastos conjuntos de datos para reconocer patrones en el lenguaje. Aunque no "piensa" como un humano, puede generar respuestas coherentes y contextuales basadas en entradas específicas. El modelo procesa instrucciones llamadas *prompts*, que son preguntas, textos o comandos diseñados para guiar su comportamiento.
@@ -146,7 +145,7 @@ Un buen prompt debe ser claro, estructurado y, cuando sea necesario, incluir eje
 
 4. **Revisar e iterar**: Evaluar las respuestas y ajustar el prompt según sea necesario. La iteración es clave para obtener resultados óptimos.
 
-### Estrategias de prompt engineering
+## Estrategias de prompt engineering
 Hay varias formas de diseñar un prompt.
 
 1. **Zero-shot prompting**
