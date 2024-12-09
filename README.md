@@ -86,7 +86,7 @@ Pueden descargarse la totalidad de los materiales de la clase para trabajar en u
 Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
 
 ## Clase 6. ¿Qué son los LLMs y cómo usarlos? Un primer ejercicio con modelos grandes de lenguaje 
-- [Slides - pdf](/clase6/DIPLO_TM_Clase_6.pdf)
+- [Slides - pdf](/clase6/DIPLO_TM_clase_6.pdf)
 - [Explicación y práctica guiada - Notebook](/clase6/notebooks/clase_6_LLMs.html)
 - [Explicación y práctica guiada - RMarkdown](/clase6/notebooks/clase_6_LLMs.Rmd)
 
