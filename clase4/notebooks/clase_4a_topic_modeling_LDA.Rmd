@@ -241,7 +241,7 @@ doc_2_topics %>%
   mutate(gamma = round(gamma, 5))
 ```
 
-Por ejemplo, el modelo estima que  alrededor del 68% de las palabras en el documento 9 se generaron a partir del tema 3. O menos del 1% de las palabras del documento 1 se generan a partir del tópico 3.
+Por ejemplo, el modelo estima que  alrededor del 45% de las palabras en el documento 9 se generaron a partir del tema 3. O menos del 1% de las palabras del documento 1 se generan a partir del tópico 3.
 
 Para verificar esta respuesta, podríamos ordenar la matriz documento-término (ver Capítulo 5.1) y verificar cuáles eran las palabras más comunes en ese documento
 ```{r}
