@@ -1,11 +1,14 @@
 ---
 title: "Módulo V"
 author: "**Diplomatura en Cs. Sociales Computacionales y Humanidades Digitales**"
-output: html_document
+output:
+  md_document:
+    variant: markdown_github
 ---
+# Módulo V
 ##### Escuela Interdisciplinaria de Altos Estudios Sociales
 ##### Universidad Nacional de San Martín
-![](imgs/Z_logo-factor-data-solo.jpg)
+![](imgs/Z_logo-factor-data-solo.jpg){width='200px'}
 
 **Equipo docente:**   
 - [Germán Rosati](https://gefero.github.io/)  
@@ -31,7 +34,7 @@ El taller se desarrollará en R y se hará un uso extensivo de las siguientes li
 
 Pueden instalarse utilizando las siguientes instrucciones:
 
-```{r Librarys, eval=FALSE, include=FALSE}
+```{r eval = FALSE, echo = TRUE}
 install.packages('tidytext')
 install.packages('topicmodels')
 install.packages('stm')
@@ -42,6 +45,9 @@ install.packages('gemini.R')
 ```
 
 ### Contenidos por clase  
+
+<u> *Los materiales están organizados por clase: Pueden descargarse la totalidad de los materiales de cada una para trabajar en un único archivo .zip* </u>  
+
 #### __Clase 1__  
 
 + Temas de clase  
@@ -49,7 +55,6 @@ install.packages('gemini.R')
   + ¿Cómo hacer de un corpus de texto crudo algo analizable mediante métodos cuantitativos?  
   + Preprocesamiento de texto: stopwords, lemmas y stemming.
 
-<u> *Pueden descargarse la totalidad de los materiales de la clase para trabajar en un único archivo .zip*  </u>  
 [![](imgs/Download.png)](clase1.zip)
 
 
@@ -60,7 +65,6 @@ install.packages('gemini.R')
   + Bag of Words. Term-frequency matrix: conteos crudos y ponderación TF-IDF.   
   + Análisis de sentimientos sobre un corpus.   
   
-<u> *Pueden descargarse la totalidad de los materiales de la clase para trabajar en un único archivo .zip* </u>   
 [![](imgs/Download.png)](clase2.zip)  
 
 
@@ -69,7 +73,6 @@ install.packages('gemini.R')
 + Temas de clase  
   + Web Scraping + APIs. ¿Cómo descargamos información de un sitio estático?   
   
-<u> *Pueden descargarse la totalidad de los materiales de la clase para trabajar en un único archivo .zip*  </u>  
 [![](imgs/Download.png)](clase3.zip)  
 
 
@@ -80,7 +83,6 @@ install.packages('gemini.R')
   + Introducción al modelado de tópicos.  
   + Latent Dirichlet Allocation (LDA) y un modelo para detectar tópicos diseñado para las ciencias sociales: Structural Topic Modeling. (STA)  
 
-<u> *Pueden descargarse la totalidad de los materiales de la clase para trabajar en un único archivo .zip*  </u>    
 [![](imgs/Download.png)](clase4.zip)
 
 
@@ -90,24 +92,22 @@ install.packages('gemini.R')
   + ¿Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec).   
   + ¿Cómo se usa un modelo pre-entrenado? Usando word embeddings pre-entrenados como insumo.    
 
-<u> *Pueden descargarse la totalidad de los materiales de la clase para trabajar en un único archivo .zip)*  </u>    
 [![](imgs/Download.png)](clase5.zip)  
 
 
-__Clase 6__
+#### __Clase 6__
 
 + Temas de clase  
   + ¿Qué son los LLMs y cómo usarlos? Un primer ejercicio con modelos grandes de lenguaje  
 
-<u> *Pueden descargarse la totalidad de los materiales de la clase para trabajar en un único archivo .zip* </u>  
 [![](imgs/Download.png)](clase6.zip)  
 
 
 
 # Bibliografía y sitios de consulta
 
-- Moretti, Franco (2015). Lectura distante. Buenos Aires: Fondo de Cultura Económica.
-- Roberts, Margaret; Stewart, Brandon y Tinlgey, Dustin (2016). “stm: R Package for Structural Topic Models”, disponible [aquí](https://cran.r-project.org/web/packages/stm/vignettes/stmVignette.pdf)
-- Silge, Julia (2020). Text mining with R. A tidy approach. California: O’Reilly Media. [Versión online gratis en ingles](https://www.tidytextmining.com/) 
+- [Moretti, Franco (2015). Lectura distante. Buenos Aires: Fondo de Cultura Económica.](https://fce.com.ar/wp-content/uploads/2020/11/MorettiLD.pdf?srsltid=AfmBOoqOFUhz-FcuetukBTw_xDMd5MceJtlavWDae9v-SYeLM14SyR36)
+- [Roberts, Margaret; Stewart, Brandon y Tinlgey, Dustin (2016). “stm: R Package for Structural Topic Models”](https://cran.r-project.org/web/packages/stm/vignettes/stmVignette.pdf)
+- [Silge, Julia (2020). Text mining with R. A tidy approach. California: O’Reilly Media. Versión online gratis en ingles](https://www.tidytextmining.com/) 
 
 
