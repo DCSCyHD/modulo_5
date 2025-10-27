@@ -1,0 +1,556 @@
+---
+title: "Una introducción a los Modelos Grandes de Lenguaje (LLMs)"
+subtitle: "Usando Gemini con R"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+author: "Germán Rosati"
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+
+# Introducción
+Este notebook ofrece una introducción a los Large Language Models (LLMs), centrándose en el modelo Gemini desarrollado por Google. Se exploran los conceptos básicos de los transformers, el mecanismo de self-attention, el prompt engineering y estrategias para interactuar con un LLM. 
+
+Como caso de aplicación, se retoma el dataset de reseñas de Amazon del Módulo 4 para clasificarlas en "positivo" o "negativo" utilizando Gemini. Se analizan los resultados y se realiza un análisis de errores para identificar las limitaciones del modelo.
+
+El objetivo principal es comprender cómo funcionan los LLMs, sus potencialidades y cómo aplicarlos a tareas de procesamiento de lenguaje natural en el ámbito de las ciencias sociales.
+
+# ¿Qué es un transformer?
+Un **transformer** es un tipo de modelo de machine learning diseñado para trabajar con datos secuenciales, como texto, pero con una capacidad mucho mayor que los modelos tradicionales. Su diseño resuelve algunos de los problemas que tenían métodos previos, como los modelos recurrentes (**RNNs**) o las redes LSTM.
+
+Los transformers son la base de los modelos de lenguaje más avanzados, como los LLMs (e.g., ChatGPT).
+
+Cuando trabajamos con texto, queremos que el modelo entienda:
+1. **El contexto**: La relación entre las palabras dentro de una frase.
+2. **La relevancia de cada palabra**: No todas las palabras tienen el mismo peso en el significado.
+
+Por ejemplo, en la frase:
+
+> "El perro no jugó con el niño porque él tenía pulgas."
+
+Hay cierta ambigüedad: ¿a quién se refiere "él"? ¿Al perro o al niño? El **self-attention** ayuda al modelo a desambiguar estas relaciones analizando cómo cada palabra interactúa con las demás.
+  
+Modelos previos, como las RNNs, procesaban las palabras una por una, pero olvidaban información a medida que avanzaban. Además, eran lentos y no podían mirar toda la frase al mismo tiempo.
+
+## ¿Cómo funcionan los transformers?
+Los transformers usan un mecanismo clave llamado **"atención"**, específicamente el **mecanismo de atención autoconsciente** (**self-attention**). Este mecanismo les permite:
+
+1. **Mirar todas las palabras al mismo tiempo** (paralelismo).
+2. **Decidir cuáles palabras son más importantes para entender el contexto de cada palabra.**
+
+En lugar de procesar palabra por palabra, el transformer calcula relaciones entre todas las palabras en paralelo. Imagina que tienes una matriz donde:
+- Cada palabra está representada como una fila y una columna.
+- Los números dentro de la matriz indican **cuánto influye cada palabra sobre las demás**.
+
+El **self-attention** permite que cada palabra en una oración analice su relación con todas las demás palabras, identificando cuáles son más importantes para su significado. Esto es crucial para entender frases donde el contexto es ambiguo o complejo.
+
+Volvamos a la frase anterior:
+
+> "El perro no jugó con el niño porque él tenía pulgas."
+
+En nuestro ejemplo:
+- "él" podría referirse al **perro** o al **niño**.
+- El modelo necesita decidir cuál es más probable en función del contexto.
+
+El **self-attention** calcula estas relaciones y ajusta la representación de cada palabra para incluir información relevante sobre las palabras relacionadas.
+
+## Pasos principales del self-attention
+**1. Representación inicial: embeddings**
+Cada palabra se convierte en un vector numérico, llamado **embedding**, que captura información sobre su significado. Por ejemplo:
+- "perro" → [0.2, 0.5, 0.8]
+- "niño" → [0.4, 0.1, 0.9]
+- "él" → [0.7, 0.3, 0.6]
+
+Estos vectores no solo representan las palabras aisladas, sino también su posición relativa en la oración (positional encoding).
+
+**2. Generación de Query, Key y Value**
+El modelo transforma los embeddings iniciales de cada palabra en tres nuevas representaciones:
+- **Query (Q)**: ¿Qué palabras buscan relaciones?
+- **Key (K)**: ¿Con qué palabras se relacionan?
+- **Value (V)**: ¿Qué información aporta cada palabra?
+
+Por ejemplo:
+- Para "él", el Query puede estar orientado a encontrar qué palabras definen a "él" en el contexto.
+- Para "pulgas", el Key puede relacionarse con atributos relevantes (¿Quién tiene pulgas?).
+
+**3. Cálculo de las relaciones: matriz de atención**
+El modelo calcula una **matriz de similitud** entre palabras usando el producto escalar entre los Queries y los Keys.
+
+\[
+\text{Atención}_{ij} = \frac{\text{Q}_i \cdot \text{K}_j}{\sqrt{d_k}}
+\]
+
+Esto da como resultado una matriz que muestra cuánto influye cada palabra en las demás. Por ejemplo:
+
+|           | perro | no   | jugó | con  | niño | porque | él   | tenía | pulgas |
+|-----------|-------|------|------|------|------|--------|------|-------|--------|
+| **perro** | 1.0   | 0.3  | 0.8  | 0.2  | 0.1  | 0.0    | 0.4  | 0.3   | 0.1    |
+| **él**    | 0.4   | 0.0  | 0.2  | 0.0  | 0.9  | 0.0    | 1.0  | 0.7   | 0.3    |
+
+- "él" tiene una conexión fuerte (0.9) con "niño".
+- También se relaciona con "perro" (0.4), pero menos.
+
+
+**4. Ponderación de los valores**
+El modelo usa la matriz de atención para combinar la información de las palabras relacionadas. Por ejemplo, el vector final de "él" incluirá información de:
+- "niño" (más relevante).
+- "perro" (menos relevante).
+
+El resultado es un nuevo vector para "él" que incluye contexto sobre a quién se refiere.
+
+**5. Generación de la salida**
+Cada palabra ahora tiene una representación ajustada que incluye información contextual. Por ejemplo:
+- "él" → nuevo vector que indica que probablemente se refiere al "niño" por la relación fuerte con "pulgas".
+
+
+## Cómo ayuda el self-attention
+El self-attention analiza relaciones complejas en toda la oración. En nuestro ejemplo:
+- Decide que "él" se refiere al "niño" porque "pulgas" tiene más sentido en ese contexto (el modelo aprende esto durante el entrenamiento).
+
+De esta forma, este mecanismo tiene varias ventajas:
+
+1. **Relaciones a largo plazo**: Captura conexiones como la de "él" con "niño" y "pulgas", aunque estén separadas en la frase.
+2. **Ambigüedad resuelta**: La matriz de atención da más peso a las palabras relevantes, ayudando a desambiguar "él".
+3. **Contexto global**: Considera toda la frase simultáneamente, en lugar de procesarla palabra por palabra.
+4. **Escalabilidad**: Procesan información en paralelo, lo que los hace mucho más rápidos que las RNNs.
+5. **Contexto global**: Consideran toda la frase, no solo una parte limitada.
+6. **Capacidad de generalización**: Pueden adaptarse a tareas complejas como traducción, resumen y generación de texto.
+
+Enseguida vamos a ver un ejemplo concreto de uso.
+
+Pero antes tenemos que introducir una última cuestión. ¿Cómo interactuamos con un LLM?
+
+# Cómo usar un LLM y qué es el prompt engineering
+Ya mencionamos que un LLM es una herramienta sumamente útil que permite realizar diversas tareas basadas en texto: desde resúmenes y clasificaciones hasta generación de contenido y análisis de sentimientos. Sin embargo, su eficacia depende de cómo interactuemos con él. Aquí entra en juego el concepto de **prompt engineering**. Es la tarea que consiste en diseñar instrucciones claras y efectivas para maximizar la calidad de las respuestas del modelo.
+
+Un LLM, como Gemini, está entrenado en vastos conjuntos de datos para reconocer patrones en el lenguaje. Aunque no "piensa" como un humano, puede generar respuestas coherentes y contextuales basadas en entradas específicas. El modelo procesa instrucciones llamadas *prompts*, que son preguntas, textos o comandos diseñados para guiar su comportamiento.
+
+Por ejemplo, si queremos traducir una frase:
+- Mal prompt: *"Traducción al inglés."*
+- Buen prompt: *"Traduce la frase 'El perro juega en el parque' al inglés."*
+
+Un buen prompt debe ser claro, estructurado y, cuando sea necesario, incluir ejemplos o contexto. Para usar en LLM tenemos que seguir algunos pasos:
+
+1. **Definir la tarea**: Antes de usar un LLM, aclarar qué se busca lograr: ¿Resumir? ¿Clasificar? ¿Analizar sentimientos? Esto determinará cómo diseñar el prompt.
+
+2. **Diseñar el prompt**: Asegurarse de que la instrucción:
+   - Sea específica.
+   - Proporcione contexto relevante.
+   - Indique el formato esperado de la respuesta.
+
+3. **Usar la herramienta adecuada**:
+   - *Interfaz directa*: Plataformas como Gemini permiten interactuar con el modelo escribiendo prompts directamente.
+   - *API programática*: Si es necesario integrar el LLM en proyectos, es poisble usar lenguajes como Python o R para enviar solicitudes al modelo.
+
+4. **Revisar e iterar**: Evaluar las respuestas y ajustar el prompt según sea necesario. La iteración es clave para obtener resultados óptimos.
+
+## Estrategias de prompt engineering
+Hay varias formas de diseñar un prompt.
+
+1. **Zero-shot prompting**
+Pide al modelo realizar una tarea sin ningún ejemplo previo. Es útil para tareas simples. Por ejemplo, 
+```
+Traduce al inglés: 'El perro juega en el parque
+```
+
+2. **One-shot prompting**
+Proporciona un ejemplo para guiar al modelo.
+ ```
+ Genera una pregunta para una encuesta sobre satisfacción laboral.
+ Ejemplo: '¿Qué tan satisfecho está con su horario de trabajo?'
+ Nueva pregunta:
+ ```
+
+3. **Few-shot prompting**
+Incluye varios ejemplos para ayudar al modelo a generalizar mejor.
+```
+Clasifica las siguientes frases según la emoción:
+- "Estoy feliz hoy." → Alegría
+- "Estoy cansado." → Tristeza
+- "Estoy ansioso por mañana." → Ansiedad
+
+Frase: "No puedo creer que gané la lotería." → Emoción:
+ ```
+
+4. **Chain-of-thought prompting**
+Solicita que el modelo muestre su razonamiento paso a paso antes de dar una respuesta final.
+```
+Pregunta: Si Juan tiene 3 manzanas y compra 5 más, ¿cuántas tiene en total? Razonamiento:
+
+1. Juan tiene 3 manzanas.
+2. Compra 5 más, así que ahora tiene 3 + 5.
+
+Respuesta final:
+    ```
+
+5. **Contextual prompting**
+Proporciona al modelo un contexto para que las respuestas sean más relevantes.
+```
+ Eres un experto en marketing. Crea un eslogan para una marca de café sostenible.
+ ```
+
+6. **Instruction-based prompting**
+Diseña el prompt como una instrucción directa y detallada.
+ ```
+Resume el siguiente texto en tres frases que incluyan las ideas principales: [texto].
+```
+
+Pese a lo bien que funcionan los LLMs es necesario tener en cuenta algunas limitaciones a los fines de evitar malos entendidos.
+
+En primer lugar, más allá del marketing alrededor de estas herramientas es importante mencionar que **no razonan como humanos**. Se limitan a generar respuestas basadas en patrones estadísticos, de allí el término ["loros aleatorios"](https://dl.acm.org/doi/10.1145/3442188.3445922). ¿Esto es un problema? Depende. Si los queremos usar para resolver tareas concretas como las que hemos mencionado hasta aquí como la que vamos a atacar en breve, no. En otros contextos, puede ser.
+
+A su vez, los LLMS (al igual que cualquier otro algoritmo, modelo o método que se basa en datos de entrada y trata de aprender patrones subyacentes) tienen **sesgos**. Hay una amplísima bibliografía  Pueden reflejar sesgos presentes en los datos de entrenamiento. Esto hace que sea necesario tener cuidado al momento de seleccionar la tarea que vamos a solicitarle. Por otro lado, tienen **memoria limitada**, no recuerdan interacciones previas a menos que se incluyan en el contexto.
+
+# Gemini, el modelo que vamos a usar
+Google DeepMind ha desarrollado Gemini, una familia de modelos de inteligencia artificial con capacidades multimodales. Esto implica que Gemini puede procesar y comprender diversos tipos de información, como texto e imágenes.
+
+![](../imgs/logo.jpeg)
+
+Gemini es un modelo de lenguaje grande (LLM) que utiliza una arquitectura de red neuronal Transformer. Esta arquitectura le permite procesar información de manera eficiente y comprender las relaciones entre las palabras en un texto.
+
+Gemini fue entrenado por Google utilizando una gran cantidad de datos de texto y código. Este proceso de entrenamiento implica ajustar los parámetros de la red neuronal para que pueda predecir la siguiente palabra o token en una secuencia. El entrenamiento se realiza en varias etapas, con conjuntos de datos cada vez más grandes y complejos. Esto permite a Gemini aprender patrones y relaciones en el lenguaje, mejorando su capacidad para comprender y generar texto.
+
+# El caso de aplicación
+Vamos a volver sobre el dataset de reseñas de Amazon de la semana pasada y  a retomar la tarea de clasificación de las mismas en "positivo" o "negativo". En realidad, vamos a trabajar sobre una muestra de unas 1200 reseñas, dado que la API de Gemini solamente permite un número limitado de requests gratis en un día.
+
+Primero vamos a instalar la librería que nos va a servir de interface para trabajar con Gemini. Se llama, como no podía ser de otra forma, [`gemini.R`](https://jhk0530.github.io/gemini.R/index.html)
+
+```{r eval=FALSE, include=FALSE}
+#install.packages("gemini.R")
+```
+
+Cargamos, ahora, los paquetes...
+
+```{r}
+library(tidyverse)
+library(gemini.R)
+library(jsonlite)
+```
+
+## Primer paso, autenticación
+Como ya hemos visto a lo largo de este curso, las APIs actúan como intermediarios que permiten la comunicación e intercambio de datos entre diferentes sistemas. Por este motivo, la autenticación es crucial para asegurar la seguridad y controlar el acceso a la información.
+
+Para usar `gemini.R`, debemos autenticarnos con una clave personal que debemos crear en [https://makersuite.google.com/app/apikey]. La función `setAPI` en `gemini.R` nos permite configurar esta clave.
+
+```{r}
+api <- "" ## Acá introducir la api key 
+setAPI(api)
+```
+
+Si no quieren que su API key sea pública (cosa que suele ser una buena práctica, en general) hay varias formas de hacer esto un poquito más seguro. Vamos a ver una muy simple:
+
+```{r}
+setAPI(read_lines("../gemini_credentials.txt"))
+```
+
+Acá guardamos la key en un archivo de texto y simplemente la cargamos mediante `read_lines()`. De esta forma no se hace visible en el script. Hay otros paquetes y otras formas para hacer esto de forma más sistemática, pero para los efectos de este ejercicio con esto nos alcanza.
+
+Probemos si ha funcionado:
+
+```{r}
+test <- gemini("¿Cómo puedo escribir un buen prompt?")
+cat(test)
+```
+
+
+
+## Segundo paso, diseño del prompt
+Perfecto. Vamos ahora a diseñar un prompt simple para nuestra tarea.
+
+```{r}
+prompt <- "A continuación vas a recibir un texto de una reseña de compra online.
+Quisiera que la clasifiques positiva o negativa usando las siguientes categorías:
+
+- Positiva: la reseña es positiva
+- Negativa: la reseña es negativa
+
+Quisiera que expliques paso a paso tu razonamiento.
+
+La salida debería tener el siguiente formato:
+
+clasif: seguido de la clasificación | expl: seguido de la explicación
+
+Texto:
+"
+```
+
+Cargamos el dataset. En realidad, vamos a cargar unos 1259 datos del dataset original para hacer esta prueba.
+```{r}
+df_list <- read_rds("../data/reviews_amazon_listsplit.rds")[[1]]
+```
+
+```{r}
+head(df_list)
+```
+
+## Tercer paso, hacemos las request, llamamos al LLM
+Y vamos a iterar por cada una de las filas del dataset y para cada fila, vamos a hacer una request a la API de Gemini con dos inputs:
+
+1. el `prompt` que diseñamos más arriba
+2. el texto de la reseña (`review_body`)
+
+```{r eval=FALSE, include=TRUE}
+rtas <- list()
+for (i in 1:nrow(df_list)){
+                id <- df_list$review_id[i]
+                Sys.sleep(4.5)
+
+                cat("Procesando comentario", i, "de", nrow(df_list), "\n")
+                rta <- gemini(paste0(prompt, df_list$review_body[i]))
+                cat(rta)
+                rtas[[id]] <- rta
+                }
+```
+
+
+El código anterior itera sobre el dataframe de reseñas de productos (almacenadas en `df_list`), hace la consulta a la API de Gemini, usando el `prompt`
+
+Vamos paso a paso:
+
+1. **Inicialización:** Se crea una lista vacía llamada rtas que almacenará las respuestas de Gemini.
+
+2. **Bucle for:** Se itera a través de las dos primeras reseñas en df_list (índice i de 1 a 2).
+
+3. **Extracción de ID:** En cada iteración, se extrae el ID de la reseña actual (review_id) y se almacena en la variable id.
+
+4. **Pausa:** Se introduce una pausa de 4.5 segundos utilizando Sys.sleep(4.5) para evitar sobrecargar la API de Gemini.
+
+5. **Mensaje de progreso:** Se imprime un mensaje en la consola indicando el progreso del procesamiento: "Procesando comentario [i] de [total de reseñas]".
+
+6. **Llamada a Gemini:** Se utiliza la función gemini() para enviar una consulta al modelo de lenguaje.
+  - La consulta se construye concatenando un prompt predefinido con el texto de la reseña actual (df_list$review_body[i]).
+  - El resultado de la consulta (la respuesta de Gemini) se almacena en la variable rta.
+
+7. **Impresión de la respuesta:** Se imprime la respuesta de Gemini en la consola utilizando cat(rta).
+
+8. **Almacenamiento de la respuesta:** La respuesta de Gemini (rta) se almacena en la lista rtas, utilizando el ID de la reseña como clave.
+
+9. **Fin del bucle:** El proceso se repite para las dos primeras reseñas.
+
+Para ganaer tiempo, ya hemos corrido las consultas al LLM. Vamos a cargar los resultados.
+
+```{r}
+rtas_llms <- read_rds('../data/1_reviews_llms_prompt1.rds')
+
+head(rtas_llms)
+```
+
+## Cuarto paso, formateando los resultados
+Como habrán notado en la salida anterior, las respuestas del modelo son básicamente un largo `character`. Toda la respuesta (la etiqueta y la explicación) están juntas. No obstante, hemos diseñado el prompt para que aparezca con algunos delimitadores que nos hagan más fácil la extracció de la información. Para ello vamos a definir dos funciones:
+
+```{r}
+parse_clasif <- function(string){
+        clasif <- str_extract(string, "(?<=clasif: ).*?(?= \\|)")
+        return(clasif)
+}
+```
+
+La función `parse_clasif` está diseñada para extraer la clasificación de una reseña de un texto, específicamente la parte que indica si la reseña es "Positiva" o "Negativa".
+
+El objetivo principal de la función es identificar y extraer la clasificación ("Positiva" o "Negativa") de una cadena de texto que contiene la respuesta de un modelo de lenguaje.
+
+¿Cómo funciona?
+
+**1. Entrada:** Recibe una cadena de texto (`string`) que se espera que contenga la clasificación de una reseña en un formato específico, por ejemplo: `clasif: Positiva | expl: El usuario expresó satisfacción con el producto`.
+
+**2. `str_extract`:** Utiliza la función str_extract de la librería stringr para extraer la parte de la cadena que coincide con un patrón específico.
+
+**3. Patrón:** El patrón utilizado es una expresión regular: `(?<=clasif: ).*?(?= \\|)`. Vamos a desglosarlo:
+    
+  - `(?<=clasif: )`: Esta parte busca la cadena "clasif: " y asegura que la coincidencia comience justo después de ella. Se conoce como una "aserción lookbehind positiva".
+  - `.*?`: Esta parte coincide con cualquier caracter (`.`) cero o más veces (`*`), pero de la manera más perezosa posible (`?`). Esto significa que intentará encontrar la coincidencia más corta posible.
+  - `(?= \\|)`: Esta parte busca el caracter "|" (que debe escaparse con una barra invertida `\\` en la expresión regular) y asegura que la coincidencia termine justo antes de él. Se conoce como una "aserción lookahead positiva".
+
+**4. Extracción:** `str_extract` devuelve la parte de la cadena que coincide con el patrón completo. En este caso, sería "Positiva" o "Negativa".
+
+**5. Retorno:** La función devuelve el valor extraído, que representa la clasificación de la reseña.
+
+```{r}
+parse_expl <- function(string){
+        expl <- str_trim(str_replace_all(str_extract(string, "(?<=expl).*"), ":|'", ""))
+        return(expl)
+}
+```
+
+Ahora bien, `parse_expl` está diseñada para extraer la explicación de una reseña de un texto, específicamente la parte que explica por qué la reseña fue clasificada como "Positiva" o "Negativa".
+
+**1. Entrada:** Recibe una cadena de texto (string) que se espera que contenga la explicación de una reseña en un formato específico, por ejemplo: "clasif: Positiva | expl: El usuario expresó satisfacción con el producto".
+**2. `str_extract`:** Similar a `parse_clasif`, utiliza str_extract de la librería stringr para extraer la parte de la cadena que coincide con un patrón específico.
+**3. Patrón:** El patrón utilizado es `(?<=expl).*`.
+  - `(?<=expl)`: Es una aserción "lookbehind positiva" que busca la cadena "expl" y asegura que la coincidencia comience justo después de ella.
+  - .*: Esta parte coincide con cualquier caracter (`.`) cero o más veces (`*`), lo que significa que selecciona todo el texto después de "expl:".
+
+**4. `str_replace_all`:** Se utiliza para limpiar la explicación extraída. Reemplaza todos los caracteres ":" y "|" por un espacio vacío. Esto ayuda a eliminar cualquier rastro del formato original.
+**5. `str_trim`:** Se aplica para eliminar cualquier espacio en blanco al principio y al final de la explicación, asegurando que la salida esté limpia.
+**6. Retorno:** La función devuelve la explicación extraída y limpia, que representa el razonamiento detrás de la clasificación de la reseña.
+
+**Ejemplo:**
+
+Si la entrada es "clasif: Positiva | expl: El usuario expresó satisfacción con el producto.", la función parse_expl devolverá "El usuario expresó satisfacción con el producto".
+
+```{r}
+rtas_df <- rtas_llms %>%
+        enframe(name = "review_id", value = "resp") %>%
+        unnest(cols = c(resp)) %>%
+        mutate(llm_expl = parse_expl(resp),
+               llm_stars = parse_clasif(resp))
+```
+
+```{r}
+rtas_df
+```
+
+Este código toma una lista de respuestas, la transforma en un dataframe estructurado y utiliza las funciones parse_expl y parse_clasif para extraer la explicación y la clasificación de cada reseña, almacenando esta información en nuevas columnas del dataframe. El resultado final es un dataframe llamado rtas_df que contiene la información de las reseñas de forma organizada.
+
+**1. `rtas %>%:`** Esto inicia una secuencia de operaciones con el operador %>% (pipe) de la librería magrittr. El operador %>% toma el resultado de la expresión anterior y lo pasa como primer argumento a la siguiente función. En este caso, rtas es la lista de respuestas que se
+procesará.
+
+**2. `enframe(name = "review_id", value = "resp")`:** Esta función de la librería tibble transforma la lista rtas en un dataframe. Cada elemento de la lista se convierte en una fila del dataframe. Los nombres de los elementos de la lista se almacenan en una columna llamada "review_id", y los valores de los elementos se almacenan en una columna llamada "resp".
+
+**3. `unnest(cols = c(resp))`:** Esta función de la librería tidyr se utiliza para "desanidar" la columna "resp", que presumiblemente contiene una lista de respuestas para cada "review_id". unnest expande la columna "resp" de modo que cada elemento de la lista se convierta en una fila separada en el dataframe.
+
+**4. `mutate(...):**` Esta función de la librería dplyr crea nuevas columnas en el dataframe basándose en los valores de las columnas existentes. Dentro de mutate se realizan dos operaciones:
+  
+  - `llm_expl = parse_expl(resp)`: Se crea una nueva columna llamada "llm_expl" aplicando la función parse_expl a la columna "resp". Esto extrae la explicación de la reseña del texto de la respuesta y la almacena en la nueva columna.
+  - `llm_stars = parse_clasif(resp`): Se crea otra nueva columna llamada "llm_stars" aplicando la función parse_clasif a la columna "resp". Esto extrae la clasificación de la reseña (Positiva o Negativa) del texto de la respuesta y la almacena en la nueva columna.
+
+```{r}
+rtas_df <- rtas_df %>%
+        left_join(df_list)  %>%
+        mutate(stars = case_when(
+                stars == "Postiva" ~ "Positiva",
+                TRUE ~ stars
+        )) %>%
+        mutate(across(c(stars, llm_stars), as.factor))
+```
+
+
+Este código combina el dataframe rtas_df con información adicional del dataframe df_list a través de un left_join. Además, corrige un posible error tipográfico en la columna "stars", cambiando "Postiva" por "Positiva". El resultado es un dataframe rtas_df actualizado y enriquecido con información de df_list y con una corrección en la columna "stars".
+
+**1. `left_join(df_list)`**:
+  - Esta función, proveniente de la librería `dplyr`, realiza una unión (`join`) entre el dataframe `rtas_df` y el dataframe `df_list`.
+  - Se trata de un `left_join`, lo que significa que todas las filas de `rtas_df` se conservarán en el resultado final.
+  - La unión se realiza buscando coincidencias entre las columnas que tienen el mismo nombre en ambos dataframes. Si hay una columna llamada, por ejemplo, "review_id" en ambos dataframes, se utilizará para unir las filas correspondientes.
+  - El resultado de esta operación es un nuevo dataframe que contiene todas las columnas de `rtas_df` y todas las columnas de `df_list`, combinadas según las coincidencias encontradas.
+
+**2. mutate(stars = case_when(...))`:**
+  - Esta función, también de `dplyr`, se utiliza para modificar o crear nuevas columnas en el dataframe.
+  - En este caso, se está modificando la columna "stars".
+  - La función `case_when` se utiliza para realizar una corrección en los valores de la columna "stars".
+  - Específicamente, si el valor de "stars" es igual a "Postiva" (con una 'v' en lugar de una 'i'), se cambiará a "Positiva" (con una 'i').
+  - La condición `TRUE ~ stars` indica que si ninguna de las condiciones anteriores se cumple (es decir, si "stars" no es igual a "Postiva"), se mantendrá el valor original de "stars".
+
+```{r}
+rtas_df
+```
+
+### Usando formatos estructurados
+Muchas veces, una forma más consistente de trabajar con LLMs es requerir outputs estructurados para las respuestas. En el caso de `gemini.r`, esto se logra mediante la función `gemini_structured()`. La misma es prácticamente igual a la que usamos antes, pero tiene un argumento más: un `schema`, es decir, un formato de salida estructurado.
+
+Veamos como se usa. Primero generamos un objeto `schema` que, a los efectos, de R es una lista; indica al modelo que debe devolver una lista de objetos con dos propiedades de tipo texto.
+
+```{r}
+schema <- list(
+  type = "ARRAY",
+  items = list(
+    type = "OBJECT",
+    properties = list(
+      clasif = list(type = "STRING"),
+      expl   = list(type = "STRING")
+    ),
+    propertyOrdering = c("clasif", "expl")
+  )
+)
+```
+
+Luego, hacemos las consultas, al LLM usando la función `gemini_structured`:
+
+```{r}
+rtas <- list()
+
+for (i in 1:5){
+  id  <- df_list$review_id[i]
+  Sys.sleep(4.5)  # pausa para evitar límite de tasa
+
+  cat("Procesando comentario", i, "de", nrow(df_list), "\n")
+
+  rta <- gemini_structured(
+    paste0(prompt, df_list$review_body[i]),
+    schema = schema
+  )
+
+  cat(rta)  # muestra el JSON crudo
+  rtas[[id]] <- fromJSON(rta)
+}
+```
+
+Cada iteración:
+
+- envía una reseña al modelo,
+- recibe una respuesta estructurada,
+- convierte el JSON a objeto R,
+- y lo almacena bajo su `review_id`.
+
+
+Finalmente, unificamos todo en una `tibble`
+
+```{r}
+test <- rtas %>%
+  map_dfr(as_tibble, .id = "name")
+
+test
+```
+
+El resultado es un tibble con columnas:
+
+- `name`: identificador (`review_id`)
+- `clasif`: etiqueta asignada
+- `expl`: explicación textual
+
+## Resultados
+Vemamos ahora, entonces, cómo funcionó nuestro modelo. Vamos a calcular las métricas habituales.
+
+```{r}
+library(tidymodels)
+```
+
+```{r}
+accuracy(rtas_df, stars, llm_stars) %>%
+bind_rows(precision(rtas_df, stars, llm_stars)) %>%
+bind_rows(recall(rtas_df, stars, llm_stars)) %>%
+bind_rows(f_meas(rtas_df, stars, llm_stars))
+```
+```{r}
+conf_mat(rtas_df, stars, llm_stars)
+```
+
+## Análisis de errores
+Un punto importante del trabajo con LLMs (y con cualquier modelo de clasificación de texto o no) es tratar de entender de alguna forma los errores que cometen.
+
+Examinar las instancias mal clasificadas permite identificar patrones de error y comprender las limitaciones del modelo. Esto puede revelar sesgos en los datos de entrenamiento, características mal interpretadas o la necesidad de ajustes en el preprocesamiento del texto. Un análisis de errores riguroso proporciona información valiosa para refinar el modelo, mejorar su precisión y adaptarlo a casos de uso específicos.
+
+Para ello vamos a realizar un análisis de casos individuales. Vamos a examinar manualmente los ejemplos mal clasificados para comprender por qué el modelo se equivocó. Puede revelar patrones de error específicos o problemas con el preprocesamiento del texto. Es útil para identificar sesgos en los datos de entrenamiento.
+
+Veamos primero una muestra de 5 "falsos negativos":
+```{r}
+rtas_df %>%
+        filter(stars == "Positiva" & llm_stars == "Negativa") %>%
+        sample_n(5) %>%
+        select(review_body, llm_expl)
+```
+
+Ahora, los "falsos positivos", según la matriz de confusión solamente tenemos 4, así que podemos analizarlos todos
+```{r}
+rtas_df %>%
+        filter(stars == "Negativa" & llm_stars == "Positiva") %>%
+        select(review_body, llm_expl)
+```
+¿Qué pueden decir de los errores que comete el modelo?
+
+## Actividad
+* Comparar la perfomance de los LLMs con la de los modelos de clasificación que vimos la semana pasada. ¿Cuál funciona mejor?
+* Pensar cómo podrían reformular el prompt para hacerlo más eficiente.
+

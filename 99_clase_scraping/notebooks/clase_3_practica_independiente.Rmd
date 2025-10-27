@@ -1,0 +1,43 @@
+---
+title: "Clase 3. Práctica independiente"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+Vamos a hacer el mismo ejercicio para Piglia con la editorial Anagrama pero con la "Colección Sociología y Política" de la [Editorial Siglo XXI](https://sigloxxieditores.com.ar/).
+
+```{r, results='hide'}
+library(rvest)
+library(tidyverse)
+library(httr)
+```
+
+## 1. Identificar la/s páginas que queremos descargar
+Leemos o buscamos el perfil del autor. 
+(Si no hay catálogo, ¿dónde busco?)
+```{r}
+### 
+```
+
+## 2. Generar lista de links
+Traemos los links de los libros
+```{r}
+###
+```
+
+## 3. Scrapeamos todo...
+Hacemos una función que inserte en una tabla el título, le autore, resumen y precio: 
+```{r}
+###
+```
+
+Y ahora la corremos en un loop:
+
+```{r}
+###
+```
+

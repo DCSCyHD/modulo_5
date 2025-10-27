@@ -38,59 +38,54 @@ Pueden descargarse la totalidad de los materiales del repositorio para trabajar 
 
 [![](imgs/Download.png)](clase2.zip)
 
-
-## Clase 3. Web Scraping + APIs. ¿Cómo descargamos información de un sitio estático?
-- [Slides - pdf](/clase3/Diplo_M5_Clase_3.pdf)
-- [Explicación y práctica guiada Scraping - Notebook](/clase3/notebooks/clase_3_scraping.html)
-- [Explicación y práctica guiada APIS - Notebook](/clase3/notebooks/clase_3_APIs.html)
-- [Explicación y práctica guiada Scraping - RMarkdown](/clase3/notebooks/clase_3_scraping.Rmd)
-- [Explicación y práctica guiada APIS - RMarkdown](/clase3/notebooks/clase_3_APIs.Rmd)
-- [Pŕactica independiente - Notebook](/clase3/notebooks/clase_3_practica_independiente.html)
-- [Pŕactica independiente - RMarkdown](/clase3/notebooks/clase_3_practica_independiente.Rmd)
-- [Pŕactica independiente SOLUCION - Notebook](/clase3/notebooks/clase_3_practica_independiente_SOLUCION.html)
-- [Pŕactica independiente SOLUCION - RMarkdown](/clase3/notebooks/clase_3_practica_independiente_SOLUCION.Rmd)
-
-Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
-
-[![](imgs/Download.png)](clase3.zip)
-
-
-## Clase 4. ¿Cómo detectar temas en corpus I? Introducción al modelado de tópicos. Latent Dirichlet Allocation (LDA) y un modelo para detectar tópicos diseñado para las ciencias sociales: Structural Topic Modeling. (STA)
+## Clase 3. ¿Cómo detectar temas en corpus I? Introducción al modelado de tópicos. Latent Dirichlet Allocation (LDA) y un modelo para detectar tópicos diseñado para las ciencias sociales: Structural Topic Modeling. (STA)
 ### LDA
-- [Slides - pdf](/clase4/DIPLO_TM_Clase_4a.pdf)
-- [Explicación y práctica guiada LDA - Notebook](/clase4/notebooks/clase_4a_topic_modeling_LDA.html)
-- [Explicación y práctica guiada LDA - RMarkdown](/clase4/notebooks/clase_4a_topic_modeling_LDA.Rmd)
-- [Pŕactica independiente - Notebook](/clase4/notebooks/clase_4b_practica_independiente.html)
-- [Pŕactica independiente - RMarkdown](/clase4/notebooks/clase_4b_practica_independiente.Rmd)
+- [Slides - pdf](/clase4/DIPLO_TM_Clase_3a.pdf)
+- [Explicación y práctica guiada LDA - Notebook](/clase4/notebooks/clase_3a_topic_modeling_LDA.html)
+- [Explicación y práctica guiada LDA - RMarkdown](/clase4/notebooks/clase_3a_topic_modeling_LDA.Rmd)
+- [Pŕactica independiente - Notebook](/clase4/notebooks/clase_3b_practica_independiente.html)
+- [Pŕactica independiente - RMarkdown](/clase4/notebooks/clase_3b_practica_independiente.Rmd)
 
 ### STM
-- [Slides - pdf](/clase4/DIPLO_TM_Clase_4b.pdf)
-- [Explicación y práctica guiada STM - Notebook](/clase4/notebooks/clase_4c_topic_modeling_STM.html)
-- [Explicación y práctica guiada STM - RMarkdown](/clase4/notebooks/clase_4c_topic_modeling_STM.Rmd)
+- [Slides - pdf](/clase4/DIPLO_TM_Clase_3b.pdf)
+- [Explicación y práctica guiada STM - Notebook](/clase4/notebooks/clase_3c_topic_modeling_STM.html)
+- [Explicación y práctica guiada STM - RMarkdown](/clase4/notebooks/clase_3c_topic_modeling_STM.Rmd)
 
 Pueden descargarse la totalidad de los materiales de la clase para trabajar en un único archivo .zip
 
+[![](imgs/Download.png)](clase3.zip)
+
+## Clase 4. ¿Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec).
+### Entrenando un word embedding desde cero
+- [Slides Embeddings- pdf](/clase5/DIPLO_TM_Clase_4a.pdf)
+- [Explicación y práctica guiada - Notebook](/clase5/notebooks/clase_4a_word2vec.html)
+- [Explicación y práctica guiada - RMarkdown](/clase5/notebooks/clase_4a_word2vec.Rmd)
+
+###¿Cómo se usa un modelo pre-entrenado? Usando word embeddings pre-entrenados como insumo
+- [Slides Clasificación- pdf](/clase5/DIPLO_TM_Clase_4b.pdf)
+- [Explicación y práctica guiada - Notebook](/clase5/notebooks/clase_4b_clasificacion.html)
+- [Explicación y práctica guiada - RMarkdown](/clase5/notebooks/clase_4b_clasificacion.Rmd)
+
 [![](imgs/Download.png)](clase4.zip)
-
-## Clase 5. A. ¿Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec). B. ¿Cómo se usa un modelo pre-entrenado? Usando word embeddings pre-entrenados como insumo.
-- [Slides Embeddings- pdf](/clase5/DIPLO_TM_Clase_5a.pdf)
-- [Explicación y práctica guiada - Notebook](/clase5/notebooks/clase_5_word2vec.html)
-- [Explicación y práctica guiada - RMarkdown](/clase5/notebooks/clase_5_word2vec.Rmd)
-- [Slides Clasificación- pdf](/clase5/DIPLO_TM_Clase_5b.pdf)
-- [Explicación y práctica guiada - Notebook](/clase5/notebooks/clase_5b_clasificacion.html)
-- [Explicación y práctica guiada - RMarkdown](/clase5/notebooks/clase_5b_clasificacion.Rmd)
-
-
-[![](imgs/Download.png)](clase5.zip)
 
 Pueden descargarse la totalidad de los materiales del repositorio para trabajar en un único archivo .zip
 
-## Clase 6. ¿Qué son los LLMs y cómo usarlos? Un primer ejercicio con modelos grandes de lenguaje 
-- [Slides - pdf](/clase6/DIPLO_TM_clase_6.pdf)
-- [Explicación y práctica guiada - Notebook](/clase6/notebooks/clase_6_LLMs.html)
-- [Explicación y práctica guiada - RMarkdown](/clase6/notebooks/clase_6_LLMs.Rmd)
+## Clase 5. ¿Qué son los LLMs y cómo usarlos? Un primer ejercicio con modelos grandes de lenguaje usando APIS 
+- [Intro APIS - Notebook](/clase5/notebooks/clase_5_APIs.html)
+- [Intro APIS - RMarkdown](/clase5/notebooks/clase_5_APIs.Rmd)
+- [Slides Intro LLMs - pdf](/clase5/DIPLO_TM_clase_5a.pdf)
+- [Slides Ingeniería de prompts- pdf](/clase5/DIPLO_TM_clase_5b.pdf)
+- [Explicación y práctica guiada - Notebook](/clase5/notebooks/clase_5_LLMs.html)
+- [Explicación y práctica guiada - RMarkdown](/clase5/notebooks/clase_5_LLMs.Rmd)
 
-[![](imgs/Download.png)](clase6.zip)
+[![](imgs/Download.png)](clase5.zip)
+
+## Clase 6. LLMs epidsodio 2. Usando modelos de lenguaje en forma local
+- [Tutorial de uso de Google Colab - YouTube](https://www.youtube.com/playlist?list=PLbECkNOVKUKP401fJbWRe8r-z4L4-OvM8)
+- [Slides Intro APIs - pdf](/clase6/DIPLO_TM_clase_6.pdf)
+- [Explicación y práctica guiada - Notebook](https://colab.research.google.com/drive/18qGub-vI8ZzAqC5dH31Tky6ltyYe6VDf?usp=sharing)
+- [Sitio oficial de Ollama](https://ollama.com/)
+- [Sitio ollamar](https://hauselin.github.io/ollama-r/)
 
 # Librerías a utilizar
 El taller se desarrollará en R y se hará un uso extensivo de las siguientes librerías:
