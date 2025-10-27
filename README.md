@@ -94,7 +94,7 @@ archivo .zip* </u>
         tópicos diseñado para las ciencias sociales: Structural Topic
         Modeling. (STA)
 
-[![](imgs/Download.png)](clase4.zip)
+[![](imgs/Download.png)](clase3.zip)
 
 #### **Clase 4**
 
@@ -104,7 +104,7 @@ archivo .zip* </u>
     -   ¿Cómo se usa un modelo pre-entrenado? Usando word embeddings
         pre-entrenados como insumo.
 
-[![](imgs/Download.png)](clase5.zip)
+[![](imgs/Download.png)](clase4.zip)
 
 #### **Clase 5**
 
@@ -112,7 +112,7 @@ archivo .zip* </u>
     -   ¿Qué son los LLMs y cómo usarlos? Un primer ejercicio con
         modelos grandes de lenguaje
 
-[![](imgs/Download.png)](clase6.zip)
+[![](imgs/Download.png)](clase5.zip)
 
 #### **Clase 6** 
 
@@ -135,3 +135,5 @@ archivo .zip* </u>
 -   [Silge, Julia (2020). Text mining with R. A tidy approach.
     California: O’Reilly Media. Versión online gratis en
     ingles](https://www.tidytextmining.com/)
+-   [Alammar, Jay & Grootendorst, Maarten (2024). Hands-On Large Language Models: Language Understanding and Generation
+    California: O’Reilly Media.](https://www.amazon.com/Hands-Large-Language-Models-Understanding/dp/1098150961)
