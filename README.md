@@ -13,7 +13,7 @@
 Abuchanab](https://ar.linkedin.com/in/zacarias-abuchanab-b38999178)  
 - [Joaquín Zajac](https://ar.linkedin.com/in/joaquin-zajac)
 
-## Minería de Texto + webscraping
+## Minería de Texto
 
 El trabajo empírico en las ciencias sociales se caracteriza por su gran
 diversidad en el tipo de fuentes de información utilizadas: desde datos
