@@ -123,10 +123,9 @@ El siguiente paso es la eliminación de las llamadas **stopwords**. Se trata de 
 En general, la forma estándar y más inmediata de lidiar con ellas es mediante su eliminación a través de una lista. La idea es matchear las palabras en nuestro corpus con las que estén en esa lista y eliminar las que coinciden. Carguemos la lista con las **stopwords**, al mismo tiempo, vamos a eliminar los acentos de esta tabla.
 
 ```{r}
-stop_words <- read_csv('https://raw.githubusercontent.com/Alir3z4/stop-words/master/spanish.txt', col_names=FALSE) %>%
-        rename(word = X1) %>%
-        mutate(word = stringi::stri_trans_general(word, "Latin-ASCII"))
-
+stop_words <- read_csv('../data/stop_words_spanish.csv') %>%
+        mutate(word = stringi::stri_trans_general(word, "Latin-ASCII")) %>%
+        select(word)
 stop_words
 ```
 
@@ -139,7 +138,7 @@ marx_engels_tidy <- marx_engels_tidy %>%
 marx_engels_tidy
 ```
 
-Fíjense cómo pasamos de aprimadamente 1.000.000 de palabras a 529.000 luego de eliminar las stop_words.
+Fíjense cómo pasamos de aprimadamente 1.000.000 de palabras a 526.000 luego de eliminar las stop_words.
 
 Ahora bien, ¿cuáles son las palabras más usadas por Marx y Engels?
 
@@ -155,7 +154,10 @@ marx_engels_tidy %>%
 Escribir el código para replicar la tabla anterior usando los comandos del `tidyverse`
 
 ```{r}
-###
+marx_engels_tidy %>%
+        group_by(word) %>%
+        summarise(n=n()) %>%
+        arrange(desc(n))
 ```
 
 -------
@@ -218,7 +220,7 @@ ggplot( aes(notas, libros)) +
   theme_minimal()
 ```
 
-Las palabras que están cerca de la línea en estos gráficos tienen frecuencias similares en ambos conjuntos de textos, por ejemplo, tanto en los libros de Marx y Engels como en las aparecen con frecuencias simialres: burguesa, acción, campesinos, abolición, comuna, producción, clase. En cambio, en los libros parecen aparecer palabras como autoconciencia, during, espípirtu, matemática. En las notas periodísitcas aparecen palabras ligadas a la acción política: congreso, consejo, estatutos, conferencia, etc.
+Las palabras que están cerca de la línea en estos gráficos tienen frecuencias similares en ambos conjuntos de textos, por ejemplo, tanto en los libros de Marx y Engels como en las aparecen con frecuencias simialres: burguesa, acción, campesinos, abolición, comuna, producción, clase. En cambio, en los libros parecen aparecer palabras como autoconciencia, during, espípirtu En las notas periodísitcas aparecen palabras ligadas a la acción política: congreso, consejo, estatutos, conferencia, etc.
 
 -------
 
