@@ -98,7 +98,8 @@ El paper original con más detalles está [acá](https://bibliotecadigital.exact
 
 ```{r}
 sentiment_words_liia <- read_csv('../data/sentiment_lexicon_liia.csv')
-sentiment_words_liia
+sentiment_words_liia <- sentiment_words_liia %>%
+        distinct(word, .keep_all = TRUE)
 ```
 
 Como puede verse, este lexicon difiere respecto del anterior en que no tiene una clasificación de palabras en "positivas" o "negativas" sino que tiene un promedio de los votos de cada persona en una escala de 1 a 3. Así "amor" es ua palabra totalmente positiva porque tiene un promedio de 3. Vamos a aprovechar esta característica de ese lexicon pero vamos, también, a recodificar los datos para clasificarlos en positivos, negativos y neutros, redondeando los decimales.
@@ -120,7 +121,7 @@ Ahora sí, estamos en condiciones de avanzar. La lógica del procesamiento va a 
 ```{r}
 tidy_renzi_sent_kag <- tidy_renzi %>%
         inner_join(sentiment_words_kaggle) %>%
-        group_by(tomo, sentiment, word) %>%
+        group_by(tomo, entry_number, sentiment, word) %>%
         summarise(n = n()) %>%
         ungroup() %>%
         arrange(desc(n))

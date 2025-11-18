@@ -6,7 +6,8 @@
 #        mutate(word =  stringi::stri_trans_general(str = word, 
 #                                                   id = "Latin-ASCII"))
 
-sentiment_words_liia <- read_csv('./clase2/data/sentiment_lexicon_liia.csv')
+sentiment_words_liia <- read_csv('./clase2/data/sentiment_lexicon_liia.csv') %>%
+                distinct(word, .keep_all = TRUE)
 
 sentiment_words_liia <- sentiment_words_liia %>% 
         mutate(sentiment = case_when(
@@ -14,6 +15,8 @@ sentiment_words_liia <- sentiment_words_liia %>%
                 round(mean_likeness) == 2 ~ 'neutral',
                 round(mean_likeness) == 3 ~ 'positivo',
         ))
+
+table(sentiment_words_liia$sentiment)
 
 tidy_renzi_sent_liia <- tidy_renzi %>%
         inner_join(sentiment_words_liia) %>%
@@ -31,7 +34,7 @@ tidy_renzi_sent_liia %>%
         #geom_smooth(aes(index, sentiment, color=tomo)) +
         labs(x='Entrada del diario',
              y= 'Sentimiento (palabras positivas-palabras negativas)',
-             title='Análisis de sentimiento por palabras (lexicon Kaggle)') +
+             title='Análisis de sentimiento por palabras (lexicon LIIA)') +
         theme_minimal() +
         scale_color_viridis_d() +
         theme(
@@ -40,20 +43,24 @@ tidy_renzi_sent_liia %>%
                 axis.ticks.x=element_blank(),
                 legend.position = 'bottom')
 
+table(sentiment_words_liia$sentiment)
+table(sentiment_words_kaggle$sentiment)
+
 
 tidy_renzi_sent_liia_mean <- tidy_renzi %>%
-        inner_join(sentiment_words_liia) %>%
+        inner_join(sentiment_words_liia %>% filter(std_likeness==0)) %>%
         group_by(tomo, entry_number) %>%
         summarise(mean_like=mean(mean_likeness)) %>%
         ungroup() 
 
+tidy_renzi_sent_liia_mean
 tidy_renzi_sent_liia_mean %>%
         ggplot(aes(x=entry_number, y=mean_like, color=tomo)) +
         geom_line(show.legend = TRUE) +
         #geom_smooth(aes(index, sentiment, color=tomo)) +
         labs(x='Entrada del diario',
              y= 'Sentimiento (palabras positivas-palabras negativas)',
-             title='Análisis de sentimiento por palabras (lexicon Kaggle)') +
+             title='Análisis de sentimiento por palabras (lexicon LIIA)') +
         theme_minimal() +
         scale_color_viridis_d() +
         theme(
