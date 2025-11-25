@@ -30,13 +30,82 @@ Vamos, entonces, a entrenar un modelo de clasificación que es una variación de
 
 Haciendo esto, se introduce algún sesgo pero se reduce la variancia de los valores pre-dichos y, por lo tanto, se incrementa la precisión predictiva total. En muchos casos, cuando existen muchos predictores puede ser necesario identificar un subconjunto más pequeño de estos predictores que muestren los efectos más grandes.Es por ello que resulta útil imponer restricciones en el proceso de estimación. A esta operación se la define como “regularización”. 
 
-Existen varios métodos de regularización  de  modelos  lineales:  non negative garrotte  (Breiman,1995);  ridge  regression  (Hoerl y Kennard, 1970). Estas notas se centrarán en el LASSO. Este método utiliza la norma l1 como medida de penalización para definir las restricciones al modelo lineal. LASSO busca minimizar la siguiente expresión:
+Existen varios métodos de regularización  de  modelos  lineales:  non negative garrotte  (Breiman,1995);  ridge  regression  (Hoerl y Kennard, 1970). Estas notas se centrarán en el LASSO. Este método utiliza la norma l1 como medida de penalización para definir las restricciones a una regresión logística. 
 
-$$\sum_{i=1}^{n} (Y_{i} - \beta_{0} - \sum_{j=1}^{p} \beta_{j})^2 + \lambda  \sum_{j=1}^{p} |\beta_{j}| = RSS + \lambda  \sum_{j=1}^{p} |\beta_{j}|$$
+En regresión logística queremos modelar la **probabilidad** de que (y_i = 1) como:
 
-Se parte de la minimización de la RSS clásico de la regresión y se agrega una restricción: el segundo término $\lambda  \sum_{j=1}^{p} |\beta_{j}|$ se hace pequeño cuando los coeficientes son pequeños y, por lo tanto, tiene el efecto de reducir los coeficientes $\beta$ estimados. $\lambda$ constituye un parámetro de tunning y su función es controlar el impacto relativo de ambos términos. Cuando el coeficiente es igual a cero ($\lambda=0$), LASSO es equivalente a un modelo lineal estimado por MCO. Por el contrario, a medida que el parámetro se hace más grande ($\lambda$), el término de restricción lo hace en igual proporción y todos los coeficientes se reducen para po-der satisfacer dicha restricción. En el límite, cuando λ es lo suficientemente grande todos los coeficientes se hacen igual a cero y solamente queda como parámetro el intercepto ($\beta_{0}$), es decir, algo casi equivalente a predecir y  solamente con la media de la distribución.
+$$
+p_i = \Pr(y_i = 1 \mid X_i)
+= \frac{1}{1 + e^{-(\beta_0 + \beta_1 x_{i1} + \cdots + \beta_k x_{ik})}}
+$$
 
-En nuestro caso, se trata de una regresión logística, pero cambia solamente la función de pérdida.
+Dado que ($y_i$) es binario (0 o 1), cada observación sigue una distribución **Bernoulli** con probabilidad ($p_i$).
+
+La verosimilitud del modelo para todos los datos es:
+
+$$L(\beta) = \prod_{i=1}^{n} p_i^{y_i} (1-p_i)^{1-y_i}$$
+
+Esto refleja que:
+
+* si ($y_i$ = 1): el término es ($p_i$),
+* si ($y_i$ = 0): el término es (1 - $p_i$).
+
+Es más conveniente trabajar con el **logaritmo de la verosimilitud**:
+
+$$
+\ell(\beta) = \sum_{i=1}^{n}
+\left[
+y_i \log(p_i) + (1 - y_i)\log(1-p_i)
+\right]
+$$
+
+En Machine Learning, se formula como una **función de pérdida que queremos minimizar**:
+
+$$
+\mathcal{L}(\beta)
+= -\ell(\beta)
+= - \sum_{i=1}^{n}
+\left[
+y_i \log(p_i) + (1 - y_i)\log(1-p_i)
+\right]
+$$
+
+Esta es la **binary cross-entropy** o **log-loss**.
+
+La pérdida penaliza fuertemente **dos situaciones**:
+
+1. **Predecir una probabilidad baja cuando el evento ocurre**
+   (si ($y_i = 1$) pero ($p_i$) es chico → ($-\log(p_i)$) es grande)
+
+2. **Predecir una probabilidad alta cuando el evento NO ocurre**
+   (si ($y_i = 0$) pero ($1-p_i$) es chico → ($-\log(1-p_i)$) es grande)
+
+En cambio, si el modelo da probabilidades “correctas”, el log-loss es pequeño.
+
+Ahora, agreguemos la penalización LASSO (L1):
+
+$$
+\lambda \sum_{j=1}^{k} |\beta_j|
+$$
+
+Entonces, la **función de pérdida completa** que el modelo minimiza es:
+
+$$
+\mathcal{L}(\beta)
+
+= \sum_{i=1}^n
+  \left[
+  y_i \log(p_i) + (1 - y_i)\log(1 - p_i)
+  \right]
+
+-
+
+\lambda \sum_{j=1}^{k} |\beta_j|
+$$
+
+Se parte de la minimización de la Máxima Verosimilitud clásica de la regresión logística y se agrega una restricción: el segundo término $\lambda  \sum_{j=1}^{p} |\beta_{j}|$ se hace pequeño cuando los coeficientes son pequeños y, por lo tanto, tiene el efecto de reducir los coeficientes $\beta$ estimados. $\lambda$ constituye un parámetro de tunning y su función es controlar el impacto relativo de ambos términos. Cuando el coeficiente es igual a cero ($\lambda=0$), LASSO es equivalente a un modelo lineal estimado por MCO. Por el contrario, a medida que el parámetro se hace más grande ($\lambda$), el término de restricción lo hace en igual proporción y todos los coeficientes se reducen para po-der satisfacer dicha restricción. En el límite, cuando λ es lo suficientemente grande todos los coeficientes se hacen igual a cero y solamente queda como parámetro el intercepto ($\beta_{0}$), es decir, algo casi equivalente a predecir y  solamente con la media de la distribución.
+
+Sintetizando: la primera parte mide **qué tan mal predice el modelo** (pérdida logística). En cambio, la segunda parte agrega un **costo por tener muchos coeficientes grandes** (regularización L1).
 
 Vamos a analizar dos casos: uno, utilizando como features o predictores las variables generadas por una vectorización tipo TF-IDF. En el segundo caso, lo haremos con el uso de features derivadas de embeddings pre-entrenados.
 

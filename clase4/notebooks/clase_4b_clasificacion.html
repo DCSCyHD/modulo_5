@@ -1481,7 +1481,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Clasificación de texto</h1>
 <h3 class="subtitle">Analizando reseñas de Amazon</h3>
 <h4 class="author">Germán Rosati</h4>
-<h4 class="date">27 octubre, 2025</h4>
+<h4 class="date">25 noviembre, 2025</h4>
 
 </div>
 
@@ -1543,15 +1543,76 @@ se la define como “regularización”.</p>
 <p>Existen varios métodos de regularización de modelos lineales: non
 negative garrotte (Breiman,1995); ridge regression (Hoerl y Kennard,
 1970). Estas notas se centrarán en el LASSO. Este método utiliza la
-norma l1 como medida de penalización para definir las restricciones al
-modelo lineal. LASSO busca minimizar la siguiente expresión:</p>
-<p><span class="math display">\[\sum_{i=1}^{n} (Y_{i} - \beta_{0} -
-\sum_{j=1}^{p} \beta_{j})^2 + \lambda  \sum_{j=1}^{p} |\beta_{j}| = RSS
-+ \lambda  \sum_{j=1}^{p} |\beta_{j}|\]</span></p>
-<p>Se parte de la minimización de la RSS clásico de la regresión y se
-agrega una restricción: el segundo término <span class="math inline">\(\lambda  \sum_{j=1}^{p} |\beta_{j}|\)</span> se
-hace pequeño cuando los coeficientes son pequeños y, por lo tanto, tiene
-el efecto de reducir los coeficientes <span class="math inline">\(\beta\)</span> estimados. <span class="math inline">\(\lambda\)</span> constituye un parámetro de
+norma l1 como medida de penalización para definir las restricciones a
+una regresión logística.</p>
+<p>En regresión logística queremos modelar la
+<strong>probabilidad</strong> de que (y_i = 1) como:</p>
+<p><span class="math display">\[
+p_i = \Pr(y_i = 1 \mid X_i)
+= \frac{1}{1 + e^{-(\beta_0 + \beta_1 x_{i1} + \cdots + \beta_k
+x_{ik})}}
+\]</span></p>
+<p>Dado que (<span class="math inline">\(y_i\)</span>) es binario (0 o
+1), cada observación sigue una distribución <strong>Bernoulli</strong>
+con probabilidad (<span class="math inline">\(p_i\)</span>).</p>
+<p>La verosimilitud del modelo para todos los datos es:</p>
+<p><span class="math display">\[L(\beta) = \prod_{i=1}^{n} p_i^{y_i}
+(1-p_i)^{1-y_i}\]</span></p>
+<p>Esto refleja que:</p>
+<ul>
+<li>si (<span class="math inline">\(y_i\)</span> = 1): el término es
+(<span class="math inline">\(p_i\)</span>),</li>
+<li>si (<span class="math inline">\(y_i\)</span> = 0): el término es (1
+- <span class="math inline">\(p_i\)</span>).</li>
+</ul>
+<p>Es más conveniente trabajar con el <strong>logaritmo de la
+verosimilitud</strong>:</p>
+<p><span class="math display">\[
+\ell(\beta) = \sum_{i=1}^{n}
+\left[
+y_i \log(p_i) + (1 - y_i)\log(1-p_i)
+\right]
+\]</span></p>
+<p>En Machine Learning, se formula como una <strong>función de pérdida
+que queremos minimizar</strong>:</p>
+<p><span class="math display">\[
+\mathcal{L}(\beta)
+= -\ell(\beta)
+= - \sum_{i=1}^{n}
+\left[
+y_i \log(p_i) + (1 - y_i)\log(1-p_i)
+\right]
+\]</span></p>
+<p>Esta es la <strong>binary cross-entropy</strong> o
+<strong>log-loss</strong>.</p>
+<p>La pérdida penaliza fuertemente <strong>dos situaciones</strong>:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Predecir una probabilidad baja cuando el evento
+ocurre</strong> (si (<span class="math inline">\(y_i = 1\)</span>) pero
+(<span class="math inline">\(p_i\)</span>) es chico → (<span class="math inline">\(-\log(p_i)\)</span>) es grande)</p></li>
+<li><p><strong>Predecir una probabilidad alta cuando el evento NO
+ocurre</strong> (si (<span class="math inline">\(y_i = 0\)</span>) pero
+(<span class="math inline">\(1-p_i\)</span>) es chico → (<span class="math inline">\(-\log(1-p_i)\)</span>) es grande)</p></li>
+</ol>
+<p>En cambio, si el modelo da probabilidades “correctas”, el log-loss es
+pequeño.</p>
+<p>Ahora, agreguemos la penalización LASSO (L1):</p>
+<p><span class="math display">\[
+\lambda \sum_{j=1}^{k} |\beta_j|
+\]</span></p>
+<p>Entonces, la <strong>función de pérdida completa</strong> que el
+modelo minimiza es:</p>
+<p>$$ ()</p>
+<p>= _{i=1}^n </p>
+<ul>
+<li></li>
+</ul>
+<p>_{j=1}^{k} |_j| $$</p>
+<p>Se parte de la minimización de la Máxima Verosimilitud clásica de la
+regresión logística y se agrega una restricción: el segundo término
+<span class="math inline">\(\lambda  \sum_{j=1}^{p} |\beta_{j}|\)</span>
+se hace pequeño cuando los coeficientes son pequeños y, por lo tanto,
+tiene el efecto de reducir los coeficientes <span class="math inline">\(\beta\)</span> estimados. <span class="math inline">\(\lambda\)</span> constituye un parámetro de
 tunning y su función es controlar el impacto relativo de ambos términos.
 Cuando el coeficiente es igual a cero (<span class="math inline">\(\lambda=0\)</span>), LASSO es equivalente a un
 modelo lineal estimado por MCO. Por el contrario, a medida que el
@@ -1561,8 +1622,10 @@ satisfacer dicha restricción. En el límite, cuando λ es lo
 suficientemente grande todos los coeficientes se hacen igual a cero y
 solamente queda como parámetro el intercepto (<span class="math inline">\(\beta_{0}\)</span>), es decir, algo casi
 equivalente a predecir y solamente con la media de la distribución.</p>
-<p>En nuestro caso, se trata de una regresión logística, pero cambia
-solamente la función de pérdida.</p>
+<p>Sintetizando: la primera parte mide <strong>qué tan mal predice el
+modelo</strong> (pérdida logística). En cambio, la segunda parte agrega
+un <strong>costo por tener muchos coeficientes grandes</strong>
+(regularización L1).</p>
 <p>Vamos a analizar dos casos: uno, utilizando como features o
 predictores las variables generadas por una vectorización tipo TF-IDF.
 En el segundo caso, lo haremos con el uso de features derivadas de
@@ -2016,7 +2079,7 @@ cargarlo . La función también permite cargar (si quisieran hacerlo) un
 <pre class="r"><code>tictoc::tic()
 rev_embed &lt;- reviews_rec_embed %&gt;% prep() %&gt;% bake(reviews_embed)
 tictoc::toc()</code></pre>
-<pre><code>## 141.138 sec elapsed</code></pre>
+<pre><code>## 154.371 sec elapsed</code></pre>
 <p>La secuencia de operaciones que se va a realizar por detrás de
 bambalinas es la siguiente:</p>
 <ol style="list-style-type: decimal">
@@ -2077,7 +2140,7 @@ tune_lasso_embed &lt;- tune_grid(
         control = control_resamples(save_pred = TRUE)
 )
 tictoc::toc()</code></pre>
-<pre><code>## 15.768 sec elapsed</code></pre>
+<pre><code>## 17.179 sec elapsed</code></pre>
 </div>
 <div id="evaluación-1" class="section level3">
 <h3>Evaluación</h3>
