@@ -292,9 +292,12 @@ Y vamos a iterar por cada una de las filas del dataset y para cada fila, vamos a
 1. el `prompt` que diseñamos más arriba
 2. el texto de la reseña (`review_body`)
 
+
+
+
 ```{r eval=FALSE, include=TRUE}
 rtas <- list()
-for (i in 1:nrow(df_list)){
+for (i in 1:5){
                 id <- df_list$review_id[i]
                 Sys.sleep(4.5)
 
@@ -427,6 +430,10 @@ rtas_df <- rtas_df %>%
         mutate(across(c(stars, llm_stars), as.factor))
 ```
 
+```{r}
+head(rtas_df)
+```
+
 
 Este código combina el dataframe rtas_df con información adicional del dataframe df_list a través de un left_join. Además, corrige un posible error tipográfico en la columna "stars", cambiando "Postiva" por "Positiva". El resultado es un dataframe rtas_df actualizado y enriquecido con información de df_list y con una corrección en la columna "stars".
 
@@ -494,6 +501,9 @@ Cada iteración:
 - convierte el JSON a objeto R,
 - y lo almacena bajo su `review_id`.
 
+```{r}
+rtas
+```
 
 Finalmente, unificamos todo en una `tibble`
 

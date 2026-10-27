@@ -1482,7 +1482,7 @@ border-radius: 0px;
 Lenguaje Natural</h1>
 <h3 class="subtitle">Práctica independiente</h3>
 <h4 class="author">Germán Rosati</h4>
-<h4 class="date">27 octubre, 2025</h4>
+<h4 class="date">27 octubre, 2026</h4>
 
 </div>
 
@@ -1492,11 +1492,11 @@ Lenguaje Natural</h1>
 Marxist Internet Archive).</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-## ✔ ggplot2   3.5.2     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-## ✔ purrr     1.0.4     
+## ✔ dplyr     1.2.1     ✔ readr     2.2.0
+## ✔ forcats   1.0.1     ✔ stringr   1.6.0
+## ✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+## ✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+## ✔ purrr     1.2.2     
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()
@@ -1520,13 +1520,13 @@ Marxist Internet Archive).</p>
 <div id="eliminamos-stopwords" class="section level2">
 <h2>3. Eliminamos stopwords</h2>
 <p>Primero cargamos el diccionario de stopwords</p>
-<pre class="r"><code>stop_words &lt;- read_csv(&#39;../data/stop_words_complete.csv&#39;, col_names=FALSE) %&gt;%
+<pre class="r"><code>stop_words &lt;- read_csv(&#39;../data/stop_words_spanish.csv&#39;, col_names=FALSE) %&gt;%
         rename(word = X1) %&gt;%
         mutate(word = stringi::stri_trans_general(word, &quot;Latin-ASCII&quot;))</code></pre>
-<pre><code>## Rows: 1767 Columns: 2
+<pre><code>## Rows: 653 Columns: 1
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
-## chr (2): X1, X2
+## chr (1): X1
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
