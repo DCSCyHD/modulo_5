@@ -9,11 +9,9 @@
 **Equipo docente:**  
 - [Germán Rosati](https://gefero.github.io/)  
 - [Tomás Maguire](https://ar.linkedin.com/in/tomasebm)  
-- [Zacarías
-Abuchanab](https://ar.linkedin.com/in/zacarias-abuchanab-b38999178)  
-- [Joaquín Zajac](https://ar.linkedin.com/in/joaquin-zajac)
 
-## Minería de Texto
+
+## Introducción al NLP
 
 El trabajo empírico en las ciencias sociales se caracteriza por su gran
 diversidad en el tipo de fuentes de información utilizadas: desde datos
