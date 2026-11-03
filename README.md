@@ -8,8 +8,7 @@
 
 **Equipo docente:**  
 - [Germán Rosati](https://gefero.github.io/)  
-- [Tomás Maguire](https://ar.linkedin.com/in/tomasebm)  
-
+- [Tomás Maguire](https://ar.linkedin.com/in/tomasebm)
 
 ## Introducción al NLP
 
@@ -34,14 +33,13 @@ tendencias y patrones generales.
 El taller se desarrollará en R y se hará un uso extensivo de las
 siguientes librerías:
 
-- `tidytext`
-- `topicmodels`
-- `stm`
-- `textstem`
-- `textclean`
-- `word2vec`
-- `gemini.R`
-- `ollamar`
+- tidytext  
+- topicmodels  
+- stm  
+- textstem  
+- textclean  
+- word2vec  
+- gemini.R
 
 Pueden instalarse utilizando las siguientes instrucciones:
 
@@ -53,7 +51,6 @@ install.packages('textclean')
 install.packages('textstem')
 install.packages('word2vec')
 install.packages('gemini.R')
-install.packages('ollamar')
 ```
 
 ### Contenidos por clase
@@ -64,74 +61,70 @@ archivo .zip* </u>
 
 #### **Clase 1**
 
--   Temas de clase
-    -   Introducción a R y al tidyverse y a tidytext.  
-    -   ¿Cómo hacer de un corpus de texto crudo algo analizable mediante
-        métodos cuantitativos?  
-    -   Preprocesamiento de texto: stopwords, lemmas y stemming.
+- Temas de clase
+  - Introducción a R y al tidyverse y a tidytext.  
+  - ¿Cómo hacer de un corpus de texto crudo algo analizable mediante
+    métodos cuantitativos?  
+  - Preprocesamiento de texto: stopwords, lemmas y stemming.
 
 [![](imgs/Download.png)](clase1.zip)
 
-#### **Clase 2** 
+#### **Clase 2**
 
--   Temas de clase
-    -   ¿Cómo vectorizar textos? Contando palabras y extrayendo
-        conclusiones de un corpus.  
-    -   Bag of Words. Term-frequency matrix: conteos crudos y
-        ponderación TF-IDF.  
-    -   Análisis de sentimientos sobre un corpus.
+- Temas de clase
+  - ¿Cómo vectorizar textos? Contando palabras y extrayendo conclusiones
+    de un corpus.  
+  - Bag of Words. Term-frequency matrix: conteos crudos y ponderación
+    TF-IDF.  
+  - Análisis de sentimientos sobre un corpus.
 
 [![](imgs/Download.png)](clase2.zip)
 
-#### **Clase 3** 
+#### **Clase 3**
 
--   Temas de clase
-    -   ¿Cómo detectar temas en corpus I?  
-    -   Introducción al modelado de tópicos.  
-    -   Latent Dirichlet Allocation (LDA) y un modelo para detectar
-        tópicos diseñado para las ciencias sociales: Structural Topic
-        Modeling. (STA)
+- Temas de clase
+  - Web Scraping + APIs. ¿Cómo descargamos información de un sitio
+    estático?
 
 [![](imgs/Download.png)](clase3.zip)
 
 #### **Clase 4**
 
--   Temas de clase
-    -   ¿Cómo vectorizar textos (recargado)? Una introducción a los
-        métodos de word-embeddings (word2vec).  
-    -   ¿Cómo se usa un modelo pre-entrenado? Usando word embeddings
-        pre-entrenados como insumo.
+- Temas de clase
+  - ¿Cómo detectar temas en corpus I?  
+  - Introducción al modelado de tópicos.  
+  - Latent Dirichlet Allocation (LDA) y un modelo para detectar tópicos
+    diseñado para las ciencias sociales: Structural Topic Modeling.
+    (STA)
 
 [![](imgs/Download.png)](clase4.zip)
 
 #### **Clase 5**
 
--   Temas de clase
-    -   ¿Qué son los LLMs y cómo usarlos? Un primer ejercicio con
-        modelos grandes de lenguaje
+- Temas de clase
+  - ¿Cómo vectorizar textos (recargado)? Una introducción a los métodos
+    de word-embeddings (word2vec).  
+  - ¿Cómo se usa un modelo pre-entrenado? Usando word embeddings
+    pre-entrenados como insumo.
 
 [![](imgs/Download.png)](clase5.zip)
 
-#### **Clase 6** 
+#### **Clase 6**
 
--   Temas de clase
-    -   LLMs epidsodio 2. Usando modelos de lenguaje en forma local
-    -   [Tutorial de uso de Google Colab - YouTube](https://www.youtube.com/playlist?list=PLbECkNOVKUKP401fJbWRe8r-z4L4-OvM8)
-    -   [Slides Intro APIs - pdf](/clase6/DIPLO_TM_clase_6.pdf)
-    -   [Explicación y práctica guiada - Notebook](https://colab.research.google.com/drive/18qGub-vI8ZzAqC5dH31Tky6ltyYe6VDf?usp=sharing)
-    -   [Sitio oficial de Ollama](https://ollama.com/)
-    -   [Sitio ollamar](https://hauselin.github.io/ollama-r/)
+- Temas de clase
+  - ¿Qué son los LLMs y cómo usarlos? Un primer ejercicio con modelos
+    grandes de lenguaje
+
+[![](imgs/Download.png)](clase6.zip)
 
 # Bibliografía y sitios de consulta
 
--   [Moretti, Franco (2015). Lectura distante. Buenos Aires: Fondo de
-    Cultura
-    Económica.](https://fce.com.ar/wp-content/uploads/2020/11/MorettiLD.pdf?srsltid=AfmBOoqOFUhz-FcuetukBTw_xDMd5MceJtlavWDae9v-SYeLM14SyR36)
--   [Roberts, Margaret; Stewart, Brandon y Tinlgey, Dustin (2016). “stm:
-    R Package for Structural Topic
-    Models”](https://cran.r-project.org/web/packages/stm/vignettes/stmVignette.pdf)
--   [Silge, Julia (2020). Text mining with R. A tidy approach.
-    California: O’Reilly Media. Versión online gratis en
-    ingles](https://www.tidytextmining.com/)
--   [Alammar, Jay & Grootendorst, Maarten (2024). Hands-On Large Language Models: Language Understanding and Generation
-    California: O’Reilly Media.](https://www.amazon.com/Hands-Large-Language-Models-Understanding/dp/1098150961)
+- [Moretti, Franco (2015). Lectura distante. Buenos Aires: Fondo de
+  Cultura
+  Económica.](https://fce.com.ar/wp-content/uploads/2020/11/MorettiLD.pdf?srsltid=AfmBOoqOFUhz-FcuetukBTw_xDMd5MceJtlavWDae9v-SYeLM14SyR36)
+- [Roberts, Margaret; Stewart, Brandon y Tinlgey, Dustin (2016). “stm: R
+  Package for Structural Topic
+  Models”](https://cran.r-project.org/web/packages/stm/vignettes/stmVignette.pdf)
+- [Silge, Julia (2020). Text mining with R. A tidy approach. California:
+  O’Reilly Media. Versión online gratis en
+  ingles](https://www.tidytextmining.com/)

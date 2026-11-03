@@ -2,8 +2,7 @@
 title: "Módulo V"
 author: "**Diplomatura en Cs. Sociales Computacionales y Humanidades Digitales**"
 output:
-  md_document:
-    variant: markdown_github
+  html_document:
 ---
 # Módulo V
 ##### Escuela Interdisciplinaria de Altos Estudios Sociales
