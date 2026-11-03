@@ -1,0 +1,82 @@
+---
+title: "Clase 2. Ponderando frecuencias de palabras"
+subtitle: "Análisis de sentimiento mediante lexicones"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+author: "Germán Rosati"
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+
+
+```{r}
+library(tidyverse)
+library(tidytext)
+```
+
+## Introducción
+El objetivo de esta práctica avanzar en el uso de lexicones para análisis de sentimentos. Para ello, vamos a utilizar un dataset de reseñas que hicieron diferentes usuarios luego de una experiencia de compras en Amazon.
+
+Se trata de un conjunto de datos de revisiones de productos de Amazon para la clasificación de texto multilingüe. Contiene reseñas en inglés, japonés, alemán, francés, chino y español, recopiladas entre el 1 de noviembre de 2015 y el 1 de noviembre de 2019. Cada registro en el conjunto de datos contiene el texto de la revisión, el título de la revisión, la calificación por estrellas, un ID de revisor anonimizado, un ID de producto anonimizado y la categoría de producto de grano grueso (por ejemplo, 'libros', 'electrodomésticos', etc.). El corpus está equilibrado en estrellas, de modo que cada calificación por estrellas constituye el 20% de las revisiones en cada idioma.
+
+Para cada idioma, hay 200,000 reseñas en los conjuntos de entrenamiento, desarrollo y prueba, respectivamente. El número máximo de revisiones por revisor es 20 y el número máximo de revisiones por producto es 20. Todas las revisiones se truncaron después de 2,000 caracteres, y todas las revisiones tienen al menos 20 caracteres de longitud.
+
+Es importante tener en cuenta que el idioma de una revisión no necesariamente coincide con el idioma de su mercado (por ejemplo, las revisiones de amazon.de están principalmente escritas en alemán, pero también podrían estar escritas en inglés, etc.). Se aplicó un algoritmo de detección de idioma para determinar el idioma del texto de la revisión y eliminamos las revisiones que no estaban escritas en el idioma esperado.
+
+De ese dataset original, vamos a trabajar con una muestra del 5%, es decir, de 10.000 reseñas. El dataset tiene los siguientes campos:
+
+- review_id: string que identifica la reseña
+- product_id: string que identifica al producto
+- reviewer_id: string que identifica al usuario
+- stars: integer con la cantidad de estrellas de la reseña
+- review_body: string texto de la reseña
+- review_title: string con el título del producto
+- language: lenguaje
+- product_category: string que representa la categoría del producto
+
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+```
+
+## Tarea 1.
+Cuantificar la polaridad (positivo-negativo)de las reseñas de Amazon mediante lexicones. Usen, en primera instancia, el lexicon del LIIA.
+
+Recuerden las etapas del pipeline
+
+- normalización del texto
+- tokenización
+- eliminación de acentos, caracteres extraños, puntuación, etc.
+- eliminación de stopwords
+- etc.
+```{r}
+reviews <- read_csv("../data/amazon_reviews_train.csv") %>%
+        select(-`...1`)## Cargamos el dataset
+
+###
+```
+
+## Tarea 2. 
+Evaluar la performance del lexicon utilizado ¿De qué forma podrían evaluar el método utilizado? Diseñen una estrategia de validación y ejecútenla.
+```{r}
+###
+```
+
+
+## Tarea 3. 
+¿Se les ocurre alguna otra forma para utilizar el lexicon del LIIA para la evaluación de la polaridad? ¿Qué pasaría si no quisiéramos utilizar una categorización discreta? ¿Cómo podríamos trabajar el lexicon?
+```{r}
+###
+```
+
+
+## Tarea 4. 
+Existe una tarea de preprocesamiento que no hemos utilizado y que podría, quizás, mejorar la performance de este análisis. ¿Cuál es? Investiguen al menos una formas de implementarla en R
+```{r}
+###
+```
+

@@ -82,39 +82,6 @@ book_words %>%
 
 Hay colas muy largas a la derecha para esos tomos (son muy raras) que no hemos mostrado en estos tramas. En general, los gráficos son similares en los tres tomos. Pocas palabras que ocurren mucho y muchas palabras que ocurrren poco.
 
-### Ley de Zipf
-Las distribuciones como las anteriores son bastante típicas en la mayoría de los lenguajes. De hecho, esos tipos de distribuciones de cola larga son tan comunes en cualquier corpus (como un libro, una gran cantidad de texto de un sitio web o palabras habladas) que la relación entre la frecuencia con la que se usa una palabra y su rango ha sido objeto de estudio; una versión clásica de esta relación se llama [ley de Zipf](https://en.wikipedia.org/wiki/Zipf%27s_law), en honor a George Zipf, un lingüista estadounidense del siglo XX. Si les interesa la historia de la ciencia, Benoît Mandelbrot (el matemático que inventó los fractales) se dió cuenta de que esta distribución es algo que se llama "ley de potencia" y utilizó el trabajo de Zipf para varias de sus aproxiaciones a los fractales.
-
-La idea es que la frecuencia con que aparece una palabra es inversamente proporcional a su rango. Más precisamente, para un idioma dado la frecuencia de aparición de las diferentes palabras puede ser aproximada mediante la siguiente función:
-
-$$P_{n} = \frac{1}{n^a} $$
-donde $P_{n}$ representa la frecuencia de la n-ésima palabra más frecuente y el exponente $a$ es un número real positivo, generalmente superior a 1.1. 
-
-```{r}
-freq_by_rank <- book_words %>% 
-  group_by(tomo) %>%
-  arrange(tomo, desc(n)) %>%
-  mutate(rank = row_number(), 
-         `tf` = n/total) %>%
-        ungroup()
-
-freq_by_rank
-```
-
-La columna de `rank` nos informa el orden de cada palabra dentro de la tabla de frecuencia; la tabla ya estaba ordenada por `n`, por lo que podríamos usar `row_number()` para encontrar el rango. 
-
-Luego, podemos calcular la frecuencia del término de la misma manera que lo hicimos antes. La ley de Zipf a menudo se visualiza trazando el rango en el eje x y la frecuencia del término en el eje y, en escalas logarítmicas. Graficando de esta manera, una relación inversamente proporcional tendrá una pendiente negativa constante.
-
-```{r}
-freq_by_rank %>% 
-  ggplot(aes(rank, `tf`, color = tomo)) +
-        geom_line(size = 1.1, alpha = 0.8) +
-        scale_x_log10() +
-        scale_y_log10() +
-        theme_minimal()
-```
-
-Observemos que el gráfico anterior está en coordenadas log-log. Los tres tomos de los diarios de Renzi son similares: la relación entre rango y frecuencia tiene una pendiente negativa.
 
 ## Calculando todas las métricas: la función `bind_tfi_idf()`
 Repitámoslo una vez más: la idea de la métrica $tf-idf$ es encontrar las palabras importantes para el contenido de cada documento disminuyendo el peso de las palabras de uso común y aumentando el peso de las palabras que no se usan mucho en una colección o corpus de documentos. El cálculo de $tf-idf$ intenta encontrar las palabras que son importantes (es decir, comunes) en un texto, pero informativas (no demasiado comunes).

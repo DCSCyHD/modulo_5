@@ -167,7 +167,7 @@ Debido a que hemos estado usando herramientas del estilo tidy, nuestros recuento
 ```{r}
 marx_engels_tidy %>%
         count(word, sort=TRUE) %>%
-        filter(n > 600) %>%
+        filter(n > 800) %>%
         mutate(word = reorder(word, n)) %>%
         ggplot(aes(n, word)) +
                 geom_col() +
@@ -210,7 +210,7 @@ Y ahora podemos hacer un gráfico en el que comparamos la frecuencia de uso de l
 
 ```{r}
 freqs %>%
-ggplot( aes(notas, libros)) +
+ggplot(aes(x=notas, y=libros)) +
   geom_jitter(alpha = 0.05, size = 2.5, width = 0.25, height = 0.25) +
   #geom_point(alpha = 0.05, size = 2.5, width = 0.25, height = 0.25) +
   geom_text(aes(label = word), check_overlap = TRUE, vjust = 1.5) +
