@@ -1,0 +1,569 @@
+---
+title: "Clase 2. Ponderando frecuencias de palabras"
+subtitle: "Análisis de sentimiento mediante lexicones - Resolución"
+output:
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+author: "Germán Rosati"
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+
+
+```{r}
+library(tidyverse)
+library(tidytext)
+```
+
+## Introducción
+El objetivo de esta práctica avanzar en el uso de lexicones para análisis de sentimentos. Para ello, vamos a utilizar un dataset de reseñas que hicieron diferentes usuarios luego de una experiencia de compras en Amazon.
+
+Se trata de un conjunto de datos de revisiones de productos de Amazon para la clasificación de texto multilingüe. Contiene reseñas en inglés, japonés, alemán, francés, chino y español, recopiladas entre el 1 de noviembre de 2015 y el 1 de noviembre de 2019. Cada registro en el conjunto de datos contiene el texto de la revisión, el título de la revisión, la calificación por estrellas, un ID de revisor anonimizado, un ID de producto anonimizado y la categoría de producto de grano grueso (por ejemplo, 'libros', 'electrodomésticos', etc.). El corpus está equilibrado en estrellas, de modo que cada calificación por estrellas constituye el 20% de las revisiones en cada idioma.
+
+Para cada idioma, hay 200,000 reseñas en los conjuntos de entrenamiento, desarrollo y prueba, respectivamente. El número máximo de revisiones por revisor es 20 y el número máximo de revisiones por producto es 20. Todas las revisiones se truncaron después de 2,000 caracteres, y todas las revisiones tienen al menos 20 caracteres de longitud.
+
+Es importante tener en cuenta que el idioma de una revisión no necesariamente coincide con el idioma de su mercado (por ejemplo, las revisiones de amazon.de están principalmente escritas en alemán, pero también podrían estar escritas en inglés, etc.). Se aplicó un algoritmo de detección de idioma para determinar el idioma del texto de la revisión y eliminamos las revisiones que no estaban escritas en el idioma esperado.
+
+De ese dataset original, vamos a trabajar con una muestra del 5%, es decir, de 10.000 reseñas. El dataset tiene los siguientes campos:
+
+- review_id: string que identifica la reseña
+- product_id: string que identifica al producto
+- reviewer_id: string que identifica al usuario
+- stars: integer con la cantidad de estrellas de la reseña
+- review_body: string texto de la reseña
+- review_title: string con el título del producto
+- language: lenguaje
+- product_category: string que representa la categoría del producto
+
+
+```{r}
+library(tidyverse)
+library(tidymodels)  # se usa yardstick para las métricas de la Tarea 2
+```
+
+## Tarea 1.
+Cuantificar la polaridad (positivo-negativo)de las reseñas de Amazon mediante lexicones. Usen, en primera instancia, el lexicon del LIIA.
+
+Recuerden las etapas del pipeline
+
+- normalización del texto
+- tokenización
+- eliminación de acentos, caracteres extraños, puntuación, etc.
+- eliminación de stopwords
+- etc.
+
+### Paso 1. Carga y muestreo de los datos
+
+Se lee el dataset y se descarta la columna de índice (`...1`) que `read_csv()` genera a partir del índice que pandas guardó en el CSV.
+
+Luego se toma una **muestra estratificada**: 2000 reseñas por cada valor de `stars` (1 a 5), es decir, 10.000 reseñas en total.
+
+- `group_by(stars)` divide el dataset en cinco grupos, uno por cantidad de estrellas.
+- `slice_sample(n = 2000)` toma 2000 filas al azar **dentro de cada grupo**.
+- `ungroup()` elimina la agrupación para que no afecte a las operaciones siguientes.
+- `set.seed(123)` fija la semilla aleatoria para que la muestra sea reproducible.
+
+Estratificar garantiza que las cinco clases tengan el mismo peso, lo cual es necesario para que la evaluación de la Tarea 2 no esté sesgada hacia una clase mayoritaria.
+
+```{r}
+reviews <- read_csv("../data/amazon_reviews_train.csv") %>%
+        select(-`...1`)## Cargamos el dataset
+## Alternativa remota:
+## "https://raw.githubusercontent.com/gefero/ecyt_lcd_intro_nlp/main/U2/data/amazon_reviews_train.csv"
+
+set.seed(123)
+reviews_sample <- reviews %>%
+  group_by(stars) %>%
+  slice_sample(n = 2000) %>%
+  ungroup()
+
+reviews_sample %>%
+  count(stars)
+```
+
+### Paso 2. Tokenización y normalización
+
+`unnest_tokens()` transforma el dataset al **formato tidy**: una fila por token. Sus argumentos son:
+
+- `output = word`: nombre de la nueva columna que contiene cada token.
+- `input = review_body`: columna de texto a tokenizar. Por defecto se elimina del resultado.
+
+Todas las demás columnas (`review_id`, `stars`, etc.) se repiten en cada fila, de modo que cada token sigue asociado a su reseña.
+
+Por defecto, `unnest_tokens()` además:
+
+- pasa todo a minúsculas (`to_lower = TRUE`);
+- elimina la puntuación;
+- conserva los números.
+
+Los acentos **no** se eliminan. El lexicon del LIIA está acentuado ("población", "petición"); si se quitaran los acentos solo en el corpus, esas palabras dejarían de coincidir con el lexicon. Para eliminarlos habría que aplicar la misma transformación a ambos (por ejemplo, con `stringi::stri_trans_general(x, "Latin-ASCII")`).
+
+```{r}
+amazon_tidy <- reviews_sample %>%
+  unnest_tokens(output = word, input = review_body)
+
+amazon_tidy %>%
+  select(review_id, stars, word)
+```
+
+### Paso 3. Eliminación de stopwords
+
+Las stopwords (artículos, preposiciones, pronombres, etc.) son muy frecuentes y no aportan polaridad. Se eliminan con `anti_join()`, que conserva solo las filas de `amazon_tidy` cuya `word` **no** aparece en la lista de stopwords.
+
+La lista se guarda como `stop_words_es` para no pisar el objeto `stop_words` (en inglés) que trae `tidytext`.
+
+```{r}
+stop_words_es <- read_csv("../data/stop_words_complete.csv")
+
+amazon_tidy <- amazon_tidy %>%
+  anti_join(stop_words_es, by = "word")
+```
+
+### Paso 4. Carga y recodificación del lexicon LIIA
+
+El lexicon tiene tres columnas:
+
+- `word`: la palabra.
+- `mean_likeness`: valoración promedio asignada por los evaluadores, en una escala de 1 (negativa) a 3 (positiva).
+- `std_likeness`: desvío estándar de esas valoraciones (grado de acuerdo entre evaluadores).
+
+Para hacer un conteo por categorías, `mean_likeness` se discretiza redondeando al entero más cercano:
+
+| `round(mean_likeness)` | `sentiment` |
+|---|---|
+| 1 | negativo |
+| 2 | neutral |
+| 3 | positivo |
+
+`round()` en R redondea los valores x.5 al número par más cercano (2.5 → 2, 1.5 → 2), igual que pandas, por lo que la recodificación es equivalente a la de Python.
+
+`sentiment` se convierte en `factor` con los tres niveles explícitos. Esto se usa en la función siguiente para que las tres columnas existan siempre, aun si alguna categoría no aparece.
+
+```{r}
+sentiment_words_liia <- read_csv("../data/sentiment_lexicon_liia.csv") %>%
+  mutate(
+    sentiment = case_when(
+      round(mean_likeness) == 1 ~ "negativo",
+      round(mean_likeness) == 2 ~ "neutral",
+      round(mean_likeness) == 3 ~ "positivo"
+    ),
+    sentiment = factor(sentiment, levels = c("negativo", "neutral", "positivo"))
+  )
+
+sentiment_words_liia
+
+sentiment_words_liia %>%
+  count(sentiment)
+```
+
+### Paso 5. Función `sentiment_analysis_freqs()`
+
+Esta función calcula, para cada reseña, cuántas de sus palabras son negativas, neutrales y positivas según el lexicon, y a partir de eso construye dos medidas de polaridad.
+
+**Argumentos**
+
+- `tidy_df`: corpus en formato tidy (una fila por token).
+- `sentiment_df`: lexicon con las columnas `word` y `sentiment`.
+- `keep_cols`: columnas que identifican a cada reseña y que se conservan en el resultado. Por defecto: `review_id`, `product_id` y `stars`.
+- `word_col`: nombre de la columna de `tidy_df` que contiene los tokens. Por defecto `"word"`; en la Tarea 4 se usa `"lemma"`.
+
+**Paso a paso**
+
+1. **`inner_join()`**: une cada token con su entrada del lexicon. Los tokens que no están en el lexicon se descartan.
+    - `by = setNames("word", word_col)` construye el criterio de unión de forma dinámica. Si `word_col = "lemma"`, equivale a `by = c("lemma" = "word")`: la columna `lemma` del corpus se compara con la columna `word` del lexicon.
+    - `relationship = "many-to-many"`: el lexicon tiene algunas palabras repetidas (2880 filas, 2779 palabras distintas). Cada token del corpus puede coincidir con más de una fila del lexicon, y cada palabra del lexicon con muchos tokens. Este argumento declara que esa relación es esperada (evita la advertencia de `dplyr`) y reproduce el comportamiento del `merge` de pandas.
+2. **`group_by()` + `summarise()`**: cuenta cuántos tokens hay por reseña y por categoría.
+    - `group_by(across(all_of(keep_cols)), sentiment)` agrupa por las columnas que identifican a la reseña y por la categoría de sentimiento. `all_of(keep_cols)` permite pasar los nombres de columnas como un vector de texto.
+    - `summarise(n = n())` devuelve una fila por grupo; `n()` es la cantidad de filas (tokens) de cada grupo.
+    - `.groups = "drop"` elimina la agrupación del resultado para que no afecte a `pivot_wider()` ni a `mutate()`.
+    - El resultado tiene una fila por combinación reseña × categoría, con la cantidad en la columna `n`.
+3. **`pivot_wider()`**: pasa de formato largo a ancho, con una columna por categoría (`negativo`, `neutral`, `positivo`).
+    - `values_fill = 0`: si una reseña no tiene palabras de una categoría, esa celda queda en 0 en lugar de `NA`.
+    - `names_expand = TRUE`: crea las tres columnas siempre, usando los niveles del factor `sentiment`, aunque alguna categoría no aparezca en los datos.
+4. **`mutate()`**: calcula dos medidas de polaridad:
+    - `sentiment_substr = positivo - negativo`: balance absoluto. Depende de la longitud de la reseña: un texto largo tiende a tener valores más extremos.
+    - `sentiment_prop = positivo / (negativo + neutral + positivo)`: proporción de palabras positivas sobre el total de palabras encontradas en el lexicon. Varía entre 0 y 1 y no depende de la longitud, por lo que es comparable entre reseñas.
+
+Ejemplo del paso 2 al paso 3 para una reseña:
+
+| review_id | sentiment | n |
+|---|---|---|
+| es_001 | neutral | 4 |
+| es_001 | positivo | 1 |
+
+se convierte en:
+
+| review_id | negativo | neutral | positivo |
+|---|---|---|---|
+| es_001 | 0 | 4 | 1 |
+
+y luego `sentiment_substr = 1`, `sentiment_prop = 1 / 5 = 0.2`.
+
+```{r}
+sentiment_analysis_freqs <- function(tidy_df, sentiment_df,
+                                     keep_cols = c("review_id", "product_id", "stars"),
+                                     word_col = "word") {
+  tidy_df %>%
+    # 1. join con el lexicon (solo quedan los tokens presentes en el lexicon)
+    inner_join(sentiment_df, by = setNames("word", word_col),
+               relationship = "many-to-many") %>%
+    # 2. cantidad de tokens por reseña y categoría
+    group_by(across(all_of(keep_cols)), sentiment) %>%
+    summarise(n = n(), .groups = "drop") %>%
+    # 3. una columna por categoría
+    pivot_wider(names_from = sentiment, values_from = n,
+                values_fill = 0, names_expand = TRUE) %>%
+    # 4. medidas de polaridad
+    mutate(
+      sentiment_substr = positivo - negativo,
+      sentiment_prop   = positivo / (negativo + neutral + positivo)
+    )
+}
+
+sent_amazon <- sentiment_analysis_freqs(amazon_tidy, sentiment_words_liia)
+sent_amazon
+```
+
+Las reseñas sin ninguna palabra presente en el lexicon quedan fuera del análisis por el `inner_join()`. Por eso `sent_amazon` puede tener menos de 10.000 filas.
+
+## Tarea 2.
+Evaluar la performance del lexicon utilizado ¿De qué forma podrían evaluar el método utilizado? Diseñen una estrategia de validación y ejecútenla.
+
+**Estrategia.** El dataset no tiene una etiqueta de sentimiento, pero sí la cantidad de estrellas que puso cada usuario. Las estrellas funcionan como etiqueta de referencia (*ground truth*) contra la cual comparar el resultado del lexicon. La evaluación tiene dos partes:
+
+1. **Exploratoria**: si el método funciona, `sentiment_prop` debería crecer con la cantidad de estrellas.
+2. **Como clasificación**: se discretizan ambas variables en tres clases (negative / neutral / positive) y se calculan métricas de clasificación.
+
+### Paso 1. Distribución de `sentiment_prop` por estrellas
+
+Se calculan media, mediana y desvío de `sentiment_prop` para cada valor de `stars` y se grafica un boxplot. Si el lexicon captura la polaridad, las medianas deberían aumentar de 1 a 5 estrellas y las cajas deberían superponerse poco.
+
+```{r}
+sent_amazon %>%
+  group_by(stars) %>%
+  summarise(
+    mean   = mean(sentiment_prop),
+    median = median(sentiment_prop),
+    sd     = sd(sentiment_prop)
+  )
+
+sent_amazon %>%
+  ggplot(aes(x = factor(stars), y = sentiment_prop)) +
+  geom_boxplot() +
+  labs(x = "stars", y = "sentiment_prop") +
+  theme_minimal()
+```
+
+### Paso 2. Función `recode_for_eval()`
+
+Genera las dos etiquetas que se van a comparar.
+
+**Etiqueta real (`sent_label`)**, a partir de las estrellas:
+
+| stars | sent_label |
+|---|---|
+| 1, 2 | negative |
+| 3 | neutral |
+| 4, 5 | positive |
+
+**Etiqueta predicha (`sentiment_prop_label`)**, a partir de `sentiment_prop` cortada por terciles:
+
+- `quantile(sentiment_prop, probs = c(0.333, 0.666))` calcula los dos valores que dividen la distribución en tres partes de igual tamaño. Usa interpolación lineal (tipo 7), la misma que pandas por defecto.
+- Valores menores o iguales al primer tercil → `negative`; entre el primer y el segundo tercil → `neutral`; mayores al segundo tercil → `positive`.
+
+Se usan terciles porque `sentiment_prop` no tiene un umbral natural que separe positivo de negativo. Cortar por terciles asume, implícitamente, que las tres clases tienen un tamaño similar. Ese supuesto no se cumple del todo: por la recodificación de las estrellas, `neutral` representa el 20% de las reseñas y `negative` y `positive` el 40% cada una.
+
+Ambas etiquetas se convierten en factor con los mismos niveles y en el mismo orden, requisito de las funciones de `yardstick`.
+
+```{r}
+label_levels <- c("negative", "neutral", "positive")
+
+recode_for_eval <- function(sent_df) {
+  # puntos de corte de los terciles
+  terciles <- quantile(sent_df$sentiment_prop, probs = c(0.333, 0.666))
+
+  sent_df %>%
+    mutate(
+      # etiqueta real: estrellas
+      sent_label = case_when(
+        stars %in% c(4, 5) ~ "positive",
+        stars %in% c(1, 2) ~ "negative",
+        stars == 3         ~ "neutral"
+      ),
+      # etiqueta predicha: terciles de sentiment_prop
+      sentiment_prop_label = case_when(
+        sentiment_prop <= terciles[1] ~ "negative",
+        sentiment_prop <= terciles[2] ~ "neutral",
+        TRUE                          ~ "positive"
+      ),
+      # mismos niveles y orden en ambas etiquetas
+      across(c(sent_label, sentiment_prop_label), ~ factor(.x, levels = label_levels))
+    )
+}
+
+eval_amazon <- recode_for_eval(sent_amazon)
+```
+
+### Paso 3. Tabla de contingencia
+
+Cruza la etiqueta real (filas) con la predicha (columnas). La diagonal contiene los aciertos; las celdas fuera de la diagonal muestran qué clases se confunden entre sí.
+
+```{r}
+eval_amazon %>%
+  group_by(sent_label, sentiment_prop_label, ) %>%
+  summarise(n=n(),.groups = "drop_last") %>%
+  pivot_wider(names_from = sentiment_prop_label, values_from = n, values_fill = 0)
+```
+
+### Paso 4. Función `classification_report()`
+
+Calcula accuracy, precision, recall y F1, siguiendo el formato del `classification_report()` de scikit-learn.
+
+**Argumentos**
+
+- `eval_df`: tabla con la etiqueta real y la predicha (salida de `recode_for_eval()`).
+- `truth`: nombre de la columna con la etiqueta real. Por defecto `"sent_label"`.
+- `estimate`: nombre de la columna con la etiqueta predicha. Por defecto `"sentiment_prop_label"`.
+
+**Paso a paso**
+
+1. `eval_df[[truth]]` y `eval_df[[estimate]]` extraen ambas columnas como vectores (`y_true`, `y_pred`).
+2. Para cada clase se cuentan:
+    - **TP** (verdaderos positivos): reseñas de la clase que fueron predichas como esa clase.
+    - **pred_n**: total de reseñas predichas como esa clase.
+    - **true_n**: total de reseñas que realmente pertenecen a esa clase.
+3. Con esos conteos se calculan las métricas por clase:
+    - **Precision** = TP / pred_n. De las reseñas que el método asignó a la clase, qué proporción era correcta. Si no hubo predicciones de la clase, se fija en 0 (igual que scikit-learn).
+    - **Recall** = TP / true_n. De las reseñas que realmente pertenecen a la clase, qué proporción fue detectada.
+    - **F1** = 2 · precision · recall / (precision + recall). Media armónica de ambas; es baja si cualquiera de las dos es baja.
+    - `map_dfr()` aplica el cálculo a cada una de las tres clases y apila los resultados en una tabla.
+4. Se agrega una fila **accuracy**: proporción de reseñas bien clasificadas sobre el total, (aciertos de la diagonal) / N. Es una métrica global, no por clase, por lo que se informa en la columna `f1` (como en scikit-learn) y precision y recall quedan en `NA`.
+
+El resultado tiene cuatro filas: una por clase (`negative`, `neutral`, `positive`) y la fila `accuracy`.
+
+```{r}
+classification_report <- function(eval_df,
+                                  truth = "sent_label",
+                                  estimate = "sentiment_prop_label") {
+  y_true <- eval_df[[truth]]
+  y_pred <- eval_df[[estimate]]
+
+  # precision, recall y f1 por clase
+  per_class <- map_dfr(label_levels, function(cl) {
+    tp     <- sum(y_true == cl & y_pred == cl)
+    pred_n <- sum(y_pred == cl)
+    true_n <- sum(y_true == cl)
+    tibble(
+      class     = cl,
+      precision = if (pred_n > 0) tp / pred_n else 0,
+      recall    = if (true_n > 0) tp / true_n else 0
+    )
+  }) %>%
+    mutate(f1 = if_else(precision + recall > 0,
+                        2 * precision * recall / (precision + recall), 0))
+
+  # accuracy (métrica global)
+  accuracy_row <- tibble(
+    class = "accuracy", precision = NA_real_, recall = NA_real_,
+    f1 = mean(y_true == y_pred)
+  )
+
+  bind_rows(per_class, accuracy_row)
+}
+
+classification_report(eval_amazon)
+```
+
+### Paso 5. Métricas globales con `yardstick`
+
+Como verificación, las mismas métricas se calculan con `yardstick` (paquete de `tidymodels`).
+
+- `metric_set()` crea una función que calcula varias métricas a la vez.
+- `truth` y `estimate` indican la columna real y la predicha.
+- `accuracy` debe coincidir con la fila `accuracy` del reporte anterior.
+- En problemas con más de dos clases, `precision`, `recall` y `f_meas` devuelven por defecto el promedio **macro**: el promedio simple de los valores de las tres clases del reporte anterior.
+
+```{r}
+eval_metrics <- metric_set(accuracy, precision, recall, f_meas)
+
+eval_metrics(eval_amazon, truth = sent_label, estimate = sentiment_prop_label)
+```
+
+### Interpretación
+
+La accuracy de `r round(100 * mean(eval_amazon$sent_label == eval_amazon$sentiment_prop_label), 2)`% indica que la clasificación basada en el lexicon (cortada por terciles) concuerda débilmente con la derivada de las estrellas. Como referencia, una asignación al azar con tres clases daría alrededor de 33%. La clase `neutral` muestra la precisión más baja: muchas reseñas predichas como neutrales pertenecen en realidad a otras clases. Esto es esperable porque el corte por terciles asigna un tercio de las reseñas a `neutral`, mientras que solo el 20% lo es según las estrellas.
+
+## Tarea 3.
+¿Se les ocurre alguna otra forma para utilizar el lexicon del LIIA para la evaluación de la polaridad? ¿Qué pasaría si no quisiéramos utilizar una categorización discreta? ¿Cómo podríamos trabajar el lexicon?
+
+En la Tarea 1, `mean_likeness` se redondeó a 1, 2 o 3. Eso pierde información: una palabra con 2.4 y otra con 1.6 quedan ambas como `neutral`, aunque la primera tiende a positiva y la segunda a negativa.
+
+La alternativa es usar `mean_likeness` como **valor continuo** y resumirlo por reseña. Cada reseña recibe un puntaje entre 1 y 3 que conserva la intensidad de cada palabra.
+
+### Función `sentiment_analysis_quants()`
+
+**Argumentos**
+
+- `tidy_df`, `sentiment_df`, `keep_cols`, `word_col`: igual que en `sentiment_analysis_freqs()`.
+- `sent_col`: columna numérica del lexicon que se resume. Por defecto `"mean_likeness"`.
+
+**Paso a paso**
+
+1. **`inner_join()`**: igual que antes, une cada token con su valor en el lexicon.
+2. **`group_by(across(all_of(keep_cols)))`**: agrupa por reseña.
+3. **`summarise()`**: calcula tres estadísticos de `mean_likeness` sobre las palabras de cada reseña:
+    - `mean`: valoración promedio de la reseña. Es la medida principal de polaridad.
+    - `median`: menos sensible a palabras con valores extremos.
+    - `sd`: dispersión. Un valor alto indica que la reseña mezcla palabras positivas y negativas (por ejemplo, "el producto es bueno pero el envío fue malo"). Es `NA` si la reseña tiene una sola palabra en el lexicon.
+    - `.data[[sent_col]]` permite referirse a una columna cuyo nombre está guardado como texto en `sent_col`.
+    - `.groups = "drop"` elimina la agrupación del resultado.
+
+Otras variantes posibles con el mismo lexicon:
+
+- ponderar cada palabra por `1 / std_likeness`, para dar más peso a las palabras en las que los evaluadores coincidieron más;
+- centrar la escala restando 2 (`mean_likeness - 2`), de modo que los valores negativos indiquen polaridad negativa y los positivos, positiva, y sumar por reseña.
+
+```{r}
+sentiment_analysis_quants <- function(tidy_df, sentiment_df,
+                                      keep_cols = c("review_id", "product_id", "stars"),
+                                      sent_col = "mean_likeness",
+                                      word_col = "word") {
+  tidy_df %>%
+    # 1. join con el lexicon
+    inner_join(sentiment_df, by = setNames("word", word_col),
+               relationship = "many-to-many") %>%
+    # 2. agrupación por reseña
+    group_by(across(all_of(keep_cols))) %>%
+    # 3. estadísticos de mean_likeness por reseña
+    summarise(
+      mean   = mean(.data[[sent_col]]),
+      median = median(.data[[sent_col]]),
+      sd     = sd(.data[[sent_col]]),
+      .groups = "drop"
+    )
+}
+
+sentiment_mean <- sentiment_analysis_quants(amazon_tidy, sentiment_words_liia)
+sentiment_mean
+```
+
+Como en la Tarea 2, si el puntaje continuo captura la polaridad, el promedio por reseña debería crecer con la cantidad de estrellas.
+
+```{r}
+sentiment_mean %>%
+  ggplot(aes(x = factor(stars), y = mean)) +
+  geom_boxplot() +
+  labs(x = "stars", y = "mean_likeness (promedio por reseña)") +
+  theme_minimal()
+```
+
+## Tarea 4.
+Existe una tarea de preprocesamiento que no hemos utilizado y que podría, quizás, mejorar la performance de este análisis. ¿Cuál es? Investiguen al menos una formas de implementarla en R
+
+La tarea es la **lematización**: llevar cada forma flexionada de una palabra a su forma canónica o lema.
+
+- verbos → infinitivo: "funcionan", "funcionó", "funcionaba" → "funcionar";
+- sustantivos y adjetivos → masculino singular: "contenta", "contentos" → "contento".
+
+El lexicon del LIIA contiene mayormente formas canónicas. Sin lematizar, "funcionan" o "contenta" no coinciden con ninguna entrada y se pierden. Lematizar el corpus aumenta la cantidad de tokens que matchean con el lexicon y, potencialmente, mejora la estimación de la polaridad.
+
+No hay que confundirla con el **stemming**, que recorta sufijos con reglas fijas ("contenta" → "content"). El stemming produce raíces que no son palabras y que, por lo tanto, no coinciden con las entradas del lexicon.
+
+Opciones en R:
+
+- **`udpipe`**: implementa modelos de Universal Dependencies preentrenados, entre ellos varios para español. Funciona solo en R, sin depender de Python. Es la opción implementada abajo.
+- **`spacyr`**: interfaz de R para spaCy (`es_core_news_sm`, el mismo modelo de la versión en Python). Requiere una instalación de Python con spaCy.
+
+### Paso 1. Carga del modelo de `udpipe`
+
+- `udpipe_download_model()` descarga el modelo `spanish-gsd` en la carpeta indicada (`model_dir`). Con `overwrite = FALSE`, si el archivo ya existe no se vuelve a descargar.
+- `udpipe_load_model()` carga el modelo en memoria a partir del archivo descargado (`ud_info$file_model`).
+
+```{r}
+library(udpipe)
+
+ud_info  <- udpipe_download_model(language = "spanish-gsd", model_dir = ".", overwrite = FALSE)
+ud_model <- udpipe_load_model(ud_info$file_model)
+```
+
+### Paso 2. Lematización del vocabulario
+
+Como en la versión de Python, cada palabra se lematiza de forma aislada, sin el contexto de la oración. Esto es menos preciso que lematizar el texto completo (una misma forma puede tener lemas distintos según su función: "como" → "comer" o "como"), pero mantiene la tokenización ya realizada.
+
+Una misma palabra aparece muchas veces en el corpus. Para no lematizarla en cada aparición, se trabaja sobre el **vocabulario** (palabras distintas) y luego se une el resultado al corpus:
+
+1. **`distinct(word)`**: obtiene las palabras únicas del corpus.
+2. **`udpipe()`**: anota cada palabra. Recibe un `data.frame` con las columnas `doc_id` y `text`; aquí ambas son la misma palabra, de modo que `doc_id` permite saber a qué palabra corresponde cada lema. Devuelve una fila por token con, entre otras, las columnas `token`, `lemma` y `upos` (categoría gramatical).
+3. **`filter(!str_detect(token_id, "-"))`**: algunas palabras se dividen en varias partes ("del" → "de" + "el"; "dárselo" → "dar" + "se" + "lo"). `udpipe` devuelve una fila para la palabra completa, con un `token_id` del tipo `"1-2"` y sin lema, y una fila para cada parte. Se descartan las filas de la palabra completa y se conservan las partes.
+4. **`group_by(word = doc_id)` + `summarise()`**: vuelve a una fila por palabra. Si la palabra se dividió en partes, sus lemas se unen con un espacio (como en la versión de Python). Los lemas se pasan a minúsculas para que coincidan con el lexicon (el modelo devuelve con mayúscula los nombres propios).
+5. **`left_join()`**: agrega la columna `lemma` a cada token del corpus.
+
+```{r}
+# 1. vocabulario
+vocab <- amazon_tidy %>%
+  distinct(word)
+
+# 2-4. tabla palabra -> lema
+lemma_map <- udpipe(x = data.frame(doc_id = vocab$word, text = vocab$word),
+                    object = ud_model) %>%
+  as_tibble() %>%
+  filter(!str_detect(token_id, "-")) %>%
+  group_by(word = doc_id) %>%
+  summarise(lemma = str_c(str_to_lower(lemma), collapse = " "), .groups = "drop")
+
+# 5. lema para cada token del corpus
+amazon_tidy_lemma <- amazon_tidy %>%
+  left_join(lemma_map, by = "word") %>%
+  filter(!is.na(lemma))
+
+amazon_tidy_lemma %>%
+  select(review_id, word, lemma)
+```
+
+### Paso 3. Stopwords sobre los lemas y análisis de sentimiento
+
+Al lematizar pueden aparecer nuevas stopwords (por ejemplo, "fue" → "ser"), por lo que se vuelven a eliminar, ahora comparando la columna `lemma` con la lista.
+
+Luego se reutiliza `sentiment_analysis_freqs()` con `word_col = "lemma"`: el join con el lexicon se hace sobre los lemas en lugar de sobre las palabras originales.
+
+```{r}
+amazon_tidy_lemma <- amazon_tidy_lemma %>%
+  anti_join(stop_words_es, by = c("lemma" = "word"))
+
+sent_amazon_lemma <- sentiment_analysis_freqs(amazon_tidy_lemma, sentiment_words_liia,
+                                              word_col = "lemma")
+sent_amazon_lemma
+```
+
+### Paso 4. Comparación con el análisis sin lematizar
+
+Se aplica la misma evaluación de la Tarea 2 (`recode_for_eval()` y `classification_report()`) a los resultados con lemas y se comparan con los obtenidos con palabras. Se comparan también:
+
+- **cobertura**: cantidad de reseñas con al menos una palabra en el lexicon;
+- **tokens matcheados**: cantidad total de tokens que coincidieron con el lexicon.
+
+Si la lematización ayuda, ambas cantidades deberían aumentar y las métricas deberían mejorar.
+
+```{r}
+eval_amazon_lemma <- recode_for_eval(sent_amazon_lemma)
+
+classification_report(eval_amazon_lemma)
+
+## Comparación de métricas: palabras vs. lemas
+bind_rows(
+  classification_report(eval_amazon)       %>% mutate(input = "word"),
+  classification_report(eval_amazon_lemma) %>% mutate(input = "lemma")
+) %>%
+  select(input, class, precision, recall, f1) %>%
+  arrange(class, input)
+
+## Cobertura y tokens matcheados
+tibble(
+  input           = c("word", "lemma"),
+  reviews         = c(nrow(sent_amazon), nrow(sent_amazon_lemma)),
+  matched_tokens  = c(sum(sent_amazon$negativo + sent_amazon$neutral + sent_amazon$positivo),
+                      sum(sent_amazon_lemma$negativo + sent_amazon_lemma$neutral + sent_amazon_lemma$positivo))
+)
+```
