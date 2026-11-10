@@ -319,7 +319,7 @@ eval_amazon %>%
 
 ### Paso 4. Función `classification_report()`
 
-Calcula accuracy, precision, recall y F1, siguiendo el formato del `classification_report()` de scikit-learn.
+Calcula accuracy, precision, recall y F1 por clase.
 
 **Argumentos**
 

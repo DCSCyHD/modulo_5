@@ -69,7 +69,9 @@ install.packages('gemini.R')
 #### __Clase 3__
 
 + Temas de clase  
-  + Web Scraping + APIs. ¿Cómo descargamos información de un sitio estático?   
+  + ¿Cómo detectar temas en corpus?  
+  + Introducción al modelado de tópicos.  
+  + Latent Dirichlet Allocation (LDA) y un modelo para detectar tópicos diseñado para las ciencias sociales: Structural Topic Modeling. (STA)  
   
 [![](imgs/Download.png)](clase3.zip)  
 
@@ -77,26 +79,26 @@ install.packages('gemini.R')
 #### __Clase 4__
 
 + Temas de clase  
-  + ¿Cómo detectar temas en corpus I?  
-  + Introducción al modelado de tópicos.  
-  + Latent Dirichlet Allocation (LDA) y un modelo para detectar tópicos diseñado para las ciencias sociales: Structural Topic Modeling. (STA)  
-
+  + ¿Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec).   
+  + ¿Cómo se usa un modelo pre-entrenado? Usando word embeddings pre-entrenados como insumo.    
+  
 [![](imgs/Download.png)](clase4.zip)
 
 
 #### __Clase 5__
 
 + Temas de clase  
-  + ¿Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec).   
-  + ¿Cómo se usa un modelo pre-entrenado? Usando word embeddings pre-entrenados como insumo.    
+  + ¿Qué son los LLMs y cómo usarlos? Un primer ejercicio con modelos grandes de lenguaje
+  +  Introducción a prompt engineering y al uso de API de gemini. 
+
 
 [![](imgs/Download.png)](clase5.zip)  
-
 
 #### __Clase 6__
 
 + Temas de clase  
-  + ¿Qué son los LLMs y cómo usarlos? Un primer ejercicio con modelos grandes de lenguaje  
+  + ¿Cómo usar LLMs de forma local? Introducción a ollamar.
+
 
 [![](imgs/Download.png)](clase6.zip)  
 

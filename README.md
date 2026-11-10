@@ -59,63 +59,62 @@ install.packages('gemini.R')
 totalidad de los materiales de cada una para trabajar en un único
 archivo .zip* </u>
 
-#### **Clase 1**
 
-- Temas de clase
-  - Introducción a R y al tidyverse y a tidytext.  
-  - ¿Cómo hacer de un corpus de texto crudo algo analizable mediante
-    métodos cuantitativos?  
-  - Preprocesamiento de texto: stopwords, lemmas y stemming.
+#### __Clase 1__  
+
++ Temas de clase  
+  + Introducción a R y al tidyverse y a tidytext.  
+  + ¿Cómo hacer de un corpus de texto crudo algo analizable mediante métodos cuantitativos?  
+  + Preprocesamiento de texto: stopwords, lemmas y stemming.
 
 [![](imgs/Download.png)](clase1.zip)
 
-#### **Clase 2**
 
-- Temas de clase
-  - ¿Cómo vectorizar textos? Contando palabras y extrayendo conclusiones
-    de un corpus.  
-  - Bag of Words. Term-frequency matrix: conteos crudos y ponderación
-    TF-IDF.  
-  - Análisis de sentimientos sobre un corpus.
+#### __Clase 2__  
 
-[![](imgs/Download.png)](clase2.zip)
++ Temas de clase  
+  + ¿Cómo vectorizar textos? Contando palabras y extrayendo conclusiones de un corpus.  
+  + Bag of Words. Term-frequency matrix: conteos crudos y ponderación TF-IDF.   
+  + Análisis de sentimientos sobre un corpus.   
+  
+[![](imgs/Download.png)](clase2.zip)  
 
-#### **Clase 3**
 
-- Temas de clase
-  - Web Scraping + APIs. ¿Cómo descargamos información de un sitio
-    estático?
+#### __Clase 3__
 
-[![](imgs/Download.png)](clase3.zip)
++ Temas de clase  
+  + ¿Cómo detectar temas en corpus?  
+  + Introducción al modelado de tópicos.  
+  + Latent Dirichlet Allocation (LDA) y un modelo para detectar tópicos diseñado para las ciencias sociales: Structural Topic Modeling. (STA)  
+  
+[![](imgs/Download.png)](clase3.zip)  
 
-#### **Clase 4**
 
-- Temas de clase
-  - ¿Cómo detectar temas en corpus I?  
-  - Introducción al modelado de tópicos.  
-  - Latent Dirichlet Allocation (LDA) y un modelo para detectar tópicos
-    diseñado para las ciencias sociales: Structural Topic Modeling.
-    (STA)
+#### __Clase 4__
 
++ Temas de clase  
+  + ¿Cómo vectorizar textos (recargado)? Una introducción a los métodos de word-embeddings (word2vec).   
+  + ¿Cómo se usa un modelo pre-entrenado? Usando word embeddings pre-entrenados como insumo.    
+  
 [![](imgs/Download.png)](clase4.zip)
 
-#### **Clase 5**
 
-- Temas de clase
-  - ¿Cómo vectorizar textos (recargado)? Una introducción a los métodos
-    de word-embeddings (word2vec).  
-  - ¿Cómo se usa un modelo pre-entrenado? Usando word embeddings
-    pre-entrenados como insumo.
+#### __Clase 5__
 
-[![](imgs/Download.png)](clase5.zip)
++ Temas de clase  
+  + ¿Qué son los LLMs y cómo usarlos? Un primer ejercicio con modelos grandes de lenguaje
+  +  Introducción a prompt engineering y al uso de API de gemini. 
 
-#### **Clase 6**
 
-- Temas de clase
-  - ¿Qué son los LLMs y cómo usarlos? Un primer ejercicio con modelos
-    grandes de lenguaje
+[![](imgs/Download.png)](clase5.zip)  
 
-[![](imgs/Download.png)](clase6.zip)
+#### __Clase 6__
+
++ Temas de clase  
+  + ¿Cómo usar LLMs de forma local? Introducción a ollamar.
+
+
+[![](imgs/Download.png)](clase6.zip)  
 
 # Bibliografía y sitios de consulta
 
