@@ -116,6 +116,25 @@ archivo .zip* </u>
 
 [![](imgs/Download.png)](clase6.zip)  
 
+
+#### __Clase Extra: Web Scraping__
+
++ Temas de clase  
+  + APIs (intro breve)
+  + WebScraping estático con `rvest`
+
++ Materiales
+   + [Intro breve a APIs - Notebook](./99_clase_scraping/clase_3_APIs.html)
+   + [Intro breve a APIs - RMarkdown](./99_clase_scraping/clase_3_APIs.Rmd)
+   + [Intro breve a scraping estático con `rvest` - Notebook](./99_clase_scraping/clase_3_scraping.html)
+   + [Intro breve a scraping estático con `rvest` - RMarkdown](./99_clase_scraping/clase_3_scraping.Rmd)
+   + [Práctica independiente - Notebook](./99_clase_scraping/clase_3_practica_independiente.html)
+   + [Práctica independiente - RMarkdown](./99_clase_scraping/clase_3_practica_independiente.Rmd)
+   + [Práctica independiente SOLUCION - Notebook](./99_clase_scraping/clase_3_practica_independiente_SOLUCION.html)
+   + [Práctica independiente SOLUCION - RMarkdown](./99_clase_scraping/clase_3_practica_independiente_SOLUCION.Rmd)
+   + [Video clase 2023](https://me-l.co/8vqzsdcr)
+   
+
 # Bibliografía y sitios de consulta
 
 - [Moretti, Franco (2015). Lectura distante. Buenos Aires: Fondo de

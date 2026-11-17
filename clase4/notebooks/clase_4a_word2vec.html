@@ -1480,18 +1480,18 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Una introducción a los <em>word
 embeddings</em></h1>
 <h3 class="subtitle">Analizando diálogos de Los Simpons</h3>
-<h4 class="date">27 octubre, 2025</h4>
+<h4 class="date">17 noviembre, 2026</h4>
 
 </div>
 
 
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-## ✔ ggplot2   3.5.2     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-## ✔ purrr     1.0.4     
+## ✔ dplyr     1.2.1     ✔ readr     2.2.0
+## ✔ forcats   1.0.1     ✔ stringr   1.6.0
+## ✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+## ✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+## ✔ purrr     1.2.2     
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()
@@ -1623,8 +1623,12 @@ unigramas &lt;- unigramas %&gt;%
         group_by(id, episode_id, raw_character_text) %&gt;%
         summarize(text = str_c(word, collapse = &quot; &quot;)) %&gt;%
         ungroup()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;id&#39;, &#39;episode_id&#39;. You can override using
-## the `.groups` argument.</code></pre>
+<pre><code>## `summarise()` has regrouped the output.
+## ℹ Summaries were computed grouped by id, episode_id, and raw_character_text.
+## ℹ Output is grouped by id and episode_id.
+## ℹ Use `summarise(.groups = &quot;drop_last&quot;)` to silence this message.
+## ℹ Use `summarise(.by = c(id, episode_id, raw_character_text))` for
+##   per-operation grouping (`?dplyr::dplyr_by`) instead.</code></pre>
 <p>Lematizamos:</p>
 <pre class="r"><code>unigramas &lt;- unigramas %&gt;%
         mutate(text = lemmatize_strings(unigramas$text))</code></pre>
@@ -1639,8 +1643,12 @@ unigramas &lt;- unigramas %&gt;%
         group_by(id, episode_id, raw_character_text) %&gt;%
         summarize(text = str_c(text, collapse = &quot; &quot;)) %&gt;%
         ungroup()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;id&#39;, &#39;episode_id&#39;. You can override using
-## the `.groups` argument.</code></pre>
+<pre><code>## `summarise()` has regrouped the output.
+## ℹ Summaries were computed grouped by id, episode_id, and raw_character_text.
+## ℹ Output is grouped by id and episode_id.
+## ℹ Use `summarise(.groups = &quot;drop_last&quot;)` to silence this message.
+## ℹ Use `summarise(.by = c(id, episode_id, raw_character_text))` for
+##   per-operation grouping (`?dplyr::dplyr_by`) instead.</code></pre>
 <pre class="r"><code>uni_bigramas</code></pre>
 <pre><code>## # A tibble: 121,476 × 4
 ##       id episode_id raw_character_text text                                     

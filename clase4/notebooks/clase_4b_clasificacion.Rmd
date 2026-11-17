@@ -313,9 +313,9 @@ reviews_embed <- reviews %>%
 ```
 
 ### Carga del embedding
-Vamos a usar un embedding entrenado mediante el algoritmo wor2vec por C. Cardelino. Está entrenado sobre un corpus grande en español. Pueden encontrar los detalles [aquí](https://crscardellino.ar/SBWCE/).
+Vamos a usar un embedding entrenado mediante el algoritmo wor2vec por C. Cardelino. Está entrenado sobre un corpus grande en español. Pueden encontrar los detalles [aquí](https://crscardellino.net/SBWCE/).
 
-Escribamos una función que cargue el embedding y ejecutémosla:
+Escribamos una función que cargue el embedding, lo formatee y ejecutémosla:
 
 ```{r}
 load_embeddings <- function(path=NULL, type=c("w2v", "ft")){
@@ -337,12 +337,12 @@ load_embeddings <- function(path=NULL, type=c("w2v", "ft")){
 }
 
 
-embedding <- load_embeddings(path = "../../../../WordEmbeddings/Word2Vec/sbw_vectors.bin",
+embedding <- load_embeddings(path = "../../../../word_embeddings/data/embeddings/word2vec/sbw_vectors.bin",
                              type = "w2v")
 
 ```
  
-Como puede verse, es necesario previamente descargar el archivo .bin (con la información en formato binario) del embedding para poder cargarlo . La función también permite cargar (si quisieran hacerlo) un .bin entrenado mediante [FastText](https://fasttext.cc/docs/en/crawl-vectors.html).
+Como puede verse, es necesario previamente descargar el archivo .bin (con la información en formato binario) del embedding para poder cargarlo. Pueden descargarlo desde la página de Cristian (ver más arriba). La función también permite cargar (si quisieran hacerlo) un .bin entrenado mediante [FastText](https://fasttext.cc/docs/en/crawl-vectors.html).
 
 ### Tokenización y construcción de features mediante el embedding
 Existe un método `step_word_embeddings()` análogo al `step_tfidf()` que realizará la vectorización:
@@ -370,7 +370,7 @@ La secuencia de operaciones que se va a realizar por detrás de bambalinas es la
 
 De esta forma, reemplazamos cada palabra de una review por sus coordenadas en el embedding. Luego, calculamos algo así como el centroide, es decir, la coordenada promedio. Así, una reseña que era una lista de palabras ahora es lista de coordenadas en 300 dimensiones.
 
-![](../imgs/egc_esquizo.png)
+![](./imgs/promedio_embeddings_resenas.png)
 Fuente: [El Gato y la Caja](https://elgatoylacaja.com/psiquiatriapp)
 
 Ahora tenemos todo listo para repetir el flujo anterior.

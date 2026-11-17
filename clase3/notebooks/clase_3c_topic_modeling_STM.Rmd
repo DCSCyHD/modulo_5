@@ -137,6 +137,12 @@ Generamos las dos matrices fundamentales: la de palabras x tópico y la document
 ```{r}
 betas_stm <- tidy(stm_15, matrix='beta')
 doc_2_topics_stm <- tidy(stm_15, matrix='theta')
+
+
+doc_2_topics_stm %>%
+        pivot_wider(names_from=topic,
+                    values_from=gamma)
+
 ```
 
 Primero, veamos las matrices de palabras por topicos.
